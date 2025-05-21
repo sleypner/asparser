@@ -17,4 +17,4 @@ jobs:
         context: ./
         file: Dockerfile
         push: false
-        tags: ${{ secrets.DOCKERHUB_USERNAME }}/asterios-news:latest
+        tags: ${{ secrets.DOCKERHUB_USERNAME }}/asparser:latest

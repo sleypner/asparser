@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:insert="~{fragments/head :: my-head}"></th:block>
+    <script th:src="@{/js/admin-script.js}"></script>
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+    <title>AsParser - Admin panel - Logs</title>
+</head>
+<body>
+<div th:replace="~{fragments/menu :: my-menu}"></div>
+<div th:replace="~{fragments/admin-left-menu :: left-menu}"></div>
+<div class="main-content">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-history me-2"></i>System Logs</h2>
+        <button class="btn btn-primary" id="refreshLogsBtn">
+            <i class="fas fa-sync-alt me-2"></i>Refresh
+        </button>
+    </div>
+    <div class="filter-section">
+        <div class="row">
+            <div class="col-md-3 mb-3">
+                <label for="logLevelFilter" class="form-label">Log Level</label>
+                <select class="form-select" id="logLevelFilter">
+                    <option value="">All Levels</option>
+                    <option value="INFO">INFO</option>
+                    <option value="WARN">WARN</option>
+                    <option value="ERROR">ERROR</option>
+                    <option value="DEBUG">DEBUG</option>
+                    <option value="TRACE">TRACE</option>
+                </select>
+            </div>
+            <div class="col-md-3 mb-3">
+                <label for="applicationFilter" class="form-label">Application</label>
+                <select class="form-select" id="applicationFilter">
+                    <option value="">All Applications</option>
+                </select>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Date Range</label>
+                <div class="date-range-picker">
+                    <input type="date" class="form-control" id="startDateFilter">
+                    <span>to</span>
+                    <input type="date" class="form-control" id="endDateFilter">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-9 mb-3">
+                <label for="searchFilter" class="form-label">Search</label>
+                <input type="text" class="form-control" id="searchFilter" placeholder="Search in message...">
+            </div>
+            <div class="col-md-3 d-flex align-items-end mb-3">
+                <button class="btn btn-primary w-100" id="applyFiltersBtn">
+                    <i class="fas fa-filter me-2"></i>Apply Filters
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <span><i class="fas fa-list me-2"></i>Log Entries</span>
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="autoRefreshToggle" checked>
+                <label class="form-check-label" for="autoRefreshToggle">Auto Refresh (30s)</label>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover" id="logsTable">
+                    <thead>
+                    <tr>
+                        <th>Timestamp</th>
+                        <th>Level</th>
+                        <th>Application</th>
+                        <th>Logger</th>
+                        <th>Message</th>
+                        <th>User</th>
+                    </tr>
+                    </thead>
+                    <tbody id="logsTableBody">
+                    <tr>
+                        <td colspan="6" class="text-center py-5">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center mt-3" id="pagination">
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="logDetailsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-info-circle me-2"></i>Log Entry Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="logDetailsContent">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:replace="~{fragments/footer :: my-footer}"></div>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<footer th:fragment="my-footer" class="footer py-3 mt-4" style="
+                            margin-left: var(--sidebar-width);
+                            width: calc(100% - var(--sidebar-width)); ">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-4 mb-2">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="logo-icon">
+                        <i class="fas fa-project-diagram"></i>
+                    </div>
+                    <span class="fw-bold">AsParser</span>
+                </div>
+                <p class="small text-muted"></p>
+            </div>
+            <div class="col-md-3 mb-2">
+                <ul class="list-unstyled">
+                    <li class="mb-2"><a th:href="@{/}" class="text-decoration-none text-muted"><i class="fas fa-home me-2"></i><p>Home</p></a></li>
+                    <li class="mb-2"><a th:href="@{/online}" class="text-decoration-none text-muted"><i class="fas fa-signal me-2"></i><p>Online</p></a></li>
+                    <li class="mb-2"><a th:href="@{/fortress}" class="text-decoration-none text-muted"><i class="fas fa-table me-2"></i>Fortress</a></li>
+                    <li class="mb-2"><a th:href="@{/fortress-history}" class="text-decoration-none text-muted"><i class="fas fa-table me-2"></i><p>Fortress history</p></a></li>
+                    <li class="mb-2"><a th:href="@{/bosses}" class="text-decoration-none text-muted"><i class="fas fa-table me-2"></i><p>Raid Bosses</p></a></li>
+                    <li class="mb-2"><a th:href="@{/events}" class="text-decoration-none text-muted"><i class="fas fa-calendar-days me-2"></i><p>Events</p></a></li>
+                    <li class="mb-2"><a th:href="@{/roulette}" class="text-decoration-none text-muted"><i class="fas fa-gamepad me-2"></i><p>Roulette</p></a></li>
+                    <li th:if="${#authorization.expression('isAuthenticated()')}" class="mb-2"><a th:href="@{/admin}" class="text-decoration-none text-muted"><i class="fas fa-screwdriver-wrench me-2"></i><p>Roulette</p></a></li>
+                </ul>
+            </div>
+            <div style="display: none" class="col-md-3">
+                <h5 class="mb-3">About</h5>
+                <ul class="list-unstyled text-muted">
+                    <li class="mb-2"><i class="fas fa-info-circle me-2"></i>Version: 1.0.0</li>
+                    <li class="mb-2"><i class="fas fa-calendar me-2"></i>Release date: 18.05.2025</li>
+                    <li class="mb-2"><i class="fas fa-shield-alt me-2"></i>License: MIT</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col-12 text-center text-muted">
+                <p class="small mb-0">&copy; 2025 AsParser. All rights reserved.</p>
+            </div>
+        </div>
+    </div>
+</footer>
+</body>
+</html>

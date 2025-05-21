@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:insert="~{fragments/head :: my-head}"></th:block>
+    <script th:src="@{/js/admin-script.js}"></script>
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+    <title>AsParser - Admin panel - Statistics</title>
+</head>
+<body>
+<div th:replace="~{fragments/menu :: my-menu}"></div>
+<div th:replace="~{fragments/admin-left-menu :: left-menu}"></div>
+<div class="main-content">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-chart-bar me-2"></i>Site Statistics</h2>
+        <div class="date-filter">
+            <input type="date" class="form-control" id="startDate">
+            <span class="align-self-center">to</span>
+            <input type="date" class="form-control" id="endDate">
+            <button class="btn btn-primary" id="applyFilter">
+                <i class="fas fa-filter me-2"></i>Apply
+            </button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="value" id="totalUsers">0</div>
+                <div class="label">Total Users</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="value" id="activeUsers">0</div>
+                <div class="label">Active Users</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="value" id="newUsers">0</div>
+                <div class="label">New Users (7d)</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="value" id="avgSessions">0</div>
+                <div class="label">Avg. Sessions</div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-users me-2"></i>User Growth
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="userGrowthChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-user-tag me-2"></i>User Roles Distribution
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="rolesChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-calendar-alt me-2"></i>Daily Activity
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="activityChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-globe me-2"></i>Traffic Sources
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="trafficChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:replace="~{fragments/footer :: my-footer}"></div>
+</body>
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="roulette" class="inner-content">
+    <div class="roulette-container">
+        <div class="roulette-header">
+            <i class="fas fa-dice me-2"></i> Roulette
+        </div>
+
+        <div class="roulette-info">
+            Min bet: 5,000 | Max bet: 500,000,000 | Number must be between 0 and 36
+        </div>
+
+        <div class="roulette-wheel" id="rouletteWheel">
+            00
+        </div>
+
+        <form th:action="@{/roulette}" name="rouletteForm" onsubmit="rouletteValidForm();return false" method="get" class="roulette-form">
+            <div class="form-group">
+                <label for="straight"><i class="fas fa-coins me-2"></i> Bet amount:</label>
+                <input type="number" id="straight" name="straight" class="form-control" placeholder="Enter the amount">
+            </div>
+
+            <div class="form-group">
+                <label for="number"><i class="fas fa-hashtag me-2"></i> Number (0-36):</label>
+                <input type="number" id="number" name="number" class="form-control" placeholder="Select number">
+            </div>
+
+            <button type="button" onclick="rouletteValidForm();return false" class="btn-play">
+                <i class="fas fa-play me-2"></i> Play
+            </button>
+        </form>
+
+        <div class="player-coffer">
+            <i class="fas fa-wallet me-2"></i> Your balance:
+            <span id="playerCofferNum">100 000 000 000</span>
+            <span id="playerCurrency">Adena</span>
+        </div>
+
+        <div class="roulette-result" id="rouletteSelectedOption">
+            <div class="text-center mb-3">
+                <i class="fas fa-info-circle me-2"></i> You bet
+                <span class="fw-bold" id="straightVal">0</span> on a number
+                <span class="fw-bold" id="numberVal">0</span>
+            </div>
+
+            <div class="stats-container">
+                <div class="stat-item">
+                    <div>Try:</div>
+                    <div class="stat-value" id="rolledCount">0</div>
+                </div>
+                <div class="stat-item">
+                    <div>Win:</div>
+                    <div class="stat-value win" id="rolledCountWon">0</div>
+                </div>
+                <div class="stat-item">
+                    <div>Win %:</div>
+                    <div class="stat-value" id="rolledCoefficientWon">0</div>
+                </div>
+                <div class="stat-item">
+                    <div>Result:</div>
+                    <div class="stat-value" id="rolledNumber">-</div>
+                </div>
+            </div>
+
+            <div class="text-center mt-3">
+                <button onclick="rouletteValidForm();return false;" class="btn btn-outline-primary">
+                    <i class="fas fa-redo me-2"></i> Try again
+                </button>
+            </div>
+        </div>
+
+        <div class="roulette-log" id="rouletteLog">
+            <div class="text-center text-muted">History</div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<div class="inner-content">
+  <div class="event-form">
+<!--    <form th:action="@{/events}" name="events" onchange="formEvents('events');return false">-->
+<!--      <label for="server">Choose a server:</label>-->
+<!--      <select class="event-form-input" name="server" id="server">-->
+<!--        <option value="all" selected>All</option>-->
+<!--        <option value="Medea x3">Medea x3</option>-->
+<!--        <option value="Asterios x5">Asterios x5</option>-->
+<!--        <option value="Prime x1">Prime x1</option>-->
+<!--        <option value="Phoenix x7">Phoenix x7</option>-->
+<!--        <option value="New Hunter x55">New Hunter x55</option>-->
+<!--      </select>-->
+<!--      <label for="server">Choose a type:</label>-->
+<!--      <select class="event-form-input" name="type" id="type">-->
+<!--        <option value="all" selected>All</option>-->
+<!--        <option value="Key Bosses">Key Bosses</option>-->
+<!--        <option value="Epic Bosses">Epic Bosses</option>-->
+<!--        <option value="Sieges">Sieges</option>-->
+<!--        <option value="Territory Wars">Territory Wars</option>-->
+<!--      </select>-->
+<!--      <label for="sort">Sort by:</label>-->
+<!--      <select class="event-form-input" name="sort" id="sort">-->
+<!--        <option value="asc">Date ascending</option>-->
+<!--        <option value="desc" selected>Date descending</option>-->
+<!--      </select>-->
+<!--    </form>-->
+  </div>
+  <div class="table-responsive">
+    <div class="div-table" id="eventsTable">
+      <div class="div-table-row div-table-header">
+        <div class="div-table-col">ID</div>
+        <div class="div-table-col">Title</div>
+        <div class="div-table-col">Description</div>
+        <div class="div-table-col">Date</div>
+        <div class="div-table-col">Server</div>
+        <div class="div-table-col">Type</div>
+      </div>
+      @for (event of events();track event.id){
+        <div class="div-table-row">
+          <div class="div-table-col" th:text="${e.id}">{{event.id}}</div>
+          <div class="div-table-col" th:text="${e.title}">{{event.title}}</div>
+          <div class="div-table-col" th:text="${e.description}">{{event.description}}</div>
+          <div class="div-table-col" th:text="${e.date}">{{event.date}}</div>
+          <div class="div-table-col" th:text="${e.server}">{{event.server}}</div>
+          <div class="div-table-col" th:text="${e.type}">{{event.type}}</div>
+        </div>
+      }
+    </div>
+  </div>
+</div>
+

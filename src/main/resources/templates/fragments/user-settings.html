@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="settings">
+    <div class="main-content">
+        <div class="profile-header">
+            <img src="https://via.placeholder.com/150" alt="Avatar" class="profile-avatar">
+            <div class="profile-info">
+                <h2>John Smith <span class="badge-role ms-2">User</span></h2>
+                <p><i class="fas fa-envelope me-2"></i>john.smith@example.com</p>
+                <p><i class="fas fa-calendar-alt me-2"></i>Joined: May 15, 2023</p>
+                <div class="profile-stats">
+                    <div class="stat-item">
+                        <div class="stat-value">24</div>
+                        <div class="stat-label">Projects</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">156</div>
+                        <div class="stat-label">Tasks</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">3.8</div>
+                        <div class="stat-label">Rating</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <ul class="nav nav-tabs mb-4" id="profileTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="info-tab" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab" aria-controls="info" aria-selected="true">
+                    <i class="fas fa-info-circle me-2"></i>Information
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="edit-tab" data-bs-toggle="tab" data-bs-target="#edit" type="button" role="tab" aria-controls="edit" aria-selected="false">
+                    <i class="fas fa-edit me-2"></i>Edit Profile
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="activity-tab" data-bs-toggle="tab" data-bs-target="#activity" type="button" role="tab" aria-controls="activity" aria-selected="false">
+                    <i class="fas fa-history me-2"></i>Activity
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="profileTabsContent">
+            <div class="tab-pane fade show active" id="info" role="tabpanel" aria-labelledby="info-tab">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-id-card me-2"></i>Basic Information
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label class="form-label">Username</label>
+                                    <div class="form-control-plaintext">jsmith</div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Email</label>
+                                    <div class="form-control-plaintext">john.smith@example.com</div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">First Name</label>
+                                    <div class="form-control-plaintext">John</div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Last Name</label>
+                                    <div class="form-control-plaintext">Smith</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-shield-alt me-2"></i>Security
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label class="form-label">Account Status</label>
+                                    <div class="form-control-plaintext">
+                                        <span class="badge bg-success">Active</span>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Last Login</label>
+                                    <div class="form-control-plaintext">Today, 10:45 AM</div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">IP Address</label>
+                                    <div class="form-control-plaintext">192.168.1.1</div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Two-Factor Authentication</label>
+                                    <div class="form-control-plaintext">
+                                        <span class="badge bg-danger">Disabled</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="edit" role="tabpanel" aria-labelledby="edit-tab">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-user-edit me-2"></i>Edit Profile
+                    </div>
+                    <div class="card-body">
+                        <form id="profileForm">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="editFirstName" class="form-label">First Name</label>
+                                    <input type="text" class="form-control" id="editFirstName" value="John">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="editLastName" class="form-label">Last Name</label>
+                                    <input type="text" class="form-control" id="editLastName" value="Smith">
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="editEmail" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="editEmail" value="john.smith@example.com">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="editPhone" class="form-label">Phone</label>
+                                <input type="tel" class="form-control" id="editPhone" value="+1 (123) 456-7890">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="editBio" class="form-label">About Me</label>
+                                <textarea class="form-control" id="editBio" rows="3">Frontend developer with 5+ years of experience. Passionate about clean code and modern technologies.</textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="editAvatar" class="form-label">Profile Picture</label>
+                                <input type="file" class="form-control" id="editAvatar">
+                            </div>
+
+                            <div class="d-flex justify-content-end">
+                                <button type="button" class="btn btn-outline-primary me-2">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="activity" role="tabpanel" aria-labelledby="activity-tab">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-history me-2"></i>Activity Log
+                    </div>
+                    <div class="card-body">
+                        <div class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fas fa-sign-in-alt"></i>
+                            </div>
+                            <div class="activity-content">
+                                <h6>Login</h6>
+                                <p>You successfully logged in to your account</p>
+                                <div class="activity-time">Today, 10:45 AM</div>
+                            </div>
+                        </div>
+
+                        <div class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fas fa-lock"></i>
+                            </div>
+                            <div class="activity-content">
+                                <h6>Password Changed</h6>
+                                <p>You changed your account password</p>
+                                <div class="activity-time">Yesterday, 3:30 PM</div>
+                            </div>
+                        </div>
+
+                        <div class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fas fa-user-edit"></i>
+                            </div>
+                            <div class="activity-content">
+                                <h6>Profile Updated</h6>
+                                <p>You updated your profile information</p>
+                                <div class="activity-time">3 days ago</div>
+                            </div>
+                        </div>
+
+                        <div class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fas fa-project-diagram"></i>
+                            </div>
+                            <div class="activity-content">
+                                <h6>New Project</h6>
+                                <p>You created a new project "Admin Dashboard"</p>
+                                <div class="activity-time">1 week ago</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

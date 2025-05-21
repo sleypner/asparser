@@ -1,0 +1,26 @@
+#parse:
+#  zone: "Europe/Helsinki"
+#  articles:
+#    cron: "-"
+#  fortress:
+#    cron: "0 0 12 * * ?"
+#  online:
+#    delay: "60000"
+#    initial-delay: "60000"
+oauth2:
+  client:
+    google:
+      client-id: ${OAUTH2_GOOGLE_CLIENT_ID}
+      client-secret: ${OAUTH2_GOOGLE_CLIENT_SECRET}
+      redirect-uri: ${OAUTH2_GOOGLE_REDIRECT_HOST}
+      attribute-key: "sub"
+    discord:
+      client-id: ${OAUTH2_DISCORD_CLIENT_ID}
+      client-secret: ${OAUTH2_DISCORD_CLIENT_SECRET}
+      redirect-uri: ${OAUTH2_DISCORD_REDIRECT_HOST}
+      attribute-key: "username"
+    yandex:
+      client-id: ${OAUTH2_YANDEX_CLIENT_ID}
+      client-secret: ${OAUTH2_YANDEX_CLIENT_SECRET}
+      redirect-uri: ${OAUTH2_YANDEX_REDIRECT_HOST}
+      attribute-key: "first_name"

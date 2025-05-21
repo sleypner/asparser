@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="fortress-table" class="main-content">
+    <h1 class="mb-4 text-center main-title">Fortress</h1>
+    <br>
+    <div class="table-responsive">
+        <table class="table table-custom table-hover">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Server</th>
+                <th>Updated</th>
+                <th>Skills</th>
+                <th>Clan</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="item : ${fortressTable}">
+                <td th:text="${item.id}"></td>
+                <td th:text="${item.name}"></td>
+                <td th:text="${item.server}"></td>
+                <td th:text="${item.updatedDate}"></td>
+                <td>
+            <tr th:each="skill : ${item.skills}">
+                <td th:text="${skill.name}"></td>
+                <td><img alt="" th:src="@{'/content/fortress-skills/image/' + ${skill.id}}"></td>
+                <td th:text="${skill.effect}"></td>
+            </tr>
+            </td>
+            <td>
+                <tr>
+            <td>Name</td>
+            <td>Leader</td>
+            <td>Image</td>
+            <td>Level</td>
+            <td>Players</td>
+            <td>Castle</td>
+            <td>Reputation</td>
+            <td>Alliance</td>
+            <td>Coffer</td>
+            <td>Hold time</td>
+            </tr>
+<!--            <tr>-->
+<!--                <td th:text="*{item.clanName}"></td>-->
+<!--                <td th:text="*{item.leader}"></td>-->
+<!--                <td>-->
+<!--                    <img alt="" th:src="@{'/content/clans/image/' + *{item.clanId}}">-->
+<!--                </td>-->
+<!--                <td th:text="*{item.level}"></td>-->
+<!--                <td th:text="*{item.playersCount}"></td>-->
+<!--                <td th:text="*{item.castle}"></td>-->
+<!--                <td th:text="*{item.reputation}"></td>-->
+<!--                <td th:text="*{item.alliance}"></td>-->
+<!--                <td th:text="*{item.coffer+' Aden.'}"></td>-->
+<!--                <td th:text="*{item.holdTime+' Hours.'}"></td>-->
+<!--            </tr>-->
+            </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>

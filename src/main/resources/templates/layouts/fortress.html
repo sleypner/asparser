@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:insert="~{fragments/head :: my-head}"></th:block>
+    <title>AsParser - Fortress</title>
+</head>
+<body>
+<div th:replace="~{fragments/menu :: my-menu}"></div>
+<div th:replace="~{fragments/fortress-table :: fortress-table}"></div>
+<div th:replace="~{fragments/footer :: my-footer}">&nbsp;</div>
+</body>
+</html>

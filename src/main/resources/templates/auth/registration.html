@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:insert="~{fragments/head :: my-head}"></th:block>
+    <link th:href="@{/css/auth.css}" rel="stylesheet" />
+    <script th:src="@{/js/auth-script.js}"></script>
+    <title>AsParser - Sing up</title>
+</head>
+<body>
+<div class="register-container">
+    <div class="register-header">
+        <h2><i class="fas fa-user-plus"></i>Sing up</h2>
+        <p>Fill out the form to register</p>
+    </div>
+    <form th:action="@{/registration-process}" method="post" id="registrationForm">
+        <div class="mb-3">
+            <label for="username" class="form-label">Username</label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                <input th:tabindex="0" type="text" class="form-control" id="username" name="username" required
+                       placeholder="From 3 to 20 characters" minlength="3" maxlength="20">
+            </div>
+            <div style="display: none" class="error-message" id="usernameError"></div>
+        </div>
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                <input th:tabindex="0" type="email" class="form-control" id="email" name="email" required
+                       placeholder="example@domain.com">
+            </div>
+            <div style="display: none" class="error-message" id="emailError"></div>
+        </div>
+        <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                <input th:tabindex="0" type="password" class="form-control" id="password" name="password" required
+                       placeholder="At least 8 characters" minlength="8">
+            </div>
+            <div class="password-strength">
+                <span id="passwordStrength"></span>
+            </div>
+            <div class="password-requirements">
+                Password must contain:
+                <ul>
+                    <li id="req-length">Minimum 8 characters</li>
+                    <li id="req-upper">Capital letter</li>
+                    <li id="req-number">Digit</li>
+                    <li id="req-special">Special character (!@#$%^&*)</li>
+                </ul>
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="confirmPassword" class="form-label">Confirm password</label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                <input th:tabindex="0" type="password" class="form-control" name="confirmPassword" id="confirmPassword" required
+                       placeholder="Confirm password">
+            </div>
+            <div style="display: none" class="error-message" id="passwordError">The password do not match</div>
+        </div>
+        <div th:tabindex="-1" class="mb-3">
+            <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+            <div class="g-recaptcha" data-sitekey="6Lf62jYrAAAAAG1JWYbAKF0BpowBGHisn8YiLOnq"></div>
+            <div style="display: none" class="error-message" id="captchaError">Please confirm that you are not a robot</div>
+        </div>
+        <button th:tabindex="0" type="submit" class="btn btn-register" id="registerButton">
+            <i class="fas fa-user-plus"></i> Sing up
+        </button>
+
+        <div th:if="${param.error}" class="alert alert-danger mt-3">
+            <span th:text="${errorMessage}">Sing up error, please try again</span>
+        </div>
+        <div class="login-link">
+            Already have an account? <a th:tabindex="-1" href="/login">Log in</a>
+        </div>
+    </form>
+</div>
+</body>
+</html>

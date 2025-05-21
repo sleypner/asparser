@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:insert="~{fragments/head :: my-head}"></th:block>
+    <link th:href="@{/css/auth.css}" rel="stylesheet" />
+    <script th:src="@{/js/auth-script.js}"></script>
+    <title>AsParser - Login</title>
+</head>
+<body>
+<div class="login-container">
+    <div class="login-header">
+        <h2><i class="fas fa-sign-in-alt"></i> Log in</h2>
+        <p>Login to access your account</p>
+    </div>
+    <form th:action="@{/login}" method="post">
+        <div class="mb-3">
+            <label for="username" class="form-label">Username</label>
+            <input th:tabindex="0" type="text" class="form-control" id="username" name="username" required>
+        </div>
+        <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input th:tabindex="0" type="password" class="form-control" id="password" name="password" required>
+        </div>
+<!--        <div class="d-flex justify-content-between mb-3">-->
+<!--            <div class="form-check">-->
+<!--                <input class="form-check-input" type="checkbox" id="remember" name="remember-me">-->
+<!--                <label class="form-check-label" for="remember">Remember me</label>-->
+<!--            </div>-->
+<!--            <a href="#" style="color: var(&#45;&#45;primary-color);">Forgot password?</a>-->
+<!--        </div>-->
+        <button th:tabindex="0" type="submit" class="btn btn-login mb-3">Login</button>
+
+        <div th:if="${param.error}" class="alert alert-danger">
+            Incorrect username or password
+        </div>
+        <div th:if="${param.logout}" class="alert alert-success">
+            You have successfully logged out.
+        </div>
+    </form>
+    <div class="divider">or log in via</div>
+    <div class="oauth-buttons">
+        <a th:tabindex="0" th:href="@{/oauth2/authorization/google}" class="oauth-btn btn-google">
+            <i class="fab fa-google oauth-icon"></i> Google
+        </a>
+        <a th:tabindex="0" th:href="@{/oauth2/authorization/discord}" class="oauth-btn btn-discord">
+            <i class="fab fa-discord oauth-icon"></i> Discord
+        </a>
+        <a th:tabindex="0" th:href="@{/oauth2/authorization/yandex}" class="oauth-btn btn-yandex">
+            <i class="fab fa-yandex oauth-icon"></i> Yandex
+        </a>
+    </div>
+    <div class="login-footer">
+        No account yet? <a th:tabindex="-1" th:href="@{/registration}">Sing up</a>
+    </div>
+</div>
+</body>
+</html>

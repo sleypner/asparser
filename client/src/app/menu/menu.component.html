@@ -1,0 +1,9 @@
+<nav class="bg-secondary py-2">
+  <div class="container">
+    <div class="d-flex justify-content-start">
+      @for (item of menu; track item.link){
+        <a class="btn btn-secondary mx-1" [href]="item.link">{{item.title}}</a>
+      }
+    </div>
+  </div>
+</nav>

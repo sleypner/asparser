@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:insert="~{fragments/head :: my-head}"></th:block>
+    <script th:src="@{/js/admin-script.js}"></script>
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+    <title>AsParser - Admin panel - Settings</title>
+</head>
+<body>
+<div th:replace="~{fragments/menu :: my-menu}"></div>
+<div th:replace="~{fragments/admin-left-menu :: left-menu}"></div>
+<div class="main-content">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-cog me-2"></i>Site Settings</h2>
+    </div>
+    <div class="settings-card">
+        <div class="card-header">
+            <ul class="nav settings-tabs" id="settingsTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="general-tab" data-bs-toggle="tab" data-bs-target="#general" type="button" role="tab">General</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="email-tab" data-bs-toggle="tab" data-bs-target="#email" type="button" role="tab">Email</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="security-tab" data-bs-toggle="tab" data-bs-target="#security" type="button" role="tab">Security</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="maintenance-tab" data-bs-toggle="tab" data-bs-target="#maintenance" type="button" role="tab">Maintenance</button>
+                </li>
+            </ul>
+        </div>
+        <div class="card-body">
+            <div class="tab-content" id="settingsTabContent">
+                <div class="tab-pane fade show active" id="general" role="tabpanel">
+                    <form id="generalSettingsForm">
+                        <div class="settings-section">
+                            <h5>Site Information</h5>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="siteName" class="form-label">Site Name</label>
+                                    <input type="text" class="form-control" id="siteName" name="siteName" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="siteUrl" class="form-label">Site URL</label>
+                                    <input type="url" class="form-control" id="siteUrl" name="siteUrl" required>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="siteDescription" class="form-label">Site Description</label>
+                                    <textarea class="form-control" id="siteDescription" name="siteDescription" rows="3"></textarea>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="siteKeywords" class="form-label">Keywords (comma separated)</label>
+                                    <textarea class="form-control" id="siteKeywords" name="siteKeywords" rows="3"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="settings-section">
+                            <h5>Appearance</h5>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="themeColor" class="form-label">Theme Color</label>
+                                    <input type="color" class="form-control" id="themeColor" name="themeColor" value="#66CC00">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="timezone" class="form-label">Timezone</label>
+                                    <select class="form-select" id="timezone" name="timezone">
+                                        <option value="UTC">UTC</option>
+                                        <option value="GMT">GMT</option>
+                                        <option value="EST">EST</option>
+                                        <option value="PST">PST</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="dateFormat" class="form-label">Date Format</label>
+                                    <select class="form-select" id="dateFormat" name="dateFormat">
+                                        <option value="MM/dd/yyyy">MM/DD/YYYY</option>
+                                        <option value="dd/MM/yyyy">DD/MM/YYYY</option>
+                                        <option value="yyyy-MM-dd">YYYY-MM-DD</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="itemsPerPage" class="form-label">Items Per Page</label>
+                                    <input type="number" class="form-control" id="itemsPerPage" name="itemsPerPage" min="5" max="100" value="10">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-end">
+                            <button type="button" class="btn btn-primary" id="saveGeneralSettings">Save General Settings</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="tab-pane fade" id="email" role="tabpanel">
+                    <form id="emailSettingsForm">
+                        <div class="settings-section">
+                            <h5>SMTP Configuration</h5>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="smtpHost" class="form-label">SMTP Host</label>
+                                    <input type="text" class="form-control" id="smtpHost" name="smtpHost" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="smtpPort" class="form-label">SMTP Port</label>
+                                    <input type="number" class="form-control" id="smtpPort" name="smtpPort" required>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="smtpUsername" class="form-label">SMTP Username</label>
+                                    <input type="text" class="form-control" id="smtpUsername" name="smtpUsername" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="smtpPassword" class="form-label">SMTP Password</label>
+                                    <input type="password" class="form-control" id="smtpPassword" name="smtpPassword" required>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="smtpProtocol" class="form-label">SMTP Protocol</label>
+                                    <select class="form-select" id="smtpProtocol" name="smtpProtocol">
+                                        <option value="smtp">SMTP</option>
+                                        <option value="smtps">SMTPS</option>
+                                        <option value="tls">TLS</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Test Email</label>
+                                    <button type="button" class="btn btn-outline-secondary w-100" id="testEmailBtn">Send Test Email</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="settings-section">
+                            <h5>Email Templates</h5>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="fromEmail" class="form-label">From Email Address</label>
+                                    <input type="email" class="form-control" id="fromEmail" name="fromEmail" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="fromName" class="form-label">From Name</label>
+                                    <input type="text" class="form-control" id="fromName" name="fromName" required>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="welcomeEmailSubject" class="form-label">Welcome Email Subject</label>
+                                    <input type="text" class="form-control" id="welcomeEmailSubject" name="welcomeEmailSubject">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="passwordResetSubject" class="form-label">Password Reset Subject</label>
+                                    <input type="text" class="form-control" id="passwordResetSubject" name="passwordResetSubject">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-end">
+                            <button type="button" class="btn btn-primary" id="saveEmailSettings">Save Email Settings</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="tab-pane fade" id="security" role="tabpanel">
+                    <form id="securitySettingsForm">
+                        <div class="settings-section">
+                            <h5>Authentication</h5>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="passwordMinLength" class="form-label">Minimum Password Length</label>
+                                    <input type="number" class="form-control" id="passwordMinLength" name="passwordMinLength" min="6" max="32" value="8">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="passwordComplexity" class="form-label">Password Complexity</label>
+                                    <select class="form-select" id="passwordComplexity" name="passwordComplexity">
+                                        <option value="low">Low (letters only)</option>
+                                        <option value="medium">Medium (letters and numbers)</option>
+                                        <option value="high">High (letters, numbers, and special chars)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="loginAttempts" class="form-label">Max Login Attempts</label>
+                                    <input type="number" class="form-control" id="loginAttempts" name="loginAttempts" min="1" max="10" value="5">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="lockoutTime" class="form-label">Lockout Time (minutes)</label>
+                                    <input type="number" class="form-control" id="lockoutTime" name="lockoutTime" min="1" max="1440" value="30">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="settings-section">
+                            <h5>Session Management</h5>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="sessionTimeout" class="form-label">Session Timeout (minutes)</label>
+                                    <input type="number" class="form-control" id="sessionTimeout" name="sessionTimeout" min="1" max="1440" value="30">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="rememberMeDuration" class="form-label">Remember Me Duration (days)</label>
+                                    <input type="number" class="form-control" id="rememberMeDuration" name="rememberMeDuration" min="1" max="365" value="7">
+                                </div>
+                            </div>
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" id="forceHttps" name="forceHttps">
+                                <label class="form-check-label" for="forceHttps">Force HTTPS</label>
+                            </div>
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" id="enableCsrf" name="enableCsrf" checked>
+                                <label class="form-check-label" for="enableCsrf">Enable CSRF Protection</label>
+                            </div>
+                        </div>
+
+                        <div class="text-end">
+                            <button type="button" class="btn btn-primary" id="saveSecuritySettings">Save Security Settings</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="tab-pane fade" id="maintenance" role="tabpanel">
+                    <form id="maintenanceSettingsForm">
+                        <div class="settings-section">
+                            <h5>Maintenance Mode</h5>
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="maintenanceMode" name="maintenanceMode">
+                                <label class="form-check-label" for="maintenanceMode">Enable Maintenance Mode</label>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-12">
+                                    <label for="maintenanceMessage" class="form-label">Maintenance Message</label>
+                                    <textarea class="form-control" id="maintenanceMessage" name="maintenanceMessage" rows="3">The site is currently undergoing maintenance. Please check back later.</textarea>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="allowedIPs" class="form-label">Allowed IPs (comma separated)</label>
+                                    <textarea class="form-control" id="allowedIPs" name="allowedIPs" rows="3" placeholder="127.0.0.1, 192.168.1.1"></textarea>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="allowedRoles" class="form-label">Allowed Roles</label>
+                                    <select class="form-select" id="allowedRoles" name="allowedRoles" multiple>
+                                        <option value="admin">Admin</option>
+                                        <option value="moderator">Moderator</option>
+                                        <option value="editor">Editor</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="settings-section">
+                            <h5>Backup Settings</h5>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="backupFrequency" class="form-label">Backup Frequency</label>
+                                    <select class="form-select" id="backupFrequency" name="backupFrequency">
+                                        <option value="daily">Daily</option>
+                                        <option value="weekly">Weekly</option>
+                                        <option value="monthly">Monthly</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="backupTime" class="form-label">Backup Time</label>
+                                    <input type="time" class="form-control" id="backupTime" name="backupTime" value="02:00">
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="backupLocation" class="form-label">Backup Location</label>
+                                    <input type="text" class="form-control" id="backupLocation" name="backupLocation" placeholder="/path/to/backup">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Actions</label>
+                                    <button type="button" class="btn btn-outline-secondary w-100" id="backupNowBtn">Backup Now</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <button type="button" class="btn btn-primary" id="saveMaintenanceSettings">Save Maintenance Settings</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:replace="~{fragments/footer :: my-footer}"></div>
+</body>
+</html>

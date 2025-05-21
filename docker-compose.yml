@@ -1,0 +1,22 @@
+services:
+  mariadb:
+    environment:
+      MYSQL_ROOT_PASSWORD: "root123"
+    image: mariadb:latest
+    ports:
+      - 3396:3306
+    volumes:
+      - "./mariadb_volume:/var/lib/mysql"
+  article-parser:
+    env_file: "variables.env"
+    image: sleypnersfa/asterios-news:latest
+    ports:
+      - 8989:8080
+    links:
+      - mariadb:db
+
+
+
+
+
+

@@ -1,0 +1,146 @@
+/* You can add global styles to this file, and also import other style files */
+
+html, body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  background-color: #f4f4f4;
+  color: #737373;
+}
+
+.logo {
+  height: 40px;
+}
+
+.div-table {
+  display: table;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.div-table-row {
+  display: table-row;
+}
+
+.div-table-col {
+  display: table-cell;
+  padding: 8px;
+  border: 1px solid #ddd;
+  vertical-align: middle;
+}
+
+.div-table-header {
+  background-color: #737373;
+  color: #fff;
+}
+
+.table-responsive {
+  margin-bottom: 20px;
+}
+
+.navbar-dark .navbar-nav .nav-link {
+  color: #fff;
+}
+
+.navbar-dark .navbar-nav .nav-link:hover {
+  color: #ccc;
+}
+
+.btn-success {
+  background-color: #7ed957;
+  border-color: #7ed957;
+}
+
+.btn-success:hover {
+  background-color: #6db347;
+  border-color: #6db347;
+}
+
+.btn-success:active {
+  background-color: #5b9d3f;
+  border-color: #5b9d3f;
+}
+
+
+
+nav .container .btn-secondary {
+  background-color: #7ed957;
+  border-color: #7ed957;
+  color: #fff;
+}
+
+nav .container .btn-secondary:hover {
+  background-color: #6db347;
+  border-color: #6db347;
+  color: #fff;
+}
+
+nav .container .btn-secondary:active {
+  background-color: #5b9d3f;
+  border-color: #5b9d3f;
+  color: #fff;
+}
+.form-error i{
+  text-decoration-color: red;
+}
+canvas { background-color : #eee;
+}
+.onlineP{
+  text-align : center;
+  font-size : 22px;
+  font-weight: 600;
+}
+.show {
+  opacity: 1;
+}
+.hide {
+  opacity: 0;
+}
+.roulette_content{
+  width: fit-content;
+  margin : 10px;
+}
+.rouletteOption{
+  display: grid;
+  grid-template-columns: repeat(2, auto);
+  grid-template-rows: repeat(2, 13px);
+}
+#rouletteSelectedOption{
+  width: 400px;
+}
+#playerCoffer{
+  width: 200px;
+  text-align: right;
+}
+.roulette_try a{
+  cursor: pointer;
+  margin: 5px;
+  padding: 5px;
+  text-decoration-line: underline !important;
+  color: blue !important;
+  User-select: none;
+}
+.fail_rolled{
+  color:red;
+}
+.success_rolled{
+  color:green;
+}
+#rouletteLog{
+  height: 600px;
+  overflow: auto;
+  width: 300px;
+}
+.roulette_rolled{
+  display: grid;
+  grid-template-columns: repeat(4, auto);
+  grid-template-rows: repeat(4, 13px);
+}
+.roulette_content form {
+  width: fit-content;
+}
+.table-responsive {
+  font-size: 16px;
+}

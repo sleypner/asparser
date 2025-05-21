@@ -1,0 +1,26 @@
+<div class="inner-content">
+  <div class="table-responsive">
+    <div class="div-table">
+      <div class="div-table-row div-table-header">
+        <div class="div-table-col">ID</div>
+        <div class="div-table-col">Link</div>
+        <div class="div-table-col">Title</div>
+        <div class="div-table-col">Subtitle</div>
+        <div class="div-table-col">Description</div>
+        <div class="div-table-col">Created On</div>
+      </div>
+      @for (news of news()!; track news.id){
+        <div class="div-table-row">
+          <div class="div-table-col">{{news.id}}</div>
+          <div class="div-table-col">
+            <a [href]="news.link">{{news.link}}</a>
+          </div>
+          <div class="div-table-col">{{news.title}}</div>
+          <div class="div-table-col">{{news.subtitle}}</div>
+          <div class="div-table-col"[innerHTML]="news.description" ></div>
+          <div class="div-table-col">{{news.createOn}}</div>
+        </div>
+      }
+    </div>
+  </div>
+</div>

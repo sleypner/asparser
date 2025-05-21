@@ -1,0 +1,59 @@
+<div class="inner-content">
+  <div class="table-responsive">
+    <div class="div-table">
+      <div class="div-table-row div-table-header">
+        <div class="div-table-col">Name</div>
+        <div class="div-table-col">Server</div>
+        <div class="div-table-col">Updated</div>
+        <div class="div-table-col">Skills</div>
+        <div class="div-table-col">Clan</div>
+      </div>
+      @for (fort of fortress(); track fort.id){
+        <div class="div-table-row">
+          <div class="div-table-col">{{fort.name}}</div>
+          <div class="div-table-col">{{fort.server}}</div>
+          <div class="div-table-col">{{fort.updatedDate}}</div>
+          <div class="div-table-col">
+            @for (skill of fort.skills; track skill.id){
+              <div class="div-table-row">
+                <div class="div-table-col">{{skill.name}}</div>
+                <div class="div-table-col">
+                  <img [alt]="skill.name" [src]="'http://localhost:8080/content/fortress-skills/image/'+skill.id">
+                </div>
+                <div class="div-table-col">{{skill.effect}}</div>
+              </div>
+            }
+          </div>
+          <div class="div-table-col">
+            <div class="div-table-row div-table-header">
+              <div class="div-table-col">Name</div>
+              <div class="div-table-col">Leader</div>
+              <div class="div-table-col">Image</div>
+              <div class="div-table-col">Level</div>
+              <div class="div-table-col">Players</div>
+              <div class="div-table-col">Castle</div>
+              <div class="div-table-col">Reputation</div>
+              <div class="div-table-col">Alliance</div>
+              <div class="div-table-col">Coffer</div>
+              <div class="div-table-col">Hold time</div>
+            </div>
+            <div class="div-table-row">
+              <div class="div-table-col">{{fort.clanName}}</div>
+              <div class="div-table-col">{{fort.leader}}</div>
+              <div class="div-table-col">
+                <img [alt]="'-'" [src]="'http://localhost:8080/content/clans/image/'+fort.clanId">
+              </div>
+              <div class="div-table-col">{{fort.level}}</div>
+              <div class="div-table-col">{{fort.playersCount}}</div>
+              <div class="div-table-col">{{fort.castle}}</div>
+              <div class="div-table-col">{{fort.reputation}}</div>
+              <div class="div-table-col">{{fort.alliance}}</div>
+              <div class="div-table-col">{{fort.coffer}} Aden.</div>
+              <div class="div-table-col">{{fort.holdTime}} Hours.</div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</div>

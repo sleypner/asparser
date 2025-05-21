@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="article-table" class="main-content">
+    <h1 class="mb-4 text-center main-title">Articles</h1>
+    <div class="table-responsive">
+        <table class="table table-custom table-hover">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th style="display: none">Id</th>
+                <th>Title</th>
+                <th>Subtitle</th>
+                <th>Description</th>
+                <th>Date</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="item,iterStat : ${articles}">
+                <td th:text="${iterStat.count}"></td>
+                <td style="display: none" th:text="${item.id}"></td>
+                <td><a th:href="${item.link}" th:text="${item.title}"></a></td>
+                <td th:text="${item.subtitle}"></td>
+                <td th:utext="${item.description}"></td>
+                <td th:text="${#temporals.formatISO(item.createOn)}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div style="display: none" class="mt-5">
+        <h3 class="mb-3">Something title</h3>
+        <ul class="list-group">
+            <li class="list-group-item d-flex align-items-center">
+                <i class="fas fa-calendar-check me-3" style="color: var(--primary-color);"></i>
+                <span>something text 1</span>
+            </li>
+            <li class="list-group-item d-flex align-items-center">
+                <i class="fas fa-flag-checkered me-3" style="color: var(--primary-color);"></i>
+                <span>something text 2</span>
+            </li>
+        </ul>
+    </div>
+</div>
+</body>
+</html>

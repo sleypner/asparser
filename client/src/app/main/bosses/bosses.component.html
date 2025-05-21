@@ -1,0 +1,59 @@
+<div class="inner-content">
+<!--  <div class="event-form">-->
+<!--    <form th:action="@{/events}" name="bosses" onchange="formEvents('bosses');return false">-->
+<!--      <label for="server">Choose a server:</label>-->
+<!--      <select class="event-form-input" name="server" id="server">-->
+<!--        <option value="all" selected>All</option>-->
+<!--        <option value="Medea x3">Medea x3</option>-->
+<!--        <option value="Asterios x5">Asterios x5</option>-->
+<!--        <option value="Prime x1">Prime x1</option>-->
+<!--        <option value="Phoenix x7">Phoenix x7</option>-->
+<!--        <option value="New Hunter x55">New Hunter x55</option>-->
+<!--      </select>-->
+<!--      <label for="server">Choose a boss type:</label>-->
+<!--      <select class="event-form-input" name="type" id="type">-->
+<!--        <option value="all" selected>All</option>-->
+<!--        <option value="Key Bosses">Key Bosses</option>-->
+<!--        <option value="Epic Bosses">Epic Bosses</option>-->
+<!--      </select>-->
+<!--      <label for="sort">Sort by:</label>-->
+<!--      <select class="event-form-input" name="sort" id="sort">-->
+<!--        <option value="asc">Date ascending</option>-->
+<!--        <option value="desc" selected>Date descending</option>-->
+<!--      </select>-->
+<!--    </form>-->
+<!--  </div>-->
+  <div class="table-responsive">
+    <div class="div-table" id="bossesTable">
+      <div class="div-table-row div-table-header">
+        <div class="div-table-col">ID</div>
+        <div class="div-table-col">Name</div>
+        <div class="div-table-col">Type</div>
+        <div class="div-table-col">Server</div>
+        <div class="div-table-col">Killed on</div>
+        <div class="div-table-col">Start respawn at</div>
+        <div class="div-table-col">End respawn at</div>
+        <div class="div-table-col">Number of killed</div>
+        <div class="div-table-col">Last killer</div>
+        <div class="div-table-col">Last killer clan</div>
+        <div class="div-table-col">Attackers count</div>
+      </div>
+      @for (boss of bosses(); track boss.id){
+        <div class="div-table-row">
+          <div class="div-table-col">{{boss.id}}</div>
+          <div class="div-table-col">{{boss.name}}</div>
+          <div class="div-table-col">{{boss.type}}</div>
+          <div class="div-table-col">{{boss.server}}</div>
+          <div class="div-table-col">{{boss.date}}</div>
+          <div class="div-table-col">{{boss.respawnStart}}</div>
+          <div class="div-table-col">{{boss.respawnEnd}}</div>
+          <div class="div-table-col">{{boss.countKilling}}</div>
+          <div class="div-table-col">{{boss.lastKiller}}</div>
+          <div class="div-table-col">{{boss.lastKillersClan}}</div>
+          <div class="div-table-col">{{boss.attackersCount}}</div>
+        </div>
+      }
+    </div>
+  </div>
+</div>
+

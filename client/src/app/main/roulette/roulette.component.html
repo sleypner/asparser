@@ -1,0 +1,43 @@
+<div th:fragment="roulette" class="inner-content" style="height: 800px;">
+  <div class="roulette_content">
+    <span>Min bet 5 000, max 500 000 000. Number must be between 0 and 36.</span>
+    <form th:action="@{/roulette}" name="rouletteForm" onsubmit="rouletteValidForm();return false" method="get">
+      <label>Straight Up:</label>
+      <input type="number" name="straight">
+      <label>Number:</label>
+      <input type="number" name="number">
+      <input type="submit" name="submit" value="Play">
+    </form>
+    <div class="rouletteOption">
+      <div class="hide" id="rouletteSelectedOption">
+        You bet <span id="straightVal" >none</span> for number <span id="numberVal">none</span>.
+      </div>
+      <div id="playerCoffer">
+        <span id="playerCofferNum">100 000 000 000</span>
+        <span id="playerCurrency">Adena.</span>
+      </div>
+    </div>
+    <div class="roulette_other hide" id="rouletteOther">
+      <div class="roulette_try" id="rouletteTry">
+        <a onclick="rouletteValidForm();return false;">Try again</a>
+      </div>
+      <div class="roulette_rolled">
+        <div  id="rouletteRolled">
+          You rolled: <span id="rolledNumber"></span>
+        </div>
+        <div>
+          try: <span id="rolledCount">0</span>
+        </div>
+        <div>
+          won: <span id="rolledCountWon">0</span>
+        </div>
+        <div>
+          wonChance: <span id="rolledCoefficientWon">0</span>
+        </div>
+      </div>
+      <br>
+      <div id="rouletteLog">
+      </div>
+    </div>
+  </div>
+</div>

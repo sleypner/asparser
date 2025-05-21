@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <th:block th:insert="~{fragments/head :: my-head}"></th:block>
+        <title>AsParser - Internal error</title>
+    </head>
+    <body>
+        <div class="error-container">
+            <div class="error-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h1 class="error-title">500 - Unexpected Error</h1>
+            <p class="error-message">
+                We`re having some issues at this moment.
+                We`ll try to fix it as soon as possible.
+            </p>
+            <a href="/" class="btn btn-home">
+                <i class="fas fa-home me-2"></i>Return to Homepage
+            </a>
+        </div>
+    </body>
+</html>

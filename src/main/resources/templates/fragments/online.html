@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="online" class="main-content">
+    <h1 class="mb-4 text-center main-title">Online</h1>
+    <form th:action="@{/online}" name="onlineChart" onsubmit="formOnline(chart);return false"
+          th:object="${onlinechart}" method="get">
+        <select name="server">
+            <option th:each="entry : ${optionsServerName}" th:value="${entry}" th:text="${entry}"
+                    th:selected="${server}==${entry}"></option>
+        </select>
+        <select id="sel_chart" name="interval">
+            <option th:each="entry: ${optionsInterval}" th:value="${entry.value}" th:text="${entry.key}"
+                    th:selected="${interval}==${entry.value}"></option>
+        </select>
+        <input type="datetime-local" name="period-start" th:value="${periodStart}">
+        <input type="datetime-local" name="period-end" th:value="${periodEnd}">
+        <input type="submit" name="submit" value="Submit">
+    </form>
+    <div>
+        <p class="onlineP">Server <span id="server" ></span> selected from <span id="period-start" ></span> to
+            <span id="period-end" ></span> , interval <span id="interval" ></span></p>
+    </div>
+    <div>
+        <canvas id="chartJSContainer" width="600" height="400"></canvas>
+    </div>
+    <script th:inline="javascript">
+        let ctx = document.getElementById('chartJSContainer').getContext('2d');
+        let chart = new Chart(ctx, {
+            type: 'line',
+            data: '',
+            options: ''
+        });
+        drawChart(chart,'')
+    </script>
+</div>
+
+</body>
+</html>

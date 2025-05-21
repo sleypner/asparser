@@ -1,9 +1,9 @@
 
 # Asterios news parser 
 
-[![asterios-news](https://badgen.net/docker/size/sleypnersfa/asterios-news?icon=docker&label=asterios-news)](https://hub.docker.com/r/sleypnersfa/asterios-news/) 
+[![asparser](https://badgen.net/docker/size/sleypnersfa/asparser?icon=docker&label=asparser)](https://hub.docker.com/r/sleypnersfa/asparser/) 
 
-[![asterios-news](https://badgen.net/docker/pulls/sleypnersfa/asterios-news?icon=docker)](https://hub.docker.com/r/sleypnersfa/asterios-news/)
+[![asparser](https://badgen.net/docker/pulls/sleypnersfa/asparser?icon=docker)](https://hub.docker.com/r/sleypnersfa/asparser/)
 
 Project for parsing news from the Asterios website
 
@@ -16,7 +16,7 @@ Project for parsing news from the Asterios website
 Clone the project
 
 ```bash
-  git clone https://github.com/Sleypner/asterios_news_parse
+  git clone https://github.com/Sleypner/asparser
 ```
 
 ## App default login
@@ -27,7 +27,7 @@ password: `admin123`
 
 ## Environment Variables
 
-To run this project, you will need to rename `default_variables.env` to your `variables.env` file
+To run this project, you will need to rename `default_variables.env` to your `variables.env` file and fill it
 
 
 

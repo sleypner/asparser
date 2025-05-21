@@ -37,17 +37,9 @@ public class CustomOauth2UserService {
             OAuth2User oAuth2User = delegate.loadUser(userRequest);
             Map<String, Object> attributes = oAuth2User.getAttributes();
             Collection<? extends GrantedAuthority> authorities = oAuth2User.getAuthorities();
-            findOrCreate(userRequest, authorities, attributes);
-            String attribute_key = "Undefined";
-            String name = "Undefined";
-            if(attributes.get(environment.getProperty("oauth2.client.yandex.attribute-key")) != null) {
-                attribute_key = environment.getProperty("oauth2.client.yandex.attribute-key");
-                name = environment.getProperty("oauth2.client.yandex.attribute-key");
-            }else if(attributes.get(environment.getProperty("oauth2.client.discord.attribute-key")) != null) {
-                attribute_key = environment.getProperty("oauth2.client.discord.attribute-key");
-                name = "global_name";
-            }
-            return new CustomOauth2User(authorities, attributes, attribute_key, (String) attributes.get(name));
+            CustomOauth2User customOauth2User = new CustomOauth2User(oAuth2User, userRequest.getClientRegistration().getClientName());
+            saveOauth2Users(userRequest, authorities, attributes);
+            return customOauth2User;
         };
     }
 
@@ -59,12 +51,13 @@ public class CustomOauth2UserService {
             OidcUser oidcUser = delegate.loadUser(userRequest);
             Map<String, Object> attributes = oidcUser.getAttributes();
             Collection<? extends GrantedAuthority> authorities = oidcUser.getAuthorities();
-            findOrCreate(userRequest, authorities, attributes);
-            return new CustomOidcUser(oidcUser,(String) attributes.get("given_name"));
+            CustomOidcUser customOidcUser = new CustomOidcUser(oidcUser, userRequest.getClientRegistration().getClientName());
+            saveOauth2Users(userRequest, authorities, attributes);
+            return customOidcUser;
         };
     }
 
-    private Users findOrCreate(OAuth2UserRequest request, Collection<? extends GrantedAuthority> authorities, Map<String, Object> attributes) {
+    private void saveOauth2Users(OAuth2UserRequest request, Collection<? extends GrantedAuthority> authorities, Map<String, Object> attributes) {
         String token = request.getAccessToken().getTokenValue();
         String providerId = request.getClientRegistration().getRegistrationId();
         String externalId = "";
@@ -116,6 +109,5 @@ public class CustomOauth2UserService {
                 }
             }
         });
-        return resultUser;
     }
 }

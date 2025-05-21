@@ -45,11 +45,14 @@ public class CustomUserDetailsService implements UserDetailsService {
         Map<String, Object> attributes = new HashMap<>();
         attributes.put("id", user.getId());
         attributes.put("name", user.getName());
-        attributes.put("username", user.getUsername());
+        attributes.put("external_id", user.getExternalId());
+        attributes.put("login", user.getUsername());
+        attributes.put("last_name", "");
+        attributes.put("esx", "");
         attributes.put("email", user.getEmail());
-        attributes.put("oauth", user.getOauth());
-        attributes.put("externalId", user.getExternalId());
-        attributes.put("provider", user.getProvider());
+        attributes.put("birthday", "");
+        attributes.put("phone", "");
+        attributes.put("client_id", "");
         return attributes;
     }
 

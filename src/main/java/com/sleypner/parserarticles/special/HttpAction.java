@@ -1,4 +1,4 @@
-package com.sleypner.parserarticles.parsing;
+package com.sleypner.parserarticles.special;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;

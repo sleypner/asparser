@@ -1,5 +1,6 @@
 package com.sleypner.parserarticles.security;
 
+import com.sleypner.parserarticles.model.source.entityes.Users;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.logging.Log;
@@ -44,11 +45,16 @@ public class CustomUser implements UserDetails, CredentialsContainer {
         this(username, password, enabled, true, true, true, authorities, attributes);
     }
 
-    public CustomUser(String username, String password, boolean enabled, boolean accountNonExpired,
-                      boolean credentialsNonExpired, boolean accountNonLocked,
-                      Collection<? extends GrantedAuthority> authorities, Map<String, Object> attributes) {
+    public CustomUser(String username,
+                      String password,
+                      boolean enabled,
+                      boolean accountNonExpired,
+                      boolean credentialsNonExpired,
+                      boolean accountNonLocked,
+                      Collection<? extends GrantedAuthority> authorities,
+                      Map<String, Object> attributes) {
         this.name = attributes.get("name").toString();
-        this.attributes = Collections.unmodifiableMap(new LinkedHashMap<>(attributes));
+        this.attributes = attributes;
         this.username = username;
         this.password = password;
         this.enabled = enabled;
@@ -64,46 +70,8 @@ public class CustomUser implements UserDetails, CredentialsContainer {
     }
 
     @Override
-    public String getPassword() {
-        return this.password;
-    }
-
-    @Override
-    public String getUsername() {
-        return this.username;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return this.enabled;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return this.accountNonExpired;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return this.accountNonLocked;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return this.credentialsNonExpired;
-    }
-
-    @Override
     public void eraseCredentials() {
         this.password = null;
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public Map<String, Object> getAttributes() {
-        return this.attributes;
     }
 
     private static SortedSet<GrantedAuthority> sortAuthorities(Collection<? extends GrantedAuthority> authorities) {

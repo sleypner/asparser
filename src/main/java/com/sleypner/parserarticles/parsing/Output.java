@@ -3,6 +3,7 @@ package com.sleypner.parserarticles.parsing;
 import com.sleypner.parserarticles.model.services.*;
 import com.sleypner.parserarticles.model.source.entityes.*;
 import com.sleypner.parserarticles.parsing.raw.FortressParser;
+import com.sleypner.parserarticles.special.Special;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

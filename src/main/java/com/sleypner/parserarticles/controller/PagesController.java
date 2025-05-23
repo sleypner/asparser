@@ -4,7 +4,7 @@ import com.sleypner.parserarticles.model.services.*;
 import com.sleypner.parserarticles.model.source.entityes.*;
 import com.sleypner.parserarticles.model.source.other.FortressTable;
 import com.sleypner.parserarticles.model.source.other.OnlineChart;
-import com.sleypner.parserarticles.parsing.DateFormat;
+import com.sleypner.parserarticles.special.DateFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;

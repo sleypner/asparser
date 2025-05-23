@@ -1,7 +1,10 @@
-package com.sleypner.parserarticles.parsing;
+package com.sleypner.parserarticles.special;
 
-import com.sleypner.parserarticles.model.source.entityes.Clan;
+import com.sleypner.parserarticles.model.source.entityes.UserActionLogs;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import ua_parser.Client;
+import ua_parser.Parser;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -23,5 +26,18 @@ public class Special {
     }
     public static String createPassword(String input) {
         return "{bcrypt}"+encodeBCrypt(input);
+    }
+
+    public static UserActionLogs getAction(HttpServletRequest request) {
+        String userAgent = request.getHeader("User-Agent");
+
+        Parser parser = new Parser();
+        Client client = parser.parse(userAgent);
+
+        return new UserActionLogs(
+                request.getRemoteAddr(),
+                client.userAgent.family,
+                client.os.family, client.device.family,
+                request.getSession().getId());
     }
  }

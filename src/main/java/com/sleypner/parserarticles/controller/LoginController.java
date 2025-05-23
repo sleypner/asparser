@@ -4,7 +4,7 @@ import com.sleypner.parserarticles.model.services.*;
 import com.sleypner.parserarticles.model.source.entityes.Roles;
 import com.sleypner.parserarticles.model.source.entityes.Users;
 import com.sleypner.parserarticles.model.source.entityes.VerificationCode;
-import com.sleypner.parserarticles.parsing.Special;
+import com.sleypner.parserarticles.special.Special;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

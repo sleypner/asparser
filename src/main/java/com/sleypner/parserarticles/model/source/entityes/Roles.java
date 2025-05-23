@@ -16,18 +16,18 @@ import java.util.Objects;
 public class Roles {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public int id;
+    private int id;
     @Column(name = "username", length = 50, nullable = false)
-    public String username;
+    private String username;
     @Column(name = "role", length = 50, nullable = false)
-    public String role;
-    @ManyToOne
+    private String role;
+    @ManyToOne()
     @JoinColumn(name = "user_id")
     private Users user;
     @Column(name = "created_date", columnDefinition = "TIMESTAMP(0)")
-    LocalDateTime createdDate;
+    private LocalDateTime createdDate;
     @Column(name = "updated_date", columnDefinition = "TIMESTAMP(0)")
-    LocalDateTime updatedDate;
+    private LocalDateTime updatedDate;
 
     public Roles(String username, String role, Users user) {
         this.createdDate = LocalDateTime.now().withNano(0);

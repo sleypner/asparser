@@ -7,10 +7,13 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
 @Repository
@@ -46,15 +49,42 @@ public class UsersServiceImpl implements UsersService {
     }
 
     @Override
-    public Users getByUsername(String username) {
+    public Users getByExternalId(String externalId) {
         TypedQuery<Users> query = entityManager.createQuery(
                 "SELECT u FROM Users u " +
                         "JOIN FETCH u.roles " +
+                        "WHERE u.externalId = :externalId", Users.class);
+        query.setParameter("externalId", externalId);
+        query.setMaxResults(1);
+        List<Users> usersList = query.getResultList();
+        if (usersList.isEmpty()) {
+            return null;
+        }
+        return usersList.getFirst();
+    }
+    @Transactional
+    @Override
+    @Cacheable("users")
+    public Optional<Users> getOptionalByUsername(String username) {
+        TypedQuery<Users> query = entityManager.createQuery(
+                "SELECT u FROM Users u " +
+                        "LEFT JOIN FETCH u.roles " +
+                        "LEFT JOIN FETCH u.userActionLogs " +
+                        "WHERE u.username = :username", Users.class);
+        query.setParameter("username", username);
+        return query.getResultStream().findFirst();
+    }
+    @Transactional
+    @Override
+    public Users getByUsername(String username) {
+        TypedQuery<Users> query = entityManager.createQuery(
+                "SELECT u FROM Users u " +
+                        "LEFT JOIN FETCH u.roles " +
+                        "LEFT JOIN FETCH u.userActionLogs " +
                         "WHERE u.username = :username", Users.class);
         query.setParameter("username", username);
         query.setMaxResults(1);
         List<Users> usersList = query.getResultList();
-        System.out.println(usersList);
         if (usersList.isEmpty()) {
             return null;
         }

@@ -1,5 +1,6 @@
 package com.sleypner.parserarticles.security;
 
+import com.sleypner.parserarticles.model.source.entityes.Users;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.logging.Log;
@@ -44,9 +45,14 @@ public class CustomUser implements UserDetails, CredentialsContainer {
         this(username, password, enabled, true, true, true, authorities, attributes);
     }
 
-    public CustomUser(String username, String password, boolean enabled, boolean accountNonExpired,
-                      boolean credentialsNonExpired, boolean accountNonLocked,
-                      Collection<? extends GrantedAuthority> authorities, Map<String, Object> attributes) {
+    public CustomUser(String username,
+                      String password,
+                      boolean enabled,
+                      boolean accountNonExpired,
+                      boolean credentialsNonExpired,
+                      boolean accountNonLocked,
+                      Collection<? extends GrantedAuthority> authorities,
+                      Map<String, Object> attributes) {
         this.name = attributes.get("name").toString();
         this.attributes = attributes;
         this.username = username;

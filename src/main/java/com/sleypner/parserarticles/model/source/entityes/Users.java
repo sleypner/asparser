@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
@@ -16,31 +18,54 @@ import java.util.Set;
 public class Users {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public int id;
+    private int id;
     @Column(name = "enabled", length = 1)
-    public boolean enabled;
+    private boolean enabled;
     @Column(name = "password", length = 68)
-    public String password;
+    private String password;
     @Column(name = "username", length = 50)
-    public String username;
+    private String username;
     @Column(name = "name", length = 50)
-    public String name;
+    private String name;
     @Column(name = "email", length = 50)
-    public String email;
+    private String email;
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<Roles> roles;
     @Column(name = "oauth", length = 1)
-    public Integer oauth;
+    private Integer oauth;
     @Column(name = "token")
-    public String token;
+    private String token;
     @Column(name = "external_id")
-    public String externalId;
+    private String externalId;
     @Column(name = "provider")
-    public String provider;
+    private String provider;
+    @Column(name = "first_name")
+    private String firstName;
+    @Column(name = "last_name")
+    private String lastName;
+    @Column(name = "last_login")
+    private LocalDateTime lastLogin;
+    @Column(name = "birthday")
+    private LocalDateTime birthday;
+    @Column(name = "gender")
+    private String gender;
+    @Column(name = "phone")
+    private String phone;
+    @Column(name = "language")
+    private String language;
+    @Column(name = "about")
+    private String about;
+    @Column(name = "img")
+    private String img;
+    @Column(name = "user_action_logs")
+    @OneToMany(mappedBy = "user")
+    private Set<UserActionLogs> userActionLogs;
+    @Column(name = "two_factor_auth")
+    private boolean twoFactorAuth = false;
     @Column(name = "created_date", columnDefinition = "TIMESTAMP(0)")
-    LocalDateTime createdDate;
+    private LocalDateTime createdDate;
     @Column(name = "updated_date", columnDefinition = "TIMESTAMP(0)")
-    LocalDateTime updatedDate;
+    private LocalDateTime updatedDate;
 
     public Users(boolean enabled, String password, String username, String name) {
         this.createdDate = LocalDateTime.now().withNano(0);
@@ -51,6 +76,35 @@ public class Users {
     }
     public Users(){
         this.createdDate = LocalDateTime.now().withNano(0);
+    }
+
+    public Map<String,Object> getAttributes(){
+        Map<String,Object> attributes = new HashMap<>();
+        attributes.put("id",id);
+        attributes.put("enabled",enabled);
+        attributes.put("password",password);
+        attributes.put("username",username);
+        attributes.put("name",name);
+        attributes.put("email",email);
+        attributes.put("roles",roles);
+        attributes.put("oauth",oauth);
+        attributes.put("token",token);
+        attributes.put("external_id",externalId);
+        attributes.put("provider",provider);
+        attributes.put("first_name",firstName);
+        attributes.put("last_name",lastName);
+        attributes.put("last_login",lastLogin);
+        attributes.put("birthday",birthday);
+        attributes.put("gender",gender);
+        attributes.put("phone",phone);
+        attributes.put("language",language);
+        attributes.put("about",about);
+        attributes.put("img",img);
+        attributes.put("user_action_logs",userActionLogs);
+        attributes.put("two_factor_auth",twoFactorAuth);
+        attributes.put("created_date",createdDate);
+        attributes.put("updated_date",updatedDate);
+        return attributes;
     }
 
 }

@@ -93,6 +93,7 @@
     font-weight: 500;
     transition: all 0.3s;
     border: none;
+    text-decoration: none;
 }
 
 .oauth-btn:hover {

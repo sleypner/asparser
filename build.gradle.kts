@@ -30,6 +30,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-security:3.3.1")
 	implementation("org.springframework.boot:spring-boot-starter-oauth2-client:3.3.4")
 	implementation("org.springframework.boot:spring-boot-devtools:3.3.2")
+	implementation("org.springframework.boot:spring-boot-starter-cache:3.3.2")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	implementation("org.springframework.boot:spring-boot-devtools:3.3.1")
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
@@ -45,6 +46,9 @@ dependencies {
 	implementation("net.logstash.logback:logstash-logback-encoder:8.0")
 	implementation("systems.manifold:manifold-all:2024.1.30")
 	implementation("org.postgresql:postgresql:42.7.5")
+
+	implementation("com.github.ua-parser:uap-java:1.6.1")
+
 //	implementation("org.jobrunr:jobrunr-spring-boot-3-starter:7.3.2")
 	compileOnly("org.projectlombok:lombok:1.18.36")
 	annotationProcessor ("org.projectlombok:lombok:1.18.36")

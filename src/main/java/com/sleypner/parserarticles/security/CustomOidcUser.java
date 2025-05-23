@@ -20,9 +20,10 @@ public class CustomOidcUser implements OidcUser {
     private final String clientName;
     private Map<String, Object> attributes;
 
-    public CustomOidcUser(OidcUser oidcUser, String clientName) {
+    public CustomOidcUser(OidcUser oidcUser, String clientName, Map<String, Object> attributes) {
         this.oidcUser = oidcUser;
         this.clientName = clientName;
+        this.attributes = attributes;
     }
 
     @Override
@@ -38,26 +39,6 @@ public class CustomOidcUser implements OidcUser {
     @Override
     public OidcIdToken getIdToken() {
         return oidcUser.getIdToken();
-    }
-
-    @Override
-    public Map<String, Object> getAttributes() {
-
-        Map<String, Object> customAttributes = new HashMap<>();
-        Map<String, Object> attributes = oidcUser.getAttributes();
-        System.out.println();
-        customAttributes.put("name", attributes.get("given_name"));
-        customAttributes.put("external_id", attributes.get("sub"));
-        customAttributes.put("login", attributes.get("email"));
-        customAttributes.put("last_name", attributes.get("family_name"));
-        customAttributes.put("sex", attributes.get(""));
-        customAttributes.put("email", attributes.get("email"));
-        customAttributes.put("birthday", attributes.get(""));
-        customAttributes.put("phone", "");
-        customAttributes.put("client_id", attributes.get(""));
-        this.attributes = customAttributes;
-
-        return customAttributes;
     }
 
     @Override

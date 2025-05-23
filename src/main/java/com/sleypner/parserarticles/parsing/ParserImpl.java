@@ -2,6 +2,8 @@ package com.sleypner.parserarticles.parsing;
 
 import com.sleypner.parserarticles.model.source.entityes.*;
 import com.sleypner.parserarticles.parsing.raw.FortressParser;
+import com.sleypner.parserarticles.special.DateFormat;
+import com.sleypner.parserarticles.special.HttpAction;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;

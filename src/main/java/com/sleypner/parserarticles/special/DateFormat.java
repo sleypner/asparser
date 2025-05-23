@@ -1,4 +1,4 @@
-package com.sleypner.parserarticles.parsing;
+package com.sleypner.parserarticles.special;
 
 import manifold.ext.rt.api.Extension;
 import org.slf4j.Logger;

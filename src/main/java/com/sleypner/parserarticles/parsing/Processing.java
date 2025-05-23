@@ -9,6 +9,7 @@ import com.sleypner.parserarticles.parsing.raw.ArticlesParser;
 import com.sleypner.parserarticles.parsing.raw.EventsParser;
 import com.sleypner.parserarticles.parsing.raw.FortressParser;
 import com.sleypner.parserarticles.parsing.raw.OnlineParser;
+import com.sleypner.parserarticles.special.HttpAction;
 import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

@@ -50,8 +50,8 @@
             <span th:text="${#authorization.expression('isAuthenticated()')} ? ${#authentication.principal.attributes.name} : 'Guest'"></span>
           </a>
           <ul class="dropdown-menu dropdown-menu-end">
-            <li><a class="dropdown-item" href="#" th:href="@{/profile}"><i class="fas fa-user me-2"></i> Profile</a></li>
-            <li><a class="dropdown-item" href="#" th:href="@{/settings}"><i class="fas fa-cog me-2"></i> Settings</a></li>
+            <li><a class="dropdown-item" href="#" th:href="@{/profile(i=${#authentication.principal.attributes.external_id})}"><i class="fas fa-user me-2"></i> Profile</a></li>
+            <li style="display: none"><a class="dropdown-item" href="#" th:href="@{/settings(i=${#authentication.principal.attributes.external_id})}"><i class="fas fa-cog me-2"></i> Settings</a></li>
             <li><hr class="dropdown-divider"></li>
             <li>
               <form th:action="@{/logout}" method="post">
@@ -63,14 +63,14 @@
           </ul>
         </div>
       </div>
+      <div th:unless="${#authorization.expression('isAuthenticated()')}" class="user-profile">
+        <a class="btn btn-secondary" th:href="@{/login}">Log in</a>
+        <a class="btn btn-secondary" th:href="@{/register}">Sign up</a>
+      </div>
       <div class="language-switcher">
         <div class="language-btn" id="languageSwitcher">
           <i class="flag-icon flag-icon-gb"></i>
         </div>
-      </div>
-      <div th:unless="${#authorization.expression('isAuthenticated()')}" class="user-profile">
-        <a class="btn btn-secondary" th:href="@{/login}">Log in</a>
-        <a class="btn btn-secondary" th:href="@{/register}">Sign up</a>
       </div>
     </div>
   </div>

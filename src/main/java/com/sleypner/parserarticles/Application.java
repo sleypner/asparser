@@ -1,20 +1,12 @@
 package com.sleypner.parserarticles;
 
 import com.sleypner.parserarticles.model.services.EmailService;
-import com.sleypner.parserarticles.parsing.HttpAction;
-import com.sleypner.parserarticles.parsing.Output;
-import com.sleypner.parserarticles.parsing.Parser;
-import com.sleypner.parserarticles.parsing.Special;
+import com.sleypner.parserarticles.special.HttpAction;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration;
-import org.springframework.context.annotation.Bean;
 
 import java.io.IOException;
-import java.net.URI;
-import java.time.LocalDateTime;
 
 @SpringBootApplication(
         scanBasePackages = {"com.sleypner.parserarticles"}

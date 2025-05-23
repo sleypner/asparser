@@ -4,7 +4,7 @@ import com.sleypner.parserarticles.model.services.RolesService;
 import com.sleypner.parserarticles.model.services.UsersService;
 import com.sleypner.parserarticles.model.source.entityes.Roles;
 import com.sleypner.parserarticles.model.source.entityes.Users;
-import com.sleypner.parserarticles.parsing.Special;
+import com.sleypner.parserarticles.special.Special;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

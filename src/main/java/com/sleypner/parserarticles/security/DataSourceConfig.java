@@ -83,7 +83,7 @@ public class DataSourceConfig {
         } else if (env.getProperty("db.url").indexOf(":mysql:") > 0) {
             properties.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
         } else if (env.getProperty("db.url").indexOf(":mariadb:") > 0) {
-//            properties.setProperty("hibernate.dialect", "org.hibernate.dialect.MariaDBDialect");
+            properties.setProperty("hibernate.dialect", "org.hibernate.dialect.MariaDBDialect");
         }else if (env.getProperty("db.url").indexOf(":postgresql:") > 0) {
             properties.setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
         }

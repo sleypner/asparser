@@ -8,7 +8,7 @@ services:
     ports:
       - 8080:8080
   db:
-    image: mariadb:latest
+    image: mariadb:11.7.2
     environment:
       MARIADB_ROOT_PASSWORD: 'root123'
       MARIADB_USER: 'asparser'

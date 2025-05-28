@@ -1,7 +1,7 @@
 services:
   article-parser:
     env_file: "variables.env"
-    image: sleypnersfa/asparser
+    image: sleypnersfa/asparser:latest
     depends_on:
       db:
         condition: service_healthy

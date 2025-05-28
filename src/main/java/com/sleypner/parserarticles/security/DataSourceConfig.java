@@ -44,7 +44,7 @@ public class DataSourceConfig {
     @Bean
     public DataSource dataSource() {
         final DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        String driverName = null;
+        String driverName = "";
         if (env.getProperty("db.url").toLowerCase().indexOf(":sqlite:") > 0) {
             driverName = "org.sqlite.JDBC";
         } else if (env.getProperty("db.url").toLowerCase().indexOf(":mysql:") > 0) {
@@ -55,7 +55,6 @@ public class DataSourceConfig {
             driverName = "org.postgresql.Driver";
         }
 
-        assert driverName != null;
         dataSource.setDriverClassName(driverName);
         dataSource.setUrl(env.getProperty("db.url"));
         dataSource.setUsername(env.getProperty("db.username"));
@@ -78,17 +77,7 @@ public class DataSourceConfig {
 
     Properties additionalProperties() {
         Properties properties = new Properties();
-        if (env.getProperty("db.url").indexOf(":sqlite:") > 0) {
-            properties.setProperty("hibernate.dialect", "org.hibernate.community.dialect.SQLiteDialect");
-        } else if (env.getProperty("db.url").indexOf(":mysql:") > 0) {
-            properties.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
-        } else if (env.getProperty("db.url").indexOf(":mariadb:") > 0) {
-            properties.setProperty("hibernate.dialect", "org.hibernate.dialect.MariaDBDialect");
-        }else if (env.getProperty("db.url").indexOf(":postgresql:") > 0) {
-            properties.setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
-        }
         properties.setProperty("hibernate.hbm2ddl.auto", "update");
-
         return properties;
     }
 }

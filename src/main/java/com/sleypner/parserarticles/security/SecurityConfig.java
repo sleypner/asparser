@@ -63,37 +63,37 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         http
-                .requiresChannel(channel -> channel.anyRequest().requiresSecure())
-                .headers(headers -> headers
-                        .httpStrictTransportSecurity(hsts -> hsts
-                                .includeSubDomains(true)
-                                .preload(true)
-                                .maxAgeInSeconds(31536000)
-                        )
-                )
-                .headers(headers -> headers
-                        .contentSecurityPolicy(csp -> csp
-                                .policyDirectives("default-src 'self'; script-src 'self' 'unsafe-inline' https://trusted.cdn.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:;")
-                        )
-                        .xssProtection(xss -> xss.headerValue(XXssProtectionHeaderWriter.HeaderValue.ENABLED_MODE_BLOCK))
-                        .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)
-                        .contentTypeOptions(HeadersConfigurer.ContentTypeOptionsConfig::disable)
-                )
-                .addFilterBefore(new RateLimitFilter(), UsernamePasswordAuthenticationFilter.class)
-                .securityContext(context -> context.requireExplicitSave(false))
-                .servletApi(AbstractHttpConfigurer::disable)
-                .cors(cors -> cors.configurationSource(request -> {
-                    CorsConfiguration config = new CorsConfiguration();
-                    config.setAllowedOrigins(List.of("https://sleypner.dev"));
-                    config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
-                    config.setAllowedHeaders(List.of("*"));
-                    config.setAllowCredentials(true);
-                    return config;
-                }))
-                .csrf(csrf -> csrf
-                        .csrfTokenRequestHandler(new XorCsrfTokenRequestAttributeHandler()::handle)
-                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                )
+//                .requiresChannel(channel -> channel.anyRequest().requiresSecure())
+//                .headers(headers -> headers
+//                        .httpStrictTransportSecurity(hsts -> hsts
+//                                .includeSubDomains(true)
+//                                .preload(true)
+//                                .maxAgeInSeconds(31536000)
+//                        )
+//                )
+//                .headers(headers -> headers
+//                        .contentSecurityPolicy(csp -> csp
+//                                .policyDirectives("default-src 'self'; script-src 'self' 'unsafe-inline' https://trusted.cdn.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:;")
+//                        )
+//                        .xssProtection(xss -> xss.headerValue(XXssProtectionHeaderWriter.HeaderValue.ENABLED_MODE_BLOCK))
+//                        .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)
+//                        .contentTypeOptions(HeadersConfigurer.ContentTypeOptionsConfig::disable)
+//                )
+//                .addFilterBefore(new RateLimitFilter(), UsernamePasswordAuthenticationFilter.class)
+//                .securityContext(context -> context.requireExplicitSave(false))
+//                .servletApi(AbstractHttpConfigurer::disable)
+//                .cors(cors -> cors.configurationSource(request -> {
+//                    CorsConfiguration config = new CorsConfiguration();
+//                    config.setAllowedOrigins(List.of("https://sleypner.dev"));
+//                    config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
+//                    config.setAllowedHeaders(List.of("*"));
+//                    config.setAllowCredentials(true);
+//                    return config;
+//                }))
+//                .csrf(csrf -> csrf
+//                        .csrfTokenRequestHandler(new XorCsrfTokenRequestAttributeHandler()::handle)
+//                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+//                )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/**").authenticated()

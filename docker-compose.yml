@@ -1,19 +1,30 @@
 services:
-  mariadb:
-    environment:
-      MYSQL_ROOT_PASSWORD: "root123"
-    image: mariadb:latest
-    ports:
-      - 3396:3306
-    volumes:
-      - "./mariadb_volume:/var/lib/mysql"
   article-parser:
     env_file: "variables.env"
-    image: sleypnersfa/asterios-news:latest
+    image: sleypnersfa/asparser
+    depends_on:
+      db:
+        condition: service_healthy
     ports:
-      - 8989:8080
-    links:
-      - mariadb:db
+      - 8080:8080
+  db:
+    image: mariadb:latest
+    environment:
+      MARIADB_ROOT_PASSWORD: 'root123'
+      MARIADB_USER: 'asparser'
+      MARIADB_PASSWORD: 'as4561'
+      MARIADB_DATABASE: 'asparser_db'
+      MARIADB_CHARACTER_SET_SERVER: 'utf8mb4'
+      MARIADB_COLLATION_SERVER: 'utf8mb4_unicode_ci'
+    ports:
+      - 3306:3306
+    volumes:
+      - "./mariadb_volume:/var/lib/mysql"
+    healthcheck:
+      test: ["CMD-SHELL", "mariadb -h 127.0.0.1 -u asparser -pas4561 asparser_db -e 'SELECT 1;'"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
 
 

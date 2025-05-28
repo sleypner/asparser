@@ -1,1 +1,0 @@
-org.springframework.context.ApplicationListener=com.sleypner.parserarticles.security.PropertiesToJsonLogger

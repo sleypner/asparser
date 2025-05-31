@@ -17,7 +17,7 @@ import java.util.*;
 @NoArgsConstructor
 @Entity
 @Table(name = "articles")
-public class Article implements Serializable {
+public class Article implements Serializable,Comparable<Article> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -66,5 +66,10 @@ public class Article implements Serializable {
         }else {
             return false;
         }
+    }
+
+    @Override
+    public int compareTo(Article o) {
+        return getCreateOn().compareTo(o.getCreateOn());
     }
 }

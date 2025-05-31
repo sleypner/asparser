@@ -49,7 +49,7 @@ public class FortressHistory implements Comparable<FortressHistory> {
 
     @Override
     public int compareTo(FortressHistory o) {
-        return Integer.compare(getId(),o.id);
+        return getUpdatedDate().compareTo(o.getUpdatedDate());
     }
 }
 

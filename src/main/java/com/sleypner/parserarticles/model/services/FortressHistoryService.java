@@ -18,4 +18,6 @@ public interface FortressHistoryService {
     FortressHistory getByFortressId(String fortressName);
 
     List<FortressHistory> getCurrentStatusOfForts();
+
+    List<FortressHistory> getByServer(String server);
 }

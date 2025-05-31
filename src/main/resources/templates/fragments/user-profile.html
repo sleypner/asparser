@@ -13,8 +13,13 @@
                         <span th:text="${role.role}" class="badge-role ms-2"></span>
                     </div>
                 </div>
-                <p th:email="${#authentication.principal.attributes.email}"><i class="fas fa-envelope me-2"></i></p>
-                <p><i class="fas fa-calendar-alt me-2"></i><span th:text="${#authentication.principal.attributes.created_date}"></span></p>
+                <p>
+                    <a class="profile-email-mailto" th:href="|mailto:${#authentication.principal.attributes.email}|">
+                        <i class="fas fa-envelope me-2"></i>
+                        <span th:text="${#authentication.principal.attributes.email}"></span>
+                    </a>
+                </p>
+                <p><i class="fas fa-calendar-alt me-2"></i><span th:text="${#temporals.format(#authentication.principal.attributes.created_date, 'dd.MM.yyyy HH:mm')}"></span></p>
                 <div style="display: none" class="profile-stats">
                     <div class="stat-item">
                         <div class="stat-value">24</div>
@@ -74,6 +79,26 @@
                                     <label class="form-label">Last Name</label>
                                     <div th:text="${#authentication.principal.attributes.last_name}" class="form-control-plaintext"></div>
                                 </div>
+                                <div class="mb-3">
+                                    <label class="form-label">About</label>
+                                    <div th:text="${#authentication.principal.attributes.about}" class="form-control-plaintext"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Birthday</label>
+                                    <div th:text="${#temporals.format(#authentication.principal.attributes.birthday, 'dd.MM.yyyy HH:mm')}" class="form-control-plaintext"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Gender</label>
+                                    <div th:text="${#authentication.principal.attributes.gender}" class="form-control-plaintext"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Phone</label>
+                                    <div th:text="${#authentication.principal.attributes.phone}" class="form-control-plaintext"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Language</label>
+                                    <div th:text="${#authentication.principal.attributes.language}" class="form-control-plaintext"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -92,11 +117,11 @@
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Last Login</label>
-                                    <div th:text="${#authentication.principal.attributes.last_login}" class="form-control-plaintext"></div>
+                                    <div th:text="${#temporals.format(userActionLog.createdDate, 'dd.MM.yyyy HH:mm')}" class="form-control-plaintext"></div>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">IP Address</label>
-                                    <div class="form-control-plaintext">192.168.1.1</div>
+                                    <div class="form-control-plaintext" th:text="${userActionLog.ip}"></div>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Two-Factor Authentication</label>
@@ -126,27 +151,44 @@
                                     <input  th:value="${#authentication.principal.attributes.last_name}" type="text" class="form-control" id="editLastName" value="">
                                 </div>
                             </div>
-
-                            <div class="mb-3">
-                                <label for="editEmail" class="form-label">Email</label>
-                                <input th:value="${#authentication.principal.attributes.email}" type="email" class="form-control" id="editEmail" value="">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="editEmail" class="form-label">Email</label>
+                                    <input th:value="${#authentication.principal.attributes.email}" type="email" class="form-control" id="editEmail" value="">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="editPhone" class="form-label">Phone</label>
+                                    <input th:value="${#authentication.principal.attributes.phone}" type="tel" class="form-control" id="editPhone" value="">
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="editBirthday" class="form-label">Birthday</label>
+                                    <input th:value="${#temporals.format(#authentication.principal.attributes.birthday, 'yyyy-MM-dd')}" type="date" class="form-control" id="editBirthday" value="">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="editGender" class="form-label">Gender</label>
+                                    <input th:value="${#authentication.principal.attributes.gender}" type="text" class="form-control" id="editGender" value="">
+                                </div>
                             </div>
 
-                            <div class="mb-3">
-                                <label for="editPhone" class="form-label">Phone</label>
-                                <input th:value="${#authentication.principal.attributes.phone}" type="tel" class="form-control" id="editPhone" value="">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="editLanguage" class="form-label">Language</label>
+                                    <input th:value="${#authentication.principal.attributes.language}" type="text" class="form-control" id="editLanguage" value="">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="editBio" class="form-label">About Me</label>
+                                    <textarea th:text="${#authentication.principal.attributes.about}" class="form-control" id="editBio" rows="3"></textarea>
+                                </div>
                             </div>
-
-                            <div class="mb-3">
-                                <label for="editBio" class="form-label">About Me</label>
-                                <textarea th:value="${#authentication.principal.attributes.about}" class="form-control" id="editBio" rows="3"></textarea>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="editAvatar" class="form-label">Profile Picture</label>
+                                    <input th:value="${#authentication.principal.attributes.img}" type="file" class="form-control" id="editAvatar">
+                                </div>
+                                <div class="col-md-6"></div>
                             </div>
-
-                            <div class="mb-3">
-                                <label for="editAvatar" class="form-label">Profile Picture</label>
-                                <input th:value="${#authentication.principal.attributes.img}" type="file" class="form-control" id="editAvatar">
-                            </div>
-
                             <div class="d-flex justify-content-end">
                                 <button type="button" class="btn btn-outline-primary me-2">Cancel</button>
                                 <button type="submit" class="btn btn-primary">Save Changes</button>

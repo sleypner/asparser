@@ -19,31 +19,31 @@ public class RaidBosses implements Comparable<RaidBosses> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    int id;
+    private int id;
     @Column(name = "name")
-    String name;
+    private String name;
     @Column(name = "type")
-    String type;
+    private String type;
     @Column(name = "server")
-    String server;
+    private String server;
     @Column(name = "date", columnDefinition = "TIMESTAMP(0)")
-    LocalDateTime date;
-    @Column(name = "respawnStart", columnDefinition = "TIMESTAMP(0)")
-    LocalDateTime respawnStart;
-    @Column(name = "respawnEnd", columnDefinition = "TIMESTAMP(0)")
-    LocalDateTime respawnEnd;
+    private LocalDateTime date;
+    @Column(name = "respawn_start", columnDefinition = "TIMESTAMP(0)")
+    private LocalDateTime respawnStart;
+    @Column(name = "respawn_end", columnDefinition = "TIMESTAMP(0)")
+    private LocalDateTime respawnEnd;
     @Column(name = "count_killing")
-    int countKilling;
+    private int countKilling;
     @Column(name = "last_killer")
-    String lastKiller;
+    private String lastKiller;
     @Column(name = "last_killers_clan")
-    String lastKillersClan;
+    private String lastKillersClan;
     @Column(name = "attackers_count")
-    int attackersCount;
+    private int attackersCount;
     @Column(name = "created_date", columnDefinition = "TIMESTAMP(0)")
-    LocalDateTime createdDate;
+    private LocalDateTime createdDate;
     @Column(name = "updated_date", columnDefinition = "TIMESTAMP(0)")
-    LocalDateTime updatedDate;
+    private LocalDateTime updatedDate;
 
     public RaidBosses(String name, String type, String server, LocalDateTime date) {
         this.name = name;

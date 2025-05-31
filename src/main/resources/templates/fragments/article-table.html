@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
-<div th:fragment="article-table" class="main-content">
+<div th:fragment="article-table" class="main-content events-form" th:data-name="${loc}" data-form-type="events-form">
     <h1 class="mb-4 text-center main-title">Articles</h1>
+    <div class=".d-flex flex-column">
+        <div th:replace="~{fragments/events-form :: form}"></div>
     <div class="table-responsive">
-        <table class="table table-custom table-hover">
+        <table th:id="${loc + 'Table'}" class="table table-custom table-hover">
             <thead>
             <tr>
                 <th>#</th>
@@ -15,16 +17,7 @@
                 <th>Date</th>
             </tr>
             </thead>
-            <tbody>
-            <tr th:each="item,iterStat : ${articles}">
-                <td th:text="${iterStat.count}"></td>
-                <td style="display: none" th:text="${item.id}"></td>
-                <td><a th:href="${item.link}" th:text="${item.title}"></a></td>
-                <td th:text="${item.subtitle}"></td>
-                <td th:utext="${item.description}"></td>
-                <td th:text="${#temporals.formatISO(item.createOn)}"></td>
-            </tr>
-            </tbody>
+            <tbody class="skeleton-body"></tbody>
         </table>
     </div>
     <div style="display: none" class="mt-5">
@@ -40,6 +33,7 @@
             </li>
         </ul>
     </div>
+        </div>
 </div>
 </body>
 </html>

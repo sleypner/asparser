@@ -3,7 +3,7 @@ function addData(chart, oldChart) {
 
     chart.data.labels = newData.labels
 
-    newData.datasets.forEach((datasets) =>{
+    newData.datasets.forEach((datasets) => {
         chart.data.datasets.push(datasets);
     })
     chart.update();
@@ -12,79 +12,84 @@ function addData(chart, oldChart) {
 function removeData(chart) {
     chart.data.labels.pop();
     let l = chart.data.datasets.length
-    for (let i=0;i<l;i++){
+    for (let i = 0; i < l; i++) {
         chart.data.datasets.pop();
     }
     chart.update();
 }
 
- async function drawChart(chart,url) {
-     var now = moment().format("DD-MM-YYYYTHH%3Amm%3Ass");
-     var start = moment().subtract(5, 'years').format("DD-MM-YYYYTHH%3Amm%3Ass");
-     const baseUrl = document.location.origin + '/api/online?server=x5&interval=1800&period-start='+start+'&period-end='+now+'';
-     if (url == ''){
-         url = baseUrl;
-     }
-     try {
-         let response = await fetch(url);
+async function drawChart(chart, url) {
+    var now = moment().format("DD-MM-YYYYTHH%3Amm%3Ass");
+    var start = moment().subtract(5, 'years').format("DD-MM-YYYYTHH%3Amm%3Ass");
+    const baseUrl = document.location.origin + '/api/online?server=x5&interval=1800&period-start=' + start + '&period-end=' + now + '';
+    if (url == '') {
+        url = baseUrl;
+    }
+    try {
+        let response = await fetch(url);
 
-         if (!response.ok) {
-             throw new Error(`Response status: ${response.status}`);
-         }
+        if (!response.ok) {
+            throw new Error(`Response status: ${response.status}`);
+        }
 
-         const json = await response.json();
-         setChartTitle()
+        const json = await response.json();
+        setChartTitle()
 
-         removeData(chart)
-         addData(chart,json)
+        removeData(chart)
+        addData(chart, json)
 
-     } catch (error) {
-         console.error(error.message);
-     }
+    } catch (error) {
+        console.error(error.message);
+    }
 }
-$(document).ready(function() {
-    $('.nav-link').on('click', function(){
+
+$(document).ready(function () {
+    $('.nav-link').on('click', function () {
         this.classList.toggle('active');
     })
 })
+
 function formOnline(chart) {
     let url = new URL("/api/online", document.location.origin)
 
     let elements = document.forms["onlineChart"].children;
-    for(let i = 0; i < elements.length ; i++){
-        if(elements.item(i).name == "submit") continue;
+    for (let i = 0; i < elements.length; i++) {
+        if (elements.item(i).name == "submit") continue;
 
-        url.searchParams.append(elements.item(i).name,elements.item(i).value);
+        url.searchParams.append(elements.item(i).name, elements.item(i).value);
     }
-    drawChart(chart,url);
+    drawChart(chart, url);
 }
-function setChartTitle(){
-    let elements = document.forms["onlineChart"].children;
-    for(let i = 0; i < elements.length ; i++){
-        if(elements.item(i).name == "submit") continue;
 
-        if(isDateValid(elements.item(i).value)){
+function setChartTitle() {
+    let elements = document.forms["onlineChart"].children;
+    for (let i = 0; i < elements.length; i++) {
+        if (elements.item(i).name == "submit") continue;
+
+        if (isDateValid(elements.item(i).value)) {
 
             const date = new Date(elements.item(i).value);
 
             document.getElementById(elements.item(i).name).textContent = date.toLocaleString('en-GB');
-        }else if(elements.item(i).name == "interval"){
-            document.getElementById(elements.item(i).name).textContent = $("#"+elements.item(i).id+" :selected").text();
-        }else{
+        } else if (elements.item(i).name == "interval") {
+            document.getElementById(elements.item(i).name).textContent = $("#" + elements.item(i).id + " :selected").text();
+        } else {
             document.getElementById(elements.item(i).name).textContent = elements.item(i).value;
         }
     }
 }
+
 function isDateValid(dateStr) {
     let res = false;
-    if (!isNaN(dateStr)){
+    if (!isNaN(dateStr)) {
         res = false;
-    }else{
+    } else {
         const date = new Date(dateStr);
         res = date instanceof Date && !isNaN(date)
     }
     return res;
 }
+
 function playRoulette(straightVal, numberVal, coffer) {
     spinWheel();
 
@@ -122,7 +127,7 @@ function playRoulette(straightVal, numberVal, coffer) {
 
     if (rolledCountWon > 0) {
         const winRate = Math.floor((rolledCountWon / rolledCount) * 1000) / 10;
-        document.getElementById("rolledCoefficientWon").textContent = winRate+' %';
+        document.getElementById("rolledCoefficientWon").textContent = winRate + ' %';
     }
 
     document.getElementById("rolledCount").textContent = rolledCount;
@@ -197,13 +202,14 @@ function spinWheel() {
         }, 100);
     }, 10);
 }
-function formatNumber(num){
+
+function formatNumber(num) {
     let res = num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
     return res;
 }
 
 async function formEvents(name) {
-    let url = new URL("/api/"+name, document.location.origin)
+    let url = new URL("/api/" + name, document.location.origin)
 
     const form = document.forms[name];
     const formData = new FormData(form);
@@ -212,7 +218,6 @@ async function formEvents(name) {
         console.log(`${name}: ${value}`);
         url.searchParams.append(name, value);
     }
-    console.log(url);
 
     let response = await fetch(url);
 
@@ -223,33 +228,32 @@ async function formEvents(name) {
     const json = await response.json();
 
     let oldData = document.getElementsByClassName("div-table-row");
-    while (oldData.length > 1){
+    while (oldData.length > 1) {
         oldData[1].remove()
     }
 
     for (const obj of json) {
-        console.log(obj);
         let row = $('<div class="div-table-row">')
-        for (const key in obj){
-            if(key == "updatedDate" || key == "createdDate"){
+        for (const key in obj) {
+            if (key == "updatedDate" || key == "createdDate") {
                 continue;
             }
             row.append(
                 $('<div class="div-table-col">').text(obj[key])
             );
         }
-        row.appendTo('#'+name+'Table');
+        row.appendTo('#' + name + 'Table');
     }
 }
 
-$(document).ready(function() {
+$(document).ready(function () {
 
-    $('#languageSwitcher').click(function() {
+    $('#languageSwitcher').click(function () {
         toggleLanguage();
     });
 
     let currentLanguage = 'gb';
-    const translations = {ru:"RU",gb:"EN"}
+    const translations = {ru: "RU", gb: "EN"}
 
     function toggleLanguage() {
         currentLanguage = currentLanguage === 'ru' ? 'gb' : 'ru';
@@ -272,7 +276,7 @@ $(document).ready(function() {
     const searchInput = $('#searchOptions');
     const submitBtn = $('#submitBtn');
 
-    originalSelect.find('option').each(function() {
+    originalSelect.find('option').each(function () {
         const option = $(this);
         optionsContainer.append(`
                     <div class="option-item" data-value="${option.val()}">
@@ -281,7 +285,7 @@ $(document).ready(function() {
                 `);
     });
 
-    customMultiselect.on('click', function(e) {
+    customMultiselect.on('click', function (e) {
         e.stopPropagation();
         dropdownList.toggleClass('show');
 
@@ -290,7 +294,7 @@ $(document).ready(function() {
         }
     });
 
-    optionsContainer.on('click', '.option-item', function() {
+    optionsContainer.on('click', '.option-item', function () {
         const option = $(this);
         const value = option.data('value');
         const text = option.text();
@@ -318,7 +322,7 @@ $(document).ready(function() {
         }
     });
 
-    selectedItemsContainer.on('click', '.remove-item', function(e) {
+    selectedItemsContainer.on('click', '.remove-item', function (e) {
         e.stopPropagation();
         const item = $(this).parent();
         const value = item.data('value');
@@ -334,10 +338,10 @@ $(document).ready(function() {
         }
     });
 
-    searchInput.on('input', function() {
+    searchInput.on('input', function () {
         const searchTerm = $(this).val().toLowerCase();
 
-        optionsContainer.find('.option-item').each(function() {
+        optionsContainer.find('.option-item').each(function () {
             const option = $(this);
             const text = option.text().toLowerCase();
 
@@ -349,20 +353,20 @@ $(document).ready(function() {
         });
     });
 
-    $(document).on('click', function() {
+    $(document).on('click', function () {
         dropdownList.removeClass('show');
     });
 
-    dropdownList.on('click', function(e) {
+    dropdownList.on('click', function (e) {
         e.stopPropagation();
     });
 
-    submitBtn.on('click', function() {
+    submitBtn.on('click', function () {
         const selectedValues = originalSelect.val() || [];
         alert('Elements selected: ' + selectedValues.join(', '));
     });
 
-    originalSelect.find('option:selected').each(function() {
+    originalSelect.find('option:selected').each(function () {
         const option = $(this);
         const value = option.val();
         const text = option.text();
@@ -377,6 +381,466 @@ $(document).ready(function() {
 
         optionsContainer.find(`.option-item[data-value="${value}"]`).addClass('selected');
     });
+
+    //events form
+    const content = document.querySelector(".main-content");
+    const formConstant = getFormConst(content);
+
+    function getFormConst(content) {
+        if (Object.keys(content.dataset).length > 0) {
+            let result = {};
+            result["name"] = content.dataset.name;
+            result["formType"] = content.dataset.formType;
+            result["form"] = document.getElementById(result.name + 'Form');
+            result["url"] = new URL(`/api/${result.name}`, document.location.origin);
+            return result;
+        } else {
+            return null;
+        }
+    }
+
+    if (formConstant !== null) {
+        addFormListeners();
+        initContent();
+    }
+
+    async function loadData(formData) {
+        const modifiedFormData = new FormData();
+        for (const [key, value] of formData.entries()) {
+            if (key === 'sort') {
+                if (value === "Date ascending") {
+                    modifiedFormData.append(key, 'asc');
+                } else {
+                    modifiedFormData.append(key, 'desc');
+                }
+            } else {
+                modifiedFormData.append(key, value);
+            }
+        }
+        const data = Object.fromEntries(modifiedFormData.entries());
+        try {
+            const response = await fetch(formConstant.url, {
+                method: 'POST',
+                body: JSON.stringify(data),
+                headers: {
+                    'Content-Type': 'application/json',
+                    "X-CSRF-TOKEN": $('#_csrf').attr('content')
+                }
+            })
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return await response.json();
+
+
+        } catch (error) {
+            console.log("error: ", error);
+            return [];
+        }
+    }
+
+    let debounceTimer;
+
+    function handleFieldChange() {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(async () => {
+            await initContent();
+        }, 0);
+    }
+
+    function showSkeleton() {
+        if (formConstant.name === 'events' || formConstant.name === 'fortress-history' || formConstant.name === 'fortress' || formConstant.name === 'articles') {
+            const skeleton = document.querySelector(".skeleton-body");
+            let colCount = document.querySelectorAll("#" + formConstant.name + "Table thead th").length;
+            let skeletonFragment = document.createDocumentFragment();
+            for (let i = 0; i < 50; i++) {
+                let row = document.createElement('tr');
+                row.classList.add("skeleton-row")
+                for (let j = 0; j < colCount; j++) {
+                    let col = document.createElement('td');
+                    let div = document.createElement('div');
+                    div.classList.add('skeleton');
+                    col.appendChild(div)
+                    row.appendChild(col);
+                }
+                skeletonFragment.appendChild(row);
+            }
+            skeleton.replaceChildren(skeletonFragment)
+        }
+
+        if (formConstant.name === 'bosses') {
+            const skeleton = document.querySelector(".skeleton-body");
+            const count = skeleton.children.length === 0 ? 50 : skeleton.children.length;
+            let skeletonFragment = document.createDocumentFragment();
+            for (let i = 0; i < count; i++) {
+                let element = document.createElement('div');
+                element.classList.add("skeleton-row")
+                element.classList.add("boss-card");
+                let skeletonBox = document.createElement('div');
+                skeletonBox.classList.add('skeleton');
+                element.appendChild(skeletonBox);
+                skeletonFragment.appendChild(element);
+            }
+            skeleton.replaceChildren(skeletonFragment)
+        }
+    }
+
+    function loadContent(result) {
+        if (formConstant.name === 'events' || formConstant.name === 'articles') {
+            const tbody = document.querySelector("#" + formConstant.name + "Table tbody");
+            const resultFrag = document.createDocumentFragment();
+            let i = 0;
+            for (const obj of result) {
+                i++;
+                let row = document.createElement("tr");
+                for (const key in obj) {
+                    let col = document.createElement("td");
+                    let value = obj[key];
+
+                    if (formConstant.name === 'articles') {
+                        if (key === 'link') {
+                            continue;
+                        }
+                        if (key === 'title') {
+                            let link = document.createElement("a");
+                            link.href = obj['link'];
+                            link.textContent = value;
+                            col.appendChild(link);
+                            row.appendChild(col);
+                            continue;
+                        }
+                    }
+
+                    if (key === "id") {
+                        value = i;
+                    }
+                    if (isDateString(value)) {
+                        value = formatDate(obj[key]);
+
+                    }
+                    if (key === "updatedDate" || key === "createdDate") {
+                        continue;
+                    }
+                    if (hasHtml(value)) {
+                        col.innerHTML = value;
+                        row.appendChild(col);
+                        continue;
+                    }
+                    col.textContent = value;
+                    row.appendChild(col);
+                }
+                resultFrag.appendChild(row);
+            }
+            tbody.replaceChildren(resultFrag);
+        } else if (formConstant.name === 'bosses') {
+            const bosses = initializeBossGrid(result);
+
+            updateTimers(bosses);
+            setInterval(() => updateTimers(bosses), 60000);
+        } else if (formConstant.name === 'fortress-history' || formConstant.name === 'fortress') {
+            console.log(result);
+            console.log("sada")
+            const tbody = document.querySelector("#" + formConstant.name + "Table tbody");
+            const resultFrag = document.createDocumentFragment();
+            let i = 0;
+            for (const object of result) {
+                i++;
+                let row = document.createElement("tr");
+                for (const secondObject in object) {
+                    let col = document.createElement("td");
+                    let value = object[secondObject];
+                    if (secondObject === "id") {
+                        value = i;
+                    } else if (secondObject === "coffer") {
+                        value = value + " Aden.";
+                    } else if (secondObject === "holdTime") {
+                        value = value + " Hours.";
+                    } else if (secondObject === "createdDate") {
+                        continue;
+                    } else if (isDateString(value)) {
+                        value = formatDate(value);
+                    } else if (typeof value === "object") {
+                        let secondTable = document.createElement("table");
+                        let secondTbody = document.createElement("tbody");
+                        let secondThead = document.createElement("thead");
+                        secondTable.classList.add("table-hover");
+                        secondTable.classList.add("table-custom");
+                        secondTable.classList.add("table");
+                        secondTable.classList.add("table-nested");
+
+                        if (secondObject === "skills") {
+                            let secondValueRow = document.createElement("tr");
+                            secondValueRow.classList.add("d-inline-block");
+                            secondValueRow.classList.add("w-25");
+                            for (const thirdObject in value) {
+
+                                let thirdValue = value[thirdObject];
+                                let tooltipContainer = document.createElement("td");
+                                tooltipContainer.classList.add("tooltip-container");
+
+                                let thirdImage = document.createElement("img");
+                                thirdImage.src = '/content/fortress-skills/image/' + thirdValue.id;
+                                thirdImage.alt = thirdValue.name;
+
+                                let tooltipText = document.createElement("span");
+                                tooltipText.classList.add("tooltip-text");
+                                let spanName = document.createElement("span");
+                                spanName.textContent = thirdValue.name + ": ";
+                                spanName.classList.add("fw-bold");
+                                let spanEffect = document.createElement("span");
+                                spanEffect.textContent = thirdValue.effect;
+
+                                tooltipText.appendChild(spanName);
+                                tooltipText.appendChild(spanEffect);
+
+                                tooltipContainer.appendChild(thirdImage);
+                                tooltipContainer.appendChild(tooltipText);
+
+                                secondValueRow.appendChild(tooltipContainer);
+                            }
+
+                            col.appendChild(secondValueRow);
+                            row.appendChild(col);
+
+                            continue;
+                        }
+
+                        // secondTbody.classList.add("skeleton-body");
+                        let secondValueRow = document.createElement("tr");
+                        let secondHeadRow = document.createElement("tr");
+                        for (const thirdObject in value) {
+                            if (thirdObject === "id" || thirdObject === "image" || thirdObject === "updatedDate" || thirdObject === "createdDate") {
+                                continue;
+                            }
+                            let secondHeadCol = document.createElement("th");
+                            secondHeadCol.textContent = capitalize(thirdObject);
+                            secondHeadRow.appendChild(secondHeadCol);
+                        }
+                        for (const thirdObject in value) {
+                            let secondValue = value[thirdObject];
+                            if (thirdObject === "id" || thirdObject === "image" || thirdObject === "updatedDate" || thirdObject === "createdDate") {
+                                continue;
+                            }
+                            if (thirdObject === "name") {
+                                let clanName = document.createElement("td");
+                                let spanName = document.createElement("span");
+                                let img = document.createElement("img");
+                                img.src = '/content/clans/image/' + value.id;
+                                img.alt = "";
+                                spanName.textContent = secondValue;
+                                clanName.appendChild(img);
+                                clanName.appendChild(spanName);
+                                secondValueRow.appendChild(clanName);
+                                continue;
+                            }
+                            if (isDateString(secondValue)) {
+                                secondValue = formatDate(secondValue);
+                            }
+                            let secondCol = document.createElement("td");
+                            secondCol.textContent = secondValue;
+                            secondValueRow.appendChild(secondCol);
+                        }
+                        secondThead.appendChild(secondHeadRow);
+                        secondTable.appendChild(secondHeadRow);
+
+                        secondTbody.appendChild(secondValueRow);
+                        secondTable.appendChild(secondTbody);
+
+                        col.appendChild(secondTable);
+                        row.appendChild(col);
+                        continue;
+                    }
+                    col.textContent = value;
+                    row.appendChild(col);
+                }
+                resultFrag.appendChild(row);
+            }
+            tbody.replaceChildren(resultFrag);
+        }
+    }
+
+    function capitalize(string) {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+
+    function formatTime(seconds) {
+        if (seconds === null || isNaN(seconds)) return '--:--:--';
+
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+        const secs = Math.floor(seconds % 60);
+        return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    function isDateString(string) {
+        return /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:\d{2})?$/.test(string);
+    }
+
+    function hasHtml(string) {
+        return /<[a-z][\s\S]*>/i.test(string);
+    }
+
+    function formatDate(date) {
+        if (!date) return 'None';
+        const d = new Date(date);
+        const day = String(d.getDate()).padStart(2, '0');
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const year = d.getFullYear();
+        const hours = String(d.getHours()).padStart(2, '0');
+        const minutes = String(d.getMinutes()).padStart(2, '0');
+        const seconds = String(d.getSeconds()).padStart(2, '0');
+
+        return `${day}.${month}.${year} ${hours}:${minutes}:${seconds}`;
+    }
+
+    function initializeBossGrid(bosses) {
+        const bossGrid = document.getElementById('bossGrid');
+        bossGrid.innerHTML = '';
+
+        bosses.forEach(boss => {
+            const card = document.createElement('div');
+            card.className = 'boss-card';
+
+            card.innerHTML = `
+                    <div class="boss-header">
+                        <span class="boss-type">${boss.type || 'None'}</span>
+                        <span class="boss-name">${boss.name}</span>
+                        <span class="boss-server">${boss.server || 'Global'}</span>
+                    </div>
+                    <div class="timer-container">
+                        <svg class="timer-circle" viewBox="0 0 42 42">
+                            <circle class="timer-background" cx="21" cy="21" r="15.9"></circle>
+                            <circle class="timer-progress" cx="21" cy="21" r="15.9" stroke-dasharray="100 100" stroke-dashoffset="100"></circle>
+                        </svg>
+                        <div class="timer-text">--:--:--<br><span class="timer-status">None</span></div>
+                    </div>
+                    <div class="boss-info">
+                        <div>Respawn start: <span id="start-${boss.id}">${formatDate(boss.respawnStart)}</span></div>
+                        <div>Respawn end: <span id="end-${boss.id}">${formatDate(boss.respawnEnd)}</span></div>
+                        <div>Killed: ${boss.countKilling || 0}</div>
+                    </div>
+                    <div class="boss-killer" id="killer-${boss.id}">
+                        ${boss.lastKiller ? `The last one killed: ${boss.lastKiller}` : ''}
+                        ${boss.lastKillersClan ? ` (${boss.lastKillersClan})` : ''}
+                    </div>
+                `;
+
+            bossGrid.appendChild(card);
+            boss.element = card;
+            boss.timerElements = {
+                progress: card.querySelector('.timer-progress'),
+                text: card.querySelector('.timer-text'),
+                status: card.querySelector('.timer-status'),
+                start: card.querySelector(`#start-${boss.id}`),
+                end: card.querySelector(`#end-${boss.id}`),
+                killer: card.querySelector(`#killer-${boss.id}`)
+            };
+        });
+
+        return bosses;
+    }
+
+    function updateTimers(bosses) {
+        const now = new Date();
+        bosses.forEach(boss => {
+            if (!boss.respawnStart || !boss.respawnEnd) {
+                updateBossElement(boss, null, null, 'unknown');
+                return;
+            }
+
+            const respawnStart = new Date(boss.respawnStart);
+            const respawnEnd = new Date(boss.respawnEnd);
+            const nowTime = now.getTime();
+            if (nowTime < respawnStart.getTime() && (respawnStart.getTime() - nowTime) / 1000 < 7200) {
+                const total = (respawnStart.getTime() - new Date(boss.date).getTime()) / 1000;
+                const remaining = (respawnStart.getTime() - nowTime) / 1000;
+                updateBossElement(boss, remaining, total, 'warning');
+            } else if (nowTime < respawnStart.getTime()) {
+                const total = (respawnStart.getTime() - new Date(boss.date).getTime()) / 1000;
+                const remaining = (respawnStart.getTime() - nowTime) / 1000;
+                updateBossElement(boss, remaining, total, 'waiting');
+            } else if (nowTime < respawnEnd.getTime()) {
+                const total = (respawnEnd.getTime() - respawnStart.getTime()) / 1000;
+                const remaining = (respawnEnd.getTime() - nowTime) / 1000;
+                updateBossElement(boss, remaining, total, 'active');
+            } else {
+                updateBossElement(boss, 0, 1, 'expired');
+            }
+        });
+    }
+
+    function updateBossElement(boss, remainingSeconds, totalSeconds, status) {
+        const elements = boss.timerElements;
+
+        if (remainingSeconds !== null && totalSeconds !== null && totalSeconds > 0) {
+            const progressPercent = (remainingSeconds / totalSeconds) * 100;
+            elements.progress.style.strokeDashoffset = progressPercent;
+            elements.text.innerHTML = `${formatTime(remainingSeconds)}<br><span class="timer-status">${getStatusText(status)}</span>`;
+        } else {
+            elements.progress.style.strokeDashoffset = '100';
+            elements.text.innerHTML = '--:--:--<br><span class="timer-status">None</span>';
+        }
+
+        switch (status) {
+            case 'active':
+                elements.progress.style.stroke = '#4CAF50';
+                elements.status.className = 'active';
+                break;
+            case 'warning':
+                elements.progress.style.stroke = '#FF5722'
+                elements.status.className = 'warning';
+                break;
+            case 'expired':
+                elements.progress.style.stroke = '#CCFF00';
+                elements.status.className = '';
+                break;
+            default:
+                elements.progress.style.stroke = '#FFC107';
+                elements.status.className = '';
+        }
+
+        elements.start.textContent = formatDate(boss.respawnStart);
+        elements.end.textContent = formatDate(boss.respawnEnd);
+
+        elements.killer.innerHTML = `
+                ${boss.lastKiller ? `The last one killed: ${boss.lastKiller}` : ''}
+                ${boss.lastKillersClan ? ` (${boss.lastKillersClan})` : ''}
+            `;
+    }
+
+    function getStatusText(status) {
+        switch (status) {
+            case 'active':
+                return 'Respawn!';
+            case 'waiting':
+                return 'Waiting';
+            case 'expired':
+                return 'Alive!';
+            case 'warning':
+                return 'Soon!';
+            default:
+                return 'None';
+        }
+    }
+
+    async function initContent() {
+        showSkeleton()
+        const formData = new FormData(formConstant.form);
+        const result = await loadData(formData);
+        loadContent(result);
+    }
+
+    function addFormListeners() {
+        formConstant.form.querySelectorAll('input, select').forEach(field => {
+            field.addEventListener('input', handleFieldChange);
+            field.addEventListener('change', handleFieldChange);
+        });
+
+        formConstant.form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            initContent();
+        });
+    }
 });
 
 

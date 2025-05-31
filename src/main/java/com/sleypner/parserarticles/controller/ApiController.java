@@ -8,6 +8,7 @@ import com.sleypner.parserarticles.model.source.other.OnlineChart;
 import com.sleypner.parserarticles.model.source.other.OnlineChartData;
 import com.sleypner.parserarticles.model.source.other.OnlineChartOptions;
 import com.sleypner.parserarticles.parsing.Processing;
+import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,10 +96,19 @@ public class ApiController {
         articleService.deleteById(id);
     }
 
-    @PostMapping(value = "/articles", produces = "application/json")
-    public Article addArticle(@RequestBody Article article) {
-        article.setId(articleService.getAll().size() + 1);
-        return articleService.save(article);
+    @RequestMapping(value = "/articles", produces = "application/json", method = RequestMethod.POST)
+    public List<Article> getArticles(@RequestBody FormData data) {
+        List<Article> articleList = new ArrayList<>();
+
+        articleList = articleService.getAll();
+
+        if (Objects.equals(data.sort, "asc")) {
+            articleList.sort(Comparator.comparing(Article::getCreateOn));
+        } else {
+            articleList.sort(Comparator.comparing(Article::getCreateOn).reversed());
+        }
+
+        return articleList;
     }
 
     @PostMapping(value = "/articles/parse", produces = "application/json")
@@ -126,65 +136,117 @@ public class ApiController {
         return new OnlineChartOptions("line", new OnlineChartData().getChartData(newListChart));
     }
 
-    @GetMapping(value = "/events", produces = "application/json")
-    public List<Events> getEvents(
-            @RequestParam(name = "server") String server,
-            @RequestParam(name = "type") String type,
-            @RequestParam(name = "sort") String sort
-    ) {
+    @RequestMapping(value = "/events", produces = "application/json", method = RequestMethod.POST)
+    public List<Events> getEvents(@RequestBody FormData data) {
         List<Events> listEvents = new ArrayList<>();
-        if (Objects.equals(server, "all")) {
+        if (Objects.equals(data.server, "all")) {
             listEvents = eventsService.getAll();
         } else {
-            listEvents = eventsService.getByServer(server);
+            listEvents = eventsService.getByServer(data.server);
         }
 
-        if (Objects.equals(sort, "asc")) {
+        if (Objects.equals(data.sort, "asc")) {
             listEvents.sort(Comparator.comparing(Events::getDate));
-        } else if (Objects.equals(sort, "desc")) {
+        } else {
             listEvents.sort(Comparator.comparing(Events::getDate).reversed());
         }
 
-        if (!type.equalsIgnoreCase("all")) {
-            listEvents = listEvents.stream().filter(el -> el.getType().equals(type)).toList();
+        if (!data.type.equalsIgnoreCase("all")) {
+            listEvents = listEvents.stream().filter(el -> el.getType().equals(data.type)).toList();
         }
 
         return listEvents;
     }
 
-    @GetMapping(value = "/bosses", produces = "application/json")
+    @RequestMapping(value = "/bosses", produces = "application/json", method = RequestMethod.POST)
     public List<RaidBosses> getBosses(
-            @RequestParam(name = "server") String server,
-            @RequestParam(name = "type") String type,
-            @RequestParam(name = "sort") String sort
+            @RequestBody(required = false) FormData data
     ) {
-        List<RaidBosses> listBosses = new ArrayList<>();
-        if (Objects.equals(server, "all")) {
+        List<RaidBosses> listBosses;
+
+        if (data.server == null || data.server.isEmpty()) {
+            listBosses = raidBossesService.getAll();
+            return listBosses;
+        }
+
+        if (Objects.equals(data.server, "all")) {
             listBosses = raidBossesService.getAll();
         } else {
-            listBosses = raidBossesService.getByServer(server);
+            listBosses = raidBossesService.getByServer(data.server);
         }
 
-        if (Objects.equals(sort, "asc")) {
-            listBosses.sort(Comparator.comparing(RaidBosses::getDate));
-        } else if (Objects.equals(sort, "desc")) {
-            listBosses.sort(Comparator.comparing(RaidBosses::getDate).reversed());
+        if (Objects.equals(data.sort, "asc")) {
+            listBosses.sort(Comparator.comparing(RaidBosses::getRespawnStart));
+        } else {
+            listBosses.sort(Comparator.comparing(RaidBosses::getRespawnStart).reversed());
         }
 
-        if (!type.equalsIgnoreCase("all")) {
-            listBosses = listBosses.stream().filter(el -> el.getType().equals(type)).toList();
+        if (!data.type.equalsIgnoreCase("all")) {
+            listBosses = listBosses.stream().filter(el -> el.getType().equals(data.type)).toList();
         }
 
         return listBosses;
     }
 
-    @GetMapping(value = "/fortress", produces = "application/json")
+    @RequestMapping(value = "/fortress", produces = "application/json", method = RequestMethod.POST)
     public List<FortressTable> getFortress(
-            @RequestParam(name = "server") String server
+            @RequestBody(required = false) FormData data
     ) {
 
+        List<FortressHistory> fortressHistoryList;
+
+        fortressHistoryList = fortressHistoryService.getCurrentStatusOfForts();
+
         List<FortressTable> fortressTableList = new ArrayList<>();
-        List<FortressHistory> fortressHistoryList = fortressHistoryService.getCurrentStatusOfForts();
+        for (FortressHistory fortressHistory : fortressHistoryList) {
+            Fortress fortress = fortressService.getById(fortressHistory.getFortressId());
+            if (!Objects.equals(fortress.getServer(), data.server) && !Objects.equals(data.server, "all")) {
+                continue;
+            }
+
+            Clan clan = clanService.getById(fortressHistory.getClanId());
+
+            FortressTable fortressTable = new FortressTable(
+                    fortress.getName(),
+                    fortress.getServer(),
+                    fortress.getSkills().stream().toList(),
+                    fortressHistory.getUpdatedDate(),
+                    clan,
+                    fortressHistory.getCoffer(),
+                    fortressHistory.getHoldTime()
+            );
+            if (fortressTable.getSkills() == null || fortressTable.getSkills().isEmpty()) {
+                fortressTable.setSkills(new ArrayList<>());
+            }
+            fortressTableList.add(fortressTable);
+        }
+
+        return fortressTableList;
+    }
+
+    @RequestMapping(value = "/fortress-history", produces = "application/json", method = RequestMethod.POST)
+    public List<FortressTable> getFortressHistory(
+            @RequestBody(required = false) FormData data
+    ) {
+        List<FortressHistory> fortressHistoryList;
+
+        if (Objects.equals(data.server, "all")) {
+            fortressHistoryList = fortressHistoryService.getAll();
+        } else {
+            if (data.server == null || data.server.isEmpty()) {
+                fortressHistoryList = fortressHistoryService.getAll();
+            } else {
+                fortressHistoryList = fortressHistoryService.getByServer(data.server);
+            }
+        }
+
+        if (Objects.equals(data.sort, "asc")) {
+            fortressHistoryList.sort(Comparator.comparing(FortressHistory::getUpdatedDate));
+        } else {
+            fortressHistoryList.sort(Comparator.comparing(FortressHistory::getUpdatedDate).reversed());
+        }
+
+        List<FortressTable> fortressTableList = new ArrayList<>();
         for (FortressHistory fortressHistory : fortressHistoryList) {
             Fortress fortress = fortressService.getById(fortressHistory.getFortressId());
             Clan clan = clanService.getById(fortressHistory.getClanId());
@@ -194,20 +256,29 @@ public class ApiController {
                     fortress.getServer(),
                     fortress.getSkills().stream().toList(),
                     fortressHistory.getUpdatedDate(),
-                    clan.getId(),
-                    clan.getName(),
-                    clan.getLevel(),
-                    clan.getLeader(),
-                    clan.getPlayersCount(),
-                    clan.getCastle(),
-                    clan.getReputation(),
-                    clan.getAlliance(),
+                    clan,
                     fortressHistory.getCoffer(),
                     fortressHistory.getHoldTime()
             );
+            if (fortressTable.getSkills() == null || fortressTable.getSkills().isEmpty()) {
+                fortressTable.setSkills(new ArrayList<>());
+            }
             fortressTableList.add(fortressTable);
         }
         return fortressTableList;
+    }
+
+    @Data
+    public static class FormData {
+        private String server;
+        private String type;
+        private String sort;
+
+        public FormData(String server, String sort) {
+            this.server = server;
+            this.sort = sort;
+            this.type = "";
+        }
     }
 }
 

@@ -1,56 +1,25 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
-<div th:fragment="events-table" class="main-content">
+<div th:fragment="events-table" class="main-content events-form" th:data-name="${loc}" data-form-type="events-form">
     <h1 class="mb-4 text-center main-title">Events</h1>
-    <div class="event-form">
-        <form th:action="@{/events}" name="events" onchange="formEvents('events');return false">
-            <label for="server">Choose a server:</label>
-            <select class="event-form-input" name="server" id="server">
-                <option value="all" selected>All</option>
-                <option value="Medea x3">Medea x3</option>
-                <option value="Asterios x5">Asterios x5</option>
-                <option value="Prime x1">Prime x1</option>
-                <option value="Phoenix x7">Phoenix x7</option>
-                <option value="New Hunter x55">New Hunter x55</option>
-            </select>
-            <label for="server">Choose a boss type:</label>
-            <select class="event-form-input" name="type" id="type">
-                <option value="all" selected>All</option>
-                <option value="Key Bosses">Key Bosses</option>
-                <option value="Epic Bosses">Epic Bosses</option>
-            </select>
-            <label for="sort">Sort by:</label>
-            <select class="event-form-input" name="sort" id="sort">
-                <option value="asc">Date ascending</option>
-                <option value="desc" selected>Date descending</option>
-            </select>
-        </form>
-    </div>
-    <br>
-    <div class="table-responsive">
-        <table class="table table-custom table-hover">
-            <thead>
-            <tr>
-                <th>#</th>
-                <th>Title</th>
-                <th>Description</th>
-                <th>Date</th>
-                <th>Server</th>
-                <th>Type</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="item : ${events}">
-                <td th:text="${item.id}"></td>
-                <td th:text="${item.title}"></td>
-                <td th:text="${item.description}"></td>
-                <td th:text="${#temporals.formatISO(item.date)}"></td>
-                <td th:text="${item.server}"></td>
-                <td th:text="${item.type}"></td>
-            </tr>
-            </tbody>
-        </table>
+    <div class=".d-flex flex-column">
+        <div th:replace="~{fragments/events-form :: form}"></div>
+        <div class="table-responsive">
+            <table th:id="${loc + 'Table'}" class="table table-custom table-hover">
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Date</th>
+                    <th>Server</th>
+                    <th>Type</th>
+                </tr>
+                </thead>
+                <tbody class="skeleton-body"></tbody>
+            </table>
+        </div>
     </div>
 </div>
 </body>

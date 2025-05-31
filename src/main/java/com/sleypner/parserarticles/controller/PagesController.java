@@ -49,8 +49,13 @@ public class PagesController {
     @GetMapping("/")
     String index(Model model) {
         List<Article> listArticles = articleService.getAll();
+
+        Map<String,List<String>> formOptions = new HashMap<>();
+        formOptions.put("Sort", new ArrayList<>(List.of("Date ascending","Date descending")));
+
+        model.addAttribute("formOptions", formOptions);
         model.addAttribute("articles", listArticles);
-        model.addAttribute("loc", "index");
+        model.addAttribute("loc", "articles");
         return "home/index";
     }
 
@@ -121,22 +126,17 @@ public class PagesController {
                     fortress.getServer(),
                     fortress.getSkills().stream().toList(),
                     fortressHistory.getUpdatedDate(),
-                    clan.getId(),
-                    clan.getName(),
-                    clan.getLevel(),
-                    clan.getLeader(),
-                    clan.getPlayersCount(),
-                    clan.getCastle(),
-                    clan.getReputation(),
-                    clan.getAlliance(),
+                    clan,
                     fortressHistory.getCoffer(),
                     fortressHistory.getHoldTime()
             );
             fortressTableList.add(fortressTable);
         }
+        Map<String,List<String>> formOptions = new HashMap<>();
+        formOptions.put("Server", new ArrayList<>(List.of("Asterios x5","Medea x3","Prime x1","Hunter x55","Phoenix x7","all")));
 
+        model.addAttribute("formOptions", formOptions);
         model.addAttribute("fortressTable", fortressTableList);
-
         model.addAttribute("loc", "fortress");
 
         return "layouts/fortress";
@@ -155,14 +155,7 @@ public class PagesController {
                     fortress.getServer(),
                     fortress.getSkills().stream().toList(),
                     fortressHistory.getUpdatedDate(),
-                    clan.getId(),
-                    clan.getName(),
-                    clan.getLevel(),
-                    clan.getLeader(),
-                    clan.getPlayersCount(),
-                    clan.getCastle(),
-                    clan.getReputation(),
-                    clan.getAlliance(),
+                    clan,
                     fortressHistory.getCoffer(),
                     fortressHistory.getHoldTime()
             );
@@ -171,8 +164,12 @@ public class PagesController {
             }
             fortressTableList.add(fortressTable);
         }
-        model.addAttribute("fortressTable", fortressTableList);
+        Map<String,List<String>> formOptions = new HashMap<>();
+        formOptions.put("Server", new ArrayList<>(List.of("Asterios x5","Medea x3","Prime x1","Hunter x55","Phoenix x7","all")));
+        formOptions.put("Sort", new ArrayList<>(List.of("Date ascending","Date descending")));
 
+        model.addAttribute("formOptions", formOptions);
+        model.addAttribute("fortressTable", fortressTableList);
         model.addAttribute("loc", "fortress-history");
 
         return "layouts/fortress-history";
@@ -183,6 +180,12 @@ public class PagesController {
         List<RaidBosses> bossesList = raidBossesService.getAll().stream().sorted().toList().reversed();
         model.addAttribute("bosses", bossesList);
 
+        Map<String,List<String>> formOptions = new HashMap<>();
+        formOptions.put("Server", new ArrayList<>(List.of("Asterios x5","Medea x3","Prime x1","Hunter x55","Phoenix x7","all")));
+        formOptions.put("Type", new ArrayList<>(List.of("all","Epic Bosses","Key Bosses")));
+        formOptions.put("Sort", new ArrayList<>(List.of("Date ascending","Date descending")));
+
+        model.addAttribute("formOptions", formOptions);
         model.addAttribute("loc", "bosses");
 
         return "layouts/bosses";
@@ -193,6 +196,12 @@ public class PagesController {
         List<Events> eventsList = eventsService.getAll().stream().sorted().toList().reversed();
         model.addAttribute("events", eventsList);
 
+        Map<String,List<String>> formOptions = new HashMap<>();
+        formOptions.put("Server", new ArrayList<>(List.of("Asterios x5","Medea x3","Prime x1","Hunter x55","Phoenix x7","all")));
+        formOptions.put("Type", new ArrayList<>(List.of("all","Territory Wars","Sieges","Epic Bosses","Key Bosses")));
+        formOptions.put("Sort", new ArrayList<>(List.of("Date ascending","Date descending")));
+
+        model.addAttribute("formOptions", formOptions);
         model.addAttribute("loc", "events");
 
         return "layouts/events";

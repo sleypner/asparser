@@ -66,7 +66,7 @@ public class Fortress implements Comparable<Fortress> {
 
     @Override
     public int compareTo(Fortress o) {
-        return Integer.compare(getId(),o.id);
+        return getUpdatedDate().compareTo(o.getUpdatedDate());
     }
 }
 

@@ -1,79 +1,82 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
-
-<nav th:fragment="my-menu" class="navbar navbar-expand-lg navbar-custom sticky-top mb-4">
-  <div class="container">
-    <a class="navbar-brand logo-wrapper" href="#" th:href="@{/}">
-      <div class="logo-icon">
-        <i class="fas fa-project-diagram"></i>
-      </div>
-      <span class="logo-text">AsParser</span>
-    </a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav me-auto">
-        <li class="nav-item">
-          <a class="nav-link " th:classappend="${loc == 'index'} ? 'active'" href="#" th:href="@{/}"><i class="fas fa-home me-1"></i>Home</a>
-        </li>
-        <li class="nav-item" hidden="hidden">
-          <a class="nav-link" th:classappend="${loc == 'swagger-ui-custom.html'} ? 'active'" href="#" th:href="@{/swagger-ui-custom.html}"><i class="fas fa-tape me-1"></i>Api</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" th:classappend="${loc == 'online'} ? 'active'" href="#" th:href="@{/online}"><i class="fas fa-signal me-1"></i>Online</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" th:classappend="${loc == 'fortress'} ? 'active'" href="#" th:href="@{/fortress}"><i class="fas fa-table me-1"></i>Fortress</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" th:classappend="${loc == 'fortress-history'} ? 'active'" href="#" th:href="@{/fortress-history}"><i class="fas fa-table me-1"></i>Fortress history</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" th:classappend="${loc == 'bosses'} ? 'active'" href="#" th:href="@{/bosses}"><i class="fas fa-table me-1"></i>Raid Bosses</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" th:classappend="${loc == 'events'} ? 'active'" href="#" th:href="@{/events}"><i class="fas fa-calendar-days me-1"></i>Events</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" th:classappend="${loc == 'roulette'} ? 'active'" href="#" th:href="@{/roulette}"><i class="fas fa-gamepad me-1"></i>Roulette</a>
-        </li>
-        <li th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}" class="nav-item">
-          <a class="nav-link" th:classappend="${loc == 'admin'} ? 'active'" href="#" th:href="@{/admin}"><i class="fas fa-screwdriver-wrench me-1"></i>Admin Panel</a>
-        </li>
-      </ul>
-      <div th:if="${#authorization.expression('isAuthenticated()')}" class="user-profile">
-        <div class="dropdown">
-          <a class="btn dropdown-toggle user-btn" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown">
-            <i class="fas fa-user-circle me-1"></i>
-            <span th:text="${#authorization.expression('isAuthenticated()')} ? ${#authentication.principal.attributes.name} : 'Guest'"></span>
-          </a>
-          <ul class="dropdown-menu dropdown-menu-end">
-            <li><a class="dropdown-item" href="#" th:href="@{/profile(i=${#authentication.principal.attributes.external_id})}"><i class="fas fa-user me-2"></i> Profile</a></li>
-            <li style="display: none"><a class="dropdown-item" href="#" th:href="@{/settings(i=${#authentication.principal.attributes.external_id})}"><i class="fas fa-cog me-2"></i> Settings</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li>
-              <form th:action="@{/logout}" method="post">
-                <button class="dropdown-item" type="submit">
-                  <i class="fas fa-sign-out-alt me-2"></i> Log out
-                </button>
-              </form>
-            </li>
-          </ul>
+<div th:fragment="my-menu">
+  <nav class="navbar navbar-expand-lg navbar-custom sticky-top mb-4">
+    <div class="container">
+      <a class="navbar-brand logo-wrapper" href="#" th:href="@{/}">
+        <div class="logo-icon">
+          <i class="fas fa-project-diagram"></i>
         </div>
-      </div>
-      <div th:unless="${#authorization.expression('isAuthenticated()')}" class="user-profile">
-        <a class="btn btn-secondary" th:href="@{/login}">Log in</a>
-        <a class="btn btn-secondary" th:href="@{/register}">Sign up</a>
-      </div>
-      <div class="language-switcher">
-        <div class="language-btn" id="languageSwitcher">
-          <i class="flag-icon flag-icon-gb"></i>
+        <span class="logo-text">AsParser</span>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item">
+            <a class="nav-link " th:classappend="${loc == 'index'} ? 'active'" href="#" th:href="@{/}"><i class="fas fa-home me-1"></i>Home</a>
+          </li>
+          <li class="nav-item" hidden="hidden">
+            <a class="nav-link" th:classappend="${loc == 'swagger-ui-custom.html'} ? 'active'" href="#" th:href="@{/swagger-ui-custom.html}"><i class="fas fa-tape me-1"></i>Api</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" th:classappend="${loc == 'online'} ? 'active'" href="#" th:href="@{/online}"><i class="fas fa-signal me-1"></i>Online</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" th:classappend="${loc == 'fortress'} ? 'active'" href="#" th:href="@{/fortress}"><i class="fas fa-table me-1"></i>Fortress</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" th:classappend="${loc == 'fortress-history'} ? 'active'" href="#" th:href="@{/fortress-history}"><i class="fas fa-table me-1"></i>Fortress history</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" th:classappend="${loc == 'bosses'} ? 'active'" href="#" th:href="@{/bosses}"><i class="fas fa-table me-1"></i>Raid Bosses</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" th:classappend="${loc == 'events'} ? 'active'" href="#" th:href="@{/events}"><i class="fas fa-calendar-days me-1"></i>Events</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" th:classappend="${loc == 'roulette'} ? 'active'" href="#" th:href="@{/roulette}"><i class="fas fa-gamepad me-1"></i>Roulette</a>
+          </li>
+          <li th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}" class="nav-item">
+            <a class="nav-link" th:classappend="${loc == 'admin'} ? 'active'" href="#" th:href="@{/admin}"><i class="fas fa-screwdriver-wrench me-1"></i>Admin Panel</a>
+          </li>
+        </ul>
+        <div class="d-flex">
+          <div th:if="${#authorization.expression('isAuthenticated()')}" class="user-profile">
+            <div class="dropdown">
+              <a class="btn dropdown-toggle user-btn" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown">
+                <i class="fas fa-user-circle me-1"></i>
+                <span th:text="${#authorization.expression('isAuthenticated()')} ? ${#authentication.principal.attributes.username} : 'Guest'"></span>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" href="#" th:href="@{/profile(i=${#authentication.principal.attributes.id})}"><i class="fas fa-user me-2"></i> Profile</a></li>
+                <li style="display: none"><a class="dropdown-item" href="#" th:href="@{/settings(i=${#authentication.principal.attributes.id})}"><i class="fas fa-cog me-2"></i> Settings</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                  <form th:action="@{/logout}" method="post">
+                    <button class="dropdown-item" type="submit">
+                      <i class="fas fa-sign-out-alt me-2"></i> Log out
+                    </button>
+                  </form>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div th:unless="${#authorization.expression('isAuthenticated()')}" class="user-profile">
+            <a class="btn btn-secondary" th:href="@{/login}">Log in</a>
+            <a class="btn btn-secondary" th:href="@{/register}">Sign up</a>
+          </div>
+          <div class="language-switcher">
+            <div class="language-btn" id="languageSwitcher">
+              <i class="flag-icon flag-icon-gb"></i>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-</nav>
+  </nav>
+</div>
 </body>
 </html>

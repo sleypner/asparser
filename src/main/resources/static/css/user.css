@@ -28,6 +28,9 @@
     margin-bottom: 10px;
     color: #6c757d;
 }
+.profile-email-mailto{
+    text-decoration: none;
+}
 
 .badge-role {
     background-color: var(--primary-color);

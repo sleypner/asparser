@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="form" class="d-grid justify-content-center">
+    <form th:id="${loc+'Form'}" class="d-flex flex-lg-row" method="post">
+        <div th:each="select : ${formOptions}" class="form-group">
+            <label class="form-label" th:for="${#strings.toLowerCase(select.key)}" th:text="${select.key + ': '}"></label>
+            <select class="form-select" th:id="${#strings.toLowerCase(select.key)}" th:name="${#strings.toLowerCase(select.key)}">
+                <option th:each="option, i : ${select.value}" th:value="${option}" th:text="${option}" th:selected="${i.first}? true : false">All</option>
+            </select>
+        </div>
+    </form>
+    <div id="status"></div>
+</div>
+</body>
+</html>

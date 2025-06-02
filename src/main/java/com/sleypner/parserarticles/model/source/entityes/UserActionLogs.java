@@ -46,6 +46,5 @@ public class UserActionLogs {
         this.oc = oc;
         this.deviceType = deviceType;
         this.sessionId = sessionId;
-        this.createdDate = createdDate;
     }
 }

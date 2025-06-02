@@ -58,7 +58,7 @@ public class Users {
     @Column(name = "img")
     private String img;
     @Column(name = "user_action_logs")
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<UserActionLogs> userActionLogs;
     @Column(name = "two_factor_auth")
     private boolean twoFactorAuth = false;

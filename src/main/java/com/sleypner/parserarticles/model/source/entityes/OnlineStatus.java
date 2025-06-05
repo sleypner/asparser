@@ -1,49 +1,57 @@
 package com.sleypner.parserarticles.model.source.entityes;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import lombok.experimental.Accessors;
+import lombok.experimental.SuperBuilder;
+import org.hibernate.proxy.HibernateProxy;
 
-import java.time.LocalDateTime;
-import java.util.StringJoiner;
+import java.util.Objects;
 
+@Entity
+@Table(name = "online_status")
 @Getter
 @Setter
+@SuperBuilder
 @NoArgsConstructor
-@Entity
-@Table(name = "online_status_new")
-public class OnlineStatus {
+@AllArgsConstructor
+@Accessors(chain = true)
+@ToString(callSuper = true)
+public class OnlineStatus extends AuditableEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    public int id;
+    private int id;
     @Column(name = "server_name")
-    public String serverName;
+    private String serverName;
     @Column(name = "online")
-    public short online;
+    private short online;
     @Column(name = "on_trade")
-    public short onTrade;
-    @Column(name = "created_date", columnDefinition = "TIMESTAMP(0)")
-    LocalDateTime createdDate;
-    @Column(name = "updated_date", columnDefinition = "TIMESTAMP(0)")
-    LocalDateTime updatedDate;
+    private short onTrade;
 
-    public OnlineStatus(LocalDateTime createDate, String serverName, short online, short onTrade) {
-        this.createdDate = createDate;
-        this.serverName = serverName;
-        this.online = online;
-        this.onTrade = onTrade;
+    @PrePersist
+    private void onCreate() {
+        super.setCreatedAt();
+    }
+
+    @PreUpdate
+    private void onUpdate() {
+        super.setUpdatedAt();
     }
 
     @Override
-    public String toString() {
-        return new StringJoiner(", ", OnlineStatus.class.getSimpleName() + "[", "]")
-                .add("id=" + id)
-                .add("createdDate=" + createdDate)
-                .add("serverName='" + serverName + "'")
-                .add("online=" + online)
-                .add("onTrade=" + onTrade)
-                .toString();
+    public final boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+        Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
+        Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
+        if (thisEffectiveClass != oEffectiveClass) return false;
+        OnlineStatus that = (OnlineStatus) o;
+        return getId() != 0 && Objects.equals(getId(), that.getId());
+    }
+
+    @Override
+    public final int hashCode() {
+        return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
     }
 }

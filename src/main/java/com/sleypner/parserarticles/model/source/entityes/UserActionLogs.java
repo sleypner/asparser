@@ -1,22 +1,38 @@
 package com.sleypner.parserarticles.model.source.entityes;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.*;
-import org.apache.catalina.User;
+import lombok.experimental.Accessors;
+import lombok.experimental.SuperBuilder;
+import org.hibernate.proxy.HibernateProxy;
+import ua_parser.Client;
+import ua_parser.Parser;
 
-import java.time.LocalDateTime;
+import java.util.Objects;
 
-@Getter
-@Setter
-@ToString
 @Entity
 @Table(name = "user_action_logs")
-public class UserActionLogs {
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id"
+)
+@Getter
+@Setter
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
+@Accessors(chain = true)
+@ToString(callSuper = true)
+public class UserActionLogs extends AuditableEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @ManyToOne()
     @JoinColumn(name = "user_id")
+    @ToString.Exclude
     private Users user;
     @Column(name = "ip")
     private String ip;
@@ -30,21 +46,47 @@ public class UserActionLogs {
     private String sessionId;
     @Column(name = "action_type")
     private String actionType;
-    @Column(name = "created_date")
-    private LocalDateTime createdDate;
-    @Column(name = "updated_date")
-    private LocalDateTime updatedDate;
 
-    public UserActionLogs() {
-        this.createdDate = LocalDateTime.now().withNano(0);
+    public static UserActionLogs getAction(Users user, HttpServletRequest request, String actionType) {
+        String userAgent = request.getHeader("User-Agent");
+
+        Parser parser = new Parser();
+        Client client = parser.parse(userAgent);
+
+        return UserActionLogs.builder()
+                .ip(request.getRemoteAddr())
+                .actionType(actionType)
+                .oc(client.os.family)
+                .browser(client.userAgent.family)
+                .deviceType(userAgent)
+                .sessionId(request.getSession().getId())
+                .user(user)
+                .build();
     }
 
-    public UserActionLogs(String ip, String browser, String oc, String deviceType, String sessionId) {
-        this.createdDate = LocalDateTime.now().withNano(0);
-        this.ip = ip;
-        this.browser = browser;
-        this.oc = oc;
-        this.deviceType = deviceType;
-        this.sessionId = sessionId;
+    @PrePersist
+    private void onCreate() {
+        super.setCreatedAt();
+    }
+
+    @PreUpdate
+    private void onUpdate() {
+        super.setUpdatedAt();
+    }
+
+    @Override
+    public final boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+        Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
+        Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
+        if (thisEffectiveClass != oEffectiveClass) return false;
+        UserActionLogs that = (UserActionLogs) o;
+        return getId() != 0 && Objects.equals(getId(), that.getId());
+    }
+
+    @Override
+    public final int hashCode() {
+        return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
     }
 }

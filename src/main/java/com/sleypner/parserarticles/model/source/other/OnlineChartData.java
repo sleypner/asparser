@@ -1,7 +1,8 @@
 package com.sleypner.parserarticles.model.source.other;
 
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.persistence.SqlResultSetMapping;
+import lombok.*;
+import lombok.experimental.Accessors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,23 +10,19 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-@Setter
-@Getter
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Accessors(chain = true)
 public class OnlineChartData {
 
 
     public List<String> labels;
     public List<OnlineChartDataset> datasets;
-
+    @Builder.Default
     Logger logger = LoggerFactory.getLogger(OnlineChartData.class);
-
-    public OnlineChartData(List<String> labels, List<OnlineChartDataset> datasets) {
-        this.labels = labels;
-        this.datasets = datasets;
-    }
-
-    public OnlineChartData() {
-    }
 
     public OnlineChartData getChartData(List<OnlineChart> listChart){
         OnlineChartData chartDate = new OnlineChartData();
@@ -41,7 +38,7 @@ public class OnlineChartData {
 
         int i =0;
         for (OnlineChart s: listChart) {
-            LocalDateTime date = s.period.toLocalDateTime();
+            LocalDateTime date = s.getPeriod().toLocalDateTime();
 
             int day = date.getDayOfMonth();
             int month = date.getMonthValue();
@@ -57,8 +54,8 @@ public class OnlineChartData {
             DateTimeFormatter formatterWithoutMonth = DateTimeFormatter.ofPattern("dd HH:mm");
 
             if(i>0){
-                int prevYear = listChart.get(i-1).period.toLocalDateTime().getYear();
-                int prevMonth = listChart.get(i-1).period.toLocalDateTime().getMonthValue();
+                int prevYear = listChart.get(i-1).getPeriod().toLocalDateTime().getYear();
+                int prevMonth = listChart.get(i-1).getPeriod().toLocalDateTime().getMonthValue();
                 if (year == prevYear){
                     if (month == prevMonth){
                         datePeriod = date.format(formatterWithoutMonth);
@@ -75,12 +72,12 @@ public class OnlineChartData {
 
 
             lablesList.add(datePeriod);
-            listMin.add(s.min);
-            listAvg.add(s.avg);
-            listMax.add(s.max);
-            listMinTrade.add(s.minTrade);
-            listAvgTrade.add(s.avgTrade);
-            listMaxTrade.add(s.maxTrade);
+            listMin.add(s.getMin());
+            listAvg.add(s.getAvg());
+            listMax.add(s.getMax());
+            listMinTrade.add(s.getMin_trade());
+            listAvgTrade.add(s.getAvg_trade());
+            listMaxTrade.add(s.getMax_trade());
 
             i++;
         }
@@ -103,7 +100,7 @@ public class OnlineChartData {
                     break;
             }
 
-            listDataset.add(new OnlineChartDataset(name+" "+listChart.getLast().server, data));
+            listDataset.add(new OnlineChartDataset(name+" "+listChart.getLast().getServer(), data));
         }
 
         chartDate.setLabels(lablesList);

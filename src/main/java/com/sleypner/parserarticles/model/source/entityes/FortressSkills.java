@@ -2,20 +2,26 @@ package com.sleypner.parserarticles.model.source.entityes;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import lombok.experimental.Accessors;
+import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.BatchSize;
+import org.hibernate.proxy.HibernateProxy;
 
-import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
-@Getter
-@Setter
-@NoArgsConstructor
 @Entity
 @Table(name = "fortress_skills")
-public class FortressSkills {
+@Getter
+@Setter
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
+@Accessors(chain = true)
+@ToString(callSuper = true)
+public class FortressSkills extends AuditableEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -25,52 +31,43 @@ public class FortressSkills {
     @Column(name = "effect")
     private String effect;
     @Lob
-    @Column(name = "image", columnDefinition="BLOB")
+    @Column(name = "image", columnDefinition = "BLOB")
     private byte[] image;
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(
             name = "fortress_and_skills",
             joinColumns = @JoinColumn(name = "fortress_skills_id"),
             inverseJoinColumns = @JoinColumn(name = "fortress_id"))
+    @BatchSize(size = 10)
     @JsonIgnore
+    @Builder.Default
+    @ToString.Exclude
     private Set<Fortress> fortress = new HashSet<>();
-    @Column(name = "created_date", columnDefinition = "TIMESTAMP(0)")
-    LocalDateTime createdDate;
-    @Column(name = "updated_date", columnDefinition = "TIMESTAMP(0)")
-    LocalDateTime updatedDate;
 
-    public FortressSkills(String name, String effect, byte[] image, Set<Fortress> fortress) {
-        this.createdDate = LocalDateTime.now().withNano(0);
-        this.name = name;
-        this.effect = effect;
-        this.image = image;
-        this.fortress = fortress;
+    @PrePersist
+    private void onCreate() {
+        super.setCreatedAt();
     }
-    public void setFort(Fortress fortress) {
 
-        if (this.fortress == null){
-            this.fortress = new HashSet<>();
-        }
-        this.fortress.add(fortress);
-    }
-    public void setFortAll(Set<Fortress> fortress) {
-
-        if (this.fortress == null){
-            this.fortress = new HashSet<>();
-        }
-        this.fortress.addAll(fortress);
+    @PreUpdate
+    private void onUpdate() {
+        super.setUpdatedAt();
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public final boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+        Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
+        Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
+        if (thisEffectiveClass != oEffectiveClass) return false;
+        FortressSkills that = (FortressSkills) o;
+        return getId() != 0 && Objects.equals(getId(), that.getId());
+    }
 
-        if (!(obj instanceof FortressSkills)){
-            return false;
-         }
-        FortressSkills skillsObj = (FortressSkills) obj;
-
-        return skillsObj.name.equals(this.name)
-                && skillsObj.effect.equals(this.effect);
+    @Override
+    public final int hashCode() {
+        return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
     }
 }
 

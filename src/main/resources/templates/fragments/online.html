@@ -3,35 +3,230 @@
 <body>
 <div th:fragment="online" class="main-content">
     <h1 class="mb-4 text-center main-title">Online</h1>
-    <form th:action="@{/online}" name="onlineChart" onsubmit="formOnline(chart);return false"
-          th:object="${onlinechart}" method="get">
-        <select name="server">
-            <option th:each="entry : ${optionsServerName}" th:value="${entry}" th:text="${entry}"
-                    th:selected="${server}==${entry}"></option>
-        </select>
-        <select id="sel_chart" name="interval">
-            <option th:each="entry: ${optionsInterval}" th:value="${entry.value}" th:text="${entry.key}"
-                    th:selected="${interval}==${entry.value}"></option>
-        </select>
-        <input type="datetime-local" name="period-start" th:value="${periodStart}">
-        <input type="datetime-local" name="period-end" th:value="${periodEnd}">
-        <input type="submit" name="submit" value="Submit">
-    </form>
-    <div>
-        <p class="onlineP">Server <span id="server" ></span> selected from <span id="period-start" ></span> to
-            <span id="period-end" ></span> , interval <span id="interval" ></span></p>
+    <div class="time-period">
+        <button class="time-btn active" data-period="year">Year</button>
+        <button class="time-btn" data-period="month">Month</button>
+        <button class="time-btn" data-period="week">Week</button>
     </div>
-    <div>
-        <canvas id="chartJSContainer" width="600" height="400"></canvas>
+
+    <div class="controls">
+        <div class="server-control active" data-server="server1" style="background-color: rgba(102, 204, 0, 0.1);">
+            <div class="server-color" style="background-color: var(--primary-color);"></div>
+            <span class="server-name">Server 1</span>
+        </div>
+        <div class="server-control active" data-server="server2" style="background-color: rgba(204, 255, 0, 0.1);">
+            <div class="server-color" style="background-color: var(--secondary-color);"></div>
+            <span class="server-name">Server 2</span>
+        </div>
+        <div class="server-control active" data-server="server3" style="background-color: rgba(230, 255, 0, 0.1);">
+            <div class="server-color" style="background-color: var(--tertiary-color);"></div>
+            <span class="server-name">Server 3</span>
+        </div>
     </div>
-    <script th:inline="javascript">
-        let ctx = document.getElementById('chartJSContainer').getContext('2d');
-        let chart = new Chart(ctx, {
-            type: 'line',
-            data: '',
-            options: ''
+
+    <div class="chart-container">
+        <canvas id="onlineChart"></canvas>
+    </div>
+
+    <div class="server-info">
+        <h3>Statistic for year</h3>
+        <div class="info-grid">
+            <div class="info-item">
+                <div class="info-title">Server 1</div>
+                <div>Max: 412</div>
+                <div>Min: 124</div>
+                <div>Avg: 278</div>
+            </div>
+            <div class="info-item">
+                <div class="info-title">Server 2</div>
+                <div>Max: 356</div>
+                <div>Min: 87</div>
+                <div>Avg: 221</div>
+            </div>
+            <div class="info-item">
+                <div class="info-title">Server 3</div>
+                <div>Max: 145</div>
+                <div>Min: 32</div>
+                <div>Avg: 88</div>
+            </div>
+        </div>
+    </div>
+    <script>
+        const serverColors = {
+            server1: 'var(--primary-color)',
+            server2: 'var(--secondary-color)',
+            server3: 'var(--tertiary-color)'
+        };
+
+        function generateYearData(base, variation) {
+            return Array(12).fill().map((_, month) => {
+                let value = base;
+
+                if (month >= 5 && month <= 8) value *= 1.2;
+                if (month >= 11 || month <= 1) value *= 0.9;
+
+                value *= 1 + (Math.random() - 0.5) * variation;
+
+                return Math.round(value);
+            });
+        }
+
+        function generateMonthData(base, variation) {
+            return Array(30).fill().map((_, day) => {
+                let value = base;
+
+                const dayOfWeek = day % 7;
+                if (dayOfWeek === 0 || dayOfWeek === 6) value *= 1.3;
+                else if (dayOfWeek === 5) value *= 1.2;
+
+                value *= 1 + (Math.random() - 0.5) * variation;
+
+                return Math.round(value);
+            });
+        }
+
+        function generateWeekData(base, variation) {
+            return Array(7).fill().map((_, day) => {
+                let value = base;
+
+                if (day === 0 || day === 6) value *= 1.3;
+                else if (day === 5) value *= 1.2;
+
+                value *= 1 + (Math.random() - 0.5) * variation;
+
+                return Math.round(value);
+            });
+        }
+
+        const serversData = {
+            year: {
+                server1: generateYearData(280, 0.15),
+                server2: generateYearData(220, 0.2),
+                server3: generateYearData(90, 0.25)
+            },
+            month: {
+                server1: generateMonthData(280, 0.2),
+                server2: generateMonthData(220, 0.25),
+                server3: generateMonthData(90, 0.3)
+            },
+            week: {
+                server1: generateWeekData(280, 0.1),
+                server2: generateWeekData(220, 0.15),
+                server3: generateWeekData(90, 0.2)
+            }
+        };
+
+        function getMonthLabels() {
+            return ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        }
+
+        function getWeekLabels() {
+            return ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+        }
+
+        function getDayLabels(count) {
+            return Array(count).fill().map((_, i) => (i + 1) + '');
+        }
+
+        let onlineChart;
+
+        function createChart() {
+            const ctx = document.getElementById('onlineChart').getContext('2d');
+
+            const activePeriod = document.querySelector('.time-btn.active').dataset.period;
+            const activeServers = Array.from(document.querySelectorAll('.server-control.active')).map(el => el.dataset.server);
+
+            const labels = activePeriod === 'year' ? getMonthLabels() :
+                activePeriod === 'month' ? getDayLabels(30) :
+                    getWeekLabels();
+
+            const datasets = activeServers.map(serverId => ({
+                label: document.querySelector(`.server-control[data-server="${serverId}"] .server-name`).textContent,
+                data: serversData[activePeriod][serverId],
+                borderColor: serverColors[serverId],
+                backgroundColor: serverColors[serverId] + '20',
+                borderWidth: 2,
+                tension: 0.3,
+                fill: false
+            }));
+
+            if (onlineChart) {
+                onlineChart.data.labels = labels;
+                onlineChart.data.datasets = datasets;
+                onlineChart.update();
+            } else {
+                onlineChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: datasets
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Players count'
+                                },
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.05)'
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: activePeriod === 'year' ? 'Month' :
+                                        activePeriod === 'month' ? 'Day' : 'Day of week'
+                                },
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        },
+                        plugins: {
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false
+                            },
+                            legend: {
+                                position: 'top',
+                                labels: {
+                                    usePointStyle: true,
+                                    pointStyle: 'circle'
+                                }
+                            }
+                        },
+                        interaction: {
+                            mode: 'nearest',
+                            axis: 'x',
+                            intersect: false
+                        }
+                    }
+                });
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.time-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    createChart();
+                });
+            });
+
+            document.querySelectorAll('.server-control').forEach(control => {
+                control.addEventListener('click', function () {
+                    this.classList.toggle('active');
+                    createChart();
+                });
+            });
+
+            createChart();
         });
-        drawChart(chart,'')
     </script>
 </div>
 

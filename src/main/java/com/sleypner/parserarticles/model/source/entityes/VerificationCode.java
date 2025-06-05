@@ -1,20 +1,27 @@
 package com.sleypner.parserarticles.model.source.entityes;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.Accessors;
+import lombok.experimental.SuperBuilder;
+import org.hibernate.proxy.HibernateProxy;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-@Data
-@NoArgsConstructor
-@Table
+@Table(name = "VerificationCode")
 @Entity
-public class VerificationCode {
+@Getter
+@Setter
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
+@Accessors(chain = true)
+@ToString
+public class VerificationCode extends AuditableEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private int id;
     @Column
     private int verificationCode;
     @Column
@@ -23,30 +30,36 @@ public class VerificationCode {
     private LocalDateTime verifiedAt;
     @Column
     private String email;
-    @Column(name = "created_date", columnDefinition = "TIMESTAMP(0)")
-    LocalDateTime createdDate;
-    @Column(name = "updated_date", columnDefinition = "TIMESTAMP(0)")
-    LocalDateTime updatedDate;
 
-    public VerificationCode(String email, int verificationCode) {
-        this.verificationCode = verificationCode;
-        this.createdDate = LocalDateTime.now().withNano(0);
-        this.expiryDate = LocalDateTime.now().plusMinutes(1);
-        this.email = email;
+    public boolean isExpired() {
+        return LocalDateTime.now().isAfter(expiryDate);
     }
 
-    public boolean isExpired(){
-        return LocalDateTime.now().isBefore(expiryDate);
+    @PrePersist
+    private void onCreate() {
+        super.setCreatedAt();
+        this.expiryDate = LocalDateTime.now().plusMinutes(15).withNano(0);
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (!(o instanceof VerificationCode that)) return false;
-        return verificationCode == that.verificationCode;
+    @PreUpdate
+    private void onUpdate() {
+        super.setUpdatedAt();
+        this.expiryDate = LocalDateTime.now().plusMinutes(15).withNano(0);
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(id, verificationCode, createdDate, expiryDate, verifiedAt, email);
+    public final boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+        Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
+        Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
+        if (thisEffectiveClass != oEffectiveClass) return false;
+        VerificationCode that = (VerificationCode) o;
+        return getId() != 0 && Objects.equals(getId(), that.getId());
+    }
+
+    @Override
+    public final int hashCode() {
+        return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
     }
 }

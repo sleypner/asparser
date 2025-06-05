@@ -4,16 +4,18 @@ import com.sleypner.parserarticles.model.source.entityes.Clan;
 import com.sleypner.parserarticles.model.source.entityes.Fortress;
 import com.sleypner.parserarticles.model.source.entityes.FortressHistory;
 import com.sleypner.parserarticles.model.source.entityes.FortressSkills;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.stereotype.Component;
 
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-@Setter
-@Getter
+@Component
+@Data
 public class FortressParser implements EntitiesParser {
     private String name = "fortress";
     private Fortress fortress;

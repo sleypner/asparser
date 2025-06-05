@@ -4,13 +4,14 @@ import com.sleypner.parserarticles.model.source.entityes.FortressSkills;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.TypedQuery;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Repository
+@Transactional
 public class FortressSkillsServiceImpl implements FortressSkillsService {
 
     private final EntityManager entityManager;
@@ -26,7 +27,6 @@ public class FortressSkillsServiceImpl implements FortressSkillsService {
         return query.getResultList();
     }
 
-    @Transactional
     @Override
     public void save(FortressSkills skill) {
         if (!entityManager.contains(skill)) {
@@ -34,7 +34,6 @@ public class FortressSkillsServiceImpl implements FortressSkillsService {
         }
     }
 
-    @Transactional
     @Override
     public FortressSkills update(FortressSkills skill) {
         return entityManager.merge(skill);

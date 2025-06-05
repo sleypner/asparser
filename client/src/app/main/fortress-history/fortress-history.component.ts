@@ -25,7 +25,7 @@ export class FortressHistoryComponent implements OnInit{
       },
       error: (err) => {
         this.error.set(err);
-        console.log(err.message);
+        console.error(err.message);
       },
       complete: () => {
         this.isFetching.set(false);

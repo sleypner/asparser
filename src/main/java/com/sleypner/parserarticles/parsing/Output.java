@@ -4,6 +4,7 @@ import com.sleypner.parserarticles.model.services.*;
 import com.sleypner.parserarticles.model.source.entityes.*;
 import com.sleypner.parserarticles.parsing.raw.FortressParser;
 import com.sleypner.parserarticles.special.Special;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,41 +17,21 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @Component
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class Output {
 
-    Logger logger = LoggerFactory.getLogger(Output.class);
-    String url = "https://asterios.tm/index.php?js=1";
-    String dirFiles = "src/main/java/com/sleypner/parserarticles/doc/";
-    private OnlineStatusService onlineStatusService;
-    private ArticleService articleService;
-    private FortressService fortressService;
-    private FortressSkillsService fortressSkillsService;
-    private ClanService clanService;
-    private EventsService eventsService;
-    private RaidBossesService raidBossesService;
-    private Parser parser;
-    private FortressHistoryService fortressHistoryService;
-
-    @Autowired
-    public Output(ArticleService articleService,
-                  Parser myParser,
-                  OnlineStatusService onlineStatusService,
-                  FortressService fortressService,
-                  FortressSkillsService fortressSkillsService,
-                  ClanService clanService,
-                  EventsService eventsService,
-                  RaidBossesService raidBossesService,
-                  FortressHistoryService fortressHistoryService) {
-        this.articleService = articleService;
-        this.parser = myParser;
-        this.onlineStatusService = onlineStatusService;
-        this.fortressService = fortressService;
-        this.fortressSkillsService = fortressSkillsService;
-        this.clanService = clanService;
-        this.eventsService = eventsService;
-        this.raidBossesService = raidBossesService;
-        this.fortressHistoryService = fortressHistoryService;
-    }
+    private final Logger logger = LoggerFactory.getLogger(Output.class);
+    private final String url = "https://asterios.tm/index.php?js=1";
+    private final String dirFiles = "src/main/java/com/sleypner/parserarticles/doc/";
+    private final OnlineStatusService onlineStatusService;
+    private final ArticleService articleService;
+    private final FortressService fortressService;
+    private final FortressSkillsService fortressSkillsService;
+    private final ClanService clanService;
+    private final EventsService eventsService;
+    private final RaidBossesService raidBossesService;
+    private final Parser parser;
+    private final FortressHistoryService fortressHistoryService;
 
     public void saveToFile(String filePath, String content) {
         try (FileWriter fileWriter = new FileWriter(filePath, StandardCharsets.UTF_8, false)) {
@@ -77,7 +58,7 @@ public class Output {
         if (!lastInBaseList.isEmpty()) {
             for (Article elem : parseList) {
                 Optional<Article> optionalSavedArticle = lastInBaseList.stream().filter(o -> o.equals(elem)).findFirst();
-                if (!optionalSavedArticle.isPresent()) {
+                if (optionalSavedArticle.isEmpty()) {
                     newArticles.add(articleService.save(elem));
                 }
             }
@@ -153,10 +134,6 @@ public class Output {
                 FortressHistory fortHistory = elem.getFortressHistory();
                 Clan clan = elem.getClan();
 
-                /* Save fortress and skills.
-                 * We save the first fort with its skills.
-                 * On the other forts we check whether they already have saved skills and if so, we attach the already saved skills to this fort.
-                 */
                 Fortress sf = null;
                 fort.setCreatedDate(fort.getUpdatedDate());
                 if (k == 0) {
@@ -189,9 +166,9 @@ public class Output {
                     } else {
                         fort.setSkills(updatedSkills);
                         sf = fortressService.update(fort);
-                        if(sf.getUpdatedDate() == sf.getCreatedDate()){
+                        if (sf.getUpdatedDate() == sf.getCreatedDate()) {
                             addedFortress++;
-                        }else {
+                        } else {
                             updatedFortress++;
                         }
                     }
@@ -221,62 +198,6 @@ public class Output {
         result.put("fortress_updated", updatedFortress);
         result.put("clan_added", addedClan);
         result.put("clan_updated", updatedClan);
-        return result;
-    }
-
-    public Map<String, Integer> saveFortressOld(List<Fortress> fortressList) {
-        Map<String, Integer> result = new HashMap<>();
-        List<Fortress> savedFortress = fortressService.getAll();
-        int fortUpdated = 0, fortAdded = 0;
-        if (!savedFortress.isEmpty()) {
-            for (Fortress fort : fortressList) {
-                Optional<Fortress> linkFortress = savedFortress.stream().filter(o -> (o.equals(fort))).findFirst();
-                if (linkFortress.isPresent()) {
-                    int idFort = linkFortress.get().getId();
-                    fort.setId(idFort);
-                    fort.setSkills(linkFortress.get().getSkills());
-                    fortressService.update(fort);
-                    fortUpdated++;
-                }
-            }
-        } else {
-            int k;
-            for (k = 0; k < fortressList.size(); k++) {
-                Fortress fort = fortressList.get(k);
-                if (k == 0) {
-                    fortressService.save(fort);
-                } else {
-                    Set<FortressSkills> skills = fort.getSkills();
-                    Set<FortressSkills> updatedSkills = new HashSet<>();
-                    Set<FortressSkills> toSaveSkills = new HashSet<>();
-
-                    Iterator<FortressSkills> iterator = skills.iterator();
-                    while (iterator.hasNext()) {
-                        FortressSkills skill = iterator.next();
-                        FortressSkills savedSkill = fortressSkillsService.getByName(skill.getName());
-                        if (savedSkill != null) {
-                            updatedSkills.add(savedSkill);
-                        } else {
-                            toSaveSkills.add(skill);
-                        }
-                    }
-                    if (!toSaveSkills.isEmpty()) {
-                        fort.setSkills(toSaveSkills);
-                        fortressService.save(fort);
-                        if (!updatedSkills.isEmpty()) {
-                            fort.setSkillAll(updatedSkills);
-                            fortressService.update(fort);
-                        }
-                    } else {
-                        fort.setSkills(updatedSkills);
-                        fortressService.update(fort);
-                    }
-                }
-                fortAdded++;
-            }
-        }
-        result.put("updated", fortUpdated);
-        result.put("added", fortAdded);
         return result;
     }
 
@@ -313,16 +234,22 @@ public class Output {
                 }
                 RaidBosses saved = raidBossesService.getByNameAndServer(nameBoss, event.getServer());
                 if (saved == null) {
-                    RaidBosses boss = new RaidBosses(nameBoss, bossType, event.getServer(), event.getDate(), killer, killerClan, countAttackers);
-                    raidBossesService.save(boss);
+                    raidBossesService.save(RaidBosses.builder()
+                            .name(nameBoss)
+                            .type(bossType)
+                            .server(event.getServer())
+                            .date(event.getDate())
+                            .lastKiller(killer)
+                            .lastKillersClan(killerClan)
+                            .attackersCount(countAttackers)
+                            .build());
                     bossesAdded++;
                 } else {
-                    saved.setDate(event.getDate());
-                    saved.setCountKilling(saved.getCountKilling() + 1);
-                    saved.setUpdatedDate(LocalDateTime.now().withNano(0));
-                    saved.setLastKillersClan(killerClan);
-                    saved.setAttackersCount(countAttackers);
-                    saved.setLastKiller(killer);
+                    saved.setDate(event.getDate())
+                            .setCountKilling(saved.getCountKilling() + 1)
+                            .setLastKillersClan(killerClan)
+                            .setAttackersCount(countAttackers)
+                            .setLastKiller(killer);
 
                     raidBossesService.save(saved);
                     bossesUpdated++;

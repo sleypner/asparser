@@ -33,21 +33,21 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.sleypner.parserarticles.security.DefaultUser.createDefaultUserIfNotExist;
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-    private Environment env;
+    private final Environment env;
     private final Oauth2ClientRegistrations oauth2ClientRegistrations;
     private final CustomOauth2UserService customOauth2UserService;
+    private final DefaultUser defaultUser;
 
     public SecurityConfig(
             CustomOauth2UserService customOauth2UserService, Oauth2ClientRegistrations oauth2ClientRegistrations,
-            Environment env) {
+            Environment env, DefaultUser defaultUser) {
         this.customOauth2UserService = customOauth2UserService;
         this.oauth2ClientRegistrations = oauth2ClientRegistrations;
         this.env = env;
+        this.defaultUser = defaultUser;
     }
 
     private PasswordEncoder passwordEncoder() {
@@ -56,7 +56,7 @@ public class SecurityConfig {
 
     @Bean
     CustomUserDetailsService customUserDetailsService() {
-        createDefaultUserIfNotExist();
+        defaultUser.createDefaultUserIfNotExist();
         return new CustomUserDetailsService();
     }
 
@@ -82,45 +82,32 @@ public class SecurityConfig {
 //                .addFilterBefore(new RateLimitFilter(), UsernamePasswordAuthenticationFilter.class)
 //                .securityContext(context -> context.requireExplicitSave(false))
 //                .servletApi(AbstractHttpConfigurer::disable)
-//                .cors(cors -> cors.configurationSource(request -> {
-//                    CorsConfiguration config = new CorsConfiguration();
-//                    config.setAllowedOrigins(List.of("https://sleypner.dev"));
-//                    config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
-//                    config.setAllowedHeaders(List.of("*"));
-//                    config.setAllowCredentials(true);
-//                    return config;
-//                }))
-//                .csrf(csrf -> csrf
+                .csrf(AbstractHttpConfigurer::disable)
 //                        .csrfTokenRequestHandler(new XorCsrfTokenRequestAttributeHandler()::handle)
 //                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
 //                )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/**").authenticated()
+                        .requestMatchers("/api/**").permitAll()
                         .requestMatchers(
                                 "/**",
                                 "/login",
                                 "/css/**",
                                 "/js/**",
                                 "/images/**",
-                                "/registration",
-                                "/registration-process",
-                                "/email-verification",
-                                "/resend-verification",
-                                "/verify-code",
-                                "/verify-email",
+                                "/auth/**",
                                 "/error"
                         ).permitAll()
-                        .anyRequest().denyAll() // По умолчанию запрещаем всё, что не разрешено явно
+                        .anyRequest().denyAll()
                 )
                 .formLogin(login -> login
-                        .loginPage("/login")
-                        .loginProcessingUrl("/login")
+                        .loginPage("/auth/signin")
+                        .loginProcessingUrl("/auth/signin")
                         .defaultSuccessUrl("/",true)
-                        .failureUrl("/login?error=true")
+                        .failureUrl("/auth/signin?error=true")
                         .permitAll())
                 .oauth2Login(oauth -> oauth
-                        .loginPage("/login")
+                        .loginPage("/auth/signin")
                         .clientRegistrationRepository(oauth2ClientRegistrations.clientRegistrationRepository())
                         .userInfoEndpoint(userInfo -> userInfo
                                 .userService(customOauth2UserService.oauth2UserService())
@@ -128,7 +115,12 @@ public class SecurityConfig {
                                 )
                         )
                 )
-                .logout(LogoutConfigurer::permitAll);
+                .logout(logout -> logout
+                        .logoutUrl("/auth/logout")
+                        .logoutSuccessUrl("/auth/signin?logout")
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
+                        .permitAll());
         return http.build();
     }
 

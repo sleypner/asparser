@@ -9,6 +9,7 @@
     --text-main-color-light : #ffffff;
     --text-secondary-color-dark : #666666;
     --body-color : #f7fafc;
+    --error-color : #e74c3c;
     --text-font-family: 'Segoe UI', Tahoma, Geneva, Verdana;
 }
 
@@ -267,7 +268,7 @@ footer {
 }
 
 .form-error i {
-    text-decoration-color: red;
+    text-decoration-color: var(--error-color);
 }
 
 canvas {
@@ -409,7 +410,7 @@ canvas {
     height: 0;
     border-left: 15px solid transparent;
     border-right: 15px solid transparent;
-    border-top: 30px solid #e74c3c;
+    border-top: 30px solid var(--error-color);
 }
 
 .stats-container {
@@ -459,7 +460,7 @@ canvas {
 }
 
 .lose {
-    color: #e74c3c;
+    color: var(--error-color);
 }
 
 .error-container {
@@ -484,10 +485,14 @@ canvas {
     color: var(--text-main-color-dark);
     margin-bottom: 15px;
 }
-
+.error-description {
+    font-size: 18px;
+    color: var(--text-main-color-dark);
+    margin-bottom: 30px;
+}
 .error-message {
     font-size: 18px;
-    color: #6c757d;
+    color: var(--error-color);
     margin-bottom: 30px;
 }
 
@@ -607,12 +612,12 @@ canvas {
     font-size: 14px;
 }
 
-.active {
+.active-status {
     color: #FF5722;
     font-weight: bold;
 }
 
-.warning {
+.warning-status {
     color: #FFC107;
 }
 

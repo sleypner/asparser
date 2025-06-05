@@ -14,7 +14,10 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -39,10 +42,16 @@ public class ParserImpl implements Parser {
             String title = s.select("a").first().text();
             String subtitle = s.select("div div p").first().text();
             String description = s.select("div div").first().toString();
-            LocalDateTime parseDate = null;
-            parseDate = LocalDateTime.from(DateFormat.format(s.getElementsByClass("col").text()));
+            LocalDateTime createOn = null;
+            createOn = LocalDateTime.from(DateFormat.format(s.getElementsByClass("col").text()));
 
-            Article elArticle = new Article(link, title, subtitle, description, parseDate);
+            Article elArticle = Article.builder()
+                    .link(link)
+                    .title(title)
+                    .subtitle(subtitle)
+                    .description(description)
+                    .createOn(createOn)
+                    .build();
             articleList.add(elArticle);
         });
         return articleList;
@@ -51,15 +60,19 @@ public class ParserImpl implements Parser {
     @Override
     public List<OnlineStatus> parseStatus(Document jsoupDocument) {
         List<OnlineStatus> statusList = new ArrayList<>();
-        var contentElements = Objects.requireNonNull(jsoupDocument.getElementById("OnlineStatus")).getElementsByAttributeValueContaining("class","block");
-        contentElements.forEach(s -> {
 
+        Elements contentElements = jsoupDocument.select("#OnlineStatus [class*=block]");
+
+        contentElements.forEach(s -> {
             String serverName = s.select("tr").last().select("td").last().text();
             short online = Short.parseShort(s.select("tr").first().selectFirst("b").text());
             short onTrade = Short.parseShort(s.select("tr").next().first().select("td").last().text());
 
-            OnlineStatus elStatus = new OnlineStatus(LocalDateTime.now(), serverName, online, onTrade);
-            statusList.add(elStatus);
+            statusList.add(OnlineStatus.builder()
+                    .serverName(serverName)
+                    .online(online)
+                    .onTrade(onTrade)
+                    .build());
         });
         return statusList;
     }
@@ -104,8 +117,14 @@ public class ParserImpl implements Parser {
             Elements skills = otherElements.get(6).select("img");
             Set<FortressSkills> skillsListParse = parseSkills(skills);
 
-            FortressHistory fortressHistory = new FortressHistory(coffer, holdTime);
-            Fortress fortress = new Fortress(fortressName, server);
+            FortressHistory fortressHistory = FortressHistory.builder()
+                    .coffer(coffer)
+                    .holdTime(holdTime)
+                    .build();
+            Fortress fortress = Fortress.builder()
+                    .name(fortressName)
+                    .server(server)
+                    .build();
             fortress.setSkills(skillsListParse);
 
             FortressParser fp = new FortressParser(fortressHistory, fortress, skillsListParse);
@@ -137,14 +156,24 @@ public class ParserImpl implements Parser {
         var contentElementsClan = jsoupDocument.select("body > b");
 
         String serverClan = stringAfter(contentElementsClan.get(0).text());
-        Short clanLevel = Short.parseShort(stringAfter(contentElementsClan.get(1).text()));
+        short clanLevel = Short.parseShort(stringAfter(contentElementsClan.get(1).text()));
         String clanLeader = stringAfter(contentElementsClan.get(2).text());
-        Short playersCount = Short.parseShort(stringAfter(contentElementsClan.get(3).text()));
+        short playersCount = Short.parseShort(stringAfter(contentElementsClan.get(3).text()));
         String castle = stringAfter(contentElementsClan.get(4).text());
-        Integer reputation = Integer.parseInt(stringAfter(contentElementsClan.get(5).text()));
+        int reputation = Integer.parseInt(stringAfter(contentElementsClan.get(5).text()));
         String alliance = stringAfter(contentElementsClan.get(6).text());
 
-        return new Clan(clanName, clanByte, serverClan, clanLevel, clanLeader, playersCount, castle, reputation, alliance);
+        return Clan.builder()
+                .name(clanName)
+                .image(clanByte)
+                .server(serverClan)
+                .level(clanLevel)
+                .leader(clanLeader)
+                .playersCount(playersCount)
+                .castle(castle)
+                .reputation(reputation)
+                .alliance(alliance)
+                .build();
     }
 
     @Override
@@ -156,18 +185,25 @@ public class ParserImpl implements Parser {
             String skillEffect = skillTitle[1];
             String skillImgUrl = skill.attr("src");
             byte[] skillByte = httpAction.getImage(skillImgUrl);
-            skillsList.add(new FortressSkills(skillName, skillEffect, skillByte, null));
+            skillsList.add(FortressSkills.builder()
+                    .name(skillName)
+                    .effect(skillEffect)
+                    .image(skillByte)
+                    .fortress(null)
+                    .build());
         });
         return skillsList;
     }
 
     public List<Events> parseEvents(Document jsoupDocument, LocalDateTime lastDate) {
+
         List<Events> eventsList = new ArrayList<>();
 
         String server = jsoupDocument.select("select#serv option[selected]").text();
         String type = jsoupDocument.select("select#filter option[selected]").text();
         Elements contentElements = jsoupDocument.select("center table");
         for (Element element : contentElements) {
+
             String fullTitle = element.select("tr").first().text();
             String description = element.select("tr").last().text();
 
@@ -177,13 +213,20 @@ public class ParserImpl implements Parser {
             String title = splitFullTitle[1];
 
             if (lastDate == null || lastDate.isBefore(date)) {
-                Events event = new Events(title, description, date, server, type);
+
+                Events event = Events.builder()
+                        .title(title)
+                        .description(description)
+                        .date(date)
+                        .server(server)
+                        .type(type)
+                        .build();
+
                 eventsList.add(event);
             } else {
                 break;
             }
         }
-
         return eventsList;
     }
 }

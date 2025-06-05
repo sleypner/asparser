@@ -22,12 +22,12 @@ public class EmailServiceImpl implements EmailService {
         this.env = env;
     }
 
-    public void sendVerificationCode(String email, int code) {
+    public boolean sendCode(String email, int code) {
 
         MimeMessage message = new MimeMessage(getMailSession(getMailProperties()));
         try {
             String from = env.getProperty("smtp.mail.from");
-            message.setFrom(new InternetAddress(from == null ? "AsParser sleypnersaf@gmail.com" : from));
+            message.setFrom(new InternetAddress(from == null ? "AsParser" : from));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(email));
             message.setSubject(getSubject());
 
@@ -41,8 +41,13 @@ public class EmailServiceImpl implements EmailService {
             message.setContent(multipart);
 
             Transport.send(message);
-        } catch (Exception e) {
+
+            return true;
+        } catch (MessagingException e) {
+
             logger.info(e.getMessage());
+
+            return false;
         }
 
     }

@@ -6,13 +6,13 @@ import java.util.Properties;
 
 public interface EmailService {
 
-    void sendVerificationCode(String email, int code);
+    boolean sendCode(String email, int code);
 
-    public Properties getMailProperties();
+    Properties getMailProperties();
 
-    public Session getMailSession(Properties props);
+    Session getMailSession(Properties props);
 
-    public String getMessage(String username, int code);
+    String getMessage(String username, int code);
 
-    public String getSubject();
+    String getSubject();
 }

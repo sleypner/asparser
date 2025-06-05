@@ -14,5 +14,4 @@ public interface OnlineStatusService {
 
     List<OnlineChart> getByTimePeriod(LocalDateTime periodStart, LocalDateTime periodEnd, Integer interval);
 
-    List<String> getServers();
 }

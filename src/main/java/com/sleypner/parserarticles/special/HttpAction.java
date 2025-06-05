@@ -27,6 +27,7 @@ public class HttpAction {
 
     public HttpAction() {
     }
+
     public HttpResponse<String> getHttpResponse(URI uri) {
         try {
             HttpRequest httpRequest = HttpRequest.newBuilder(uri)
@@ -70,6 +71,7 @@ public class HttpAction {
             return null;
         }
     }
+
     public HttpResponse<String> getHttpResponse(URI uri, String user, String password) {
         try {
             HttpRequest httpRequest = HttpRequest.newBuilder(uri)

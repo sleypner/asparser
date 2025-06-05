@@ -1,23 +1,25 @@
 package com.sleypner.parserarticles.model.source.entityes;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.sleypner.parserarticles.model.source.metamodels.Article_;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import lombok.experimental.Accessors;
+import lombok.experimental.SuperBuilder;
+import org.hibernate.proxy.HibernateProxy;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Objects;
 
-
-@Getter
-@Setter
-@NoArgsConstructor
 @Entity
 @Table(name = "articles")
-public class Article implements Serializable,Comparable<Article> {
+@Getter
+@Setter
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
+@Accessors(chain = true)
+@ToString(callSuper = true)
+public class Article extends AuditableEntity implements Serializable, Comparable<Article> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -28,48 +30,39 @@ public class Article implements Serializable,Comparable<Article> {
     private String title;
     @Column(name = "subtitle")
     private String subtitle;
-    @Column(columnDefinition = "LONGTEXT",name = "description")
+    @Column(columnDefinition = "LONGTEXT", name = "description")
     private String description;
     @Column(name = "create_on", columnDefinition = "TIMESTAMP(0)")
     private LocalDateTime createOn;
-    @Column(name = "created_date", columnDefinition = "TIMESTAMP(0)")
-    LocalDateTime createdDate;
-    @Column(name = "updated_date", columnDefinition = "TIMESTAMP(0)")
-    LocalDateTime updatedDate;
 
-    public Article(String link, String title, String subtitle, String description, LocalDateTime createOn) {
-        this.createdDate = LocalDateTime.now().withNano(0);
-        this.link = link;
-        this.title = title;
-        this.subtitle = subtitle;
-        this.description = description;
-        this.createOn = createOn;
+    @PrePersist
+    private void onCreate() {
+        super.setCreatedAt();
     }
 
-    @Override
-    public String toString() {
-        return String.format("%s\n %s\n %s\n %s\n %5$tY-%tm-%5$td %5$tT\n", link, title, subtitle, description, createOn);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null || this.getClass() != obj.getClass()) return false;
-        Article articleObj = (Article) obj;
-        if (this.createOn.isEqual(articleObj.createOn)){
-            if (!this.title.equals(articleObj.title) ||
-                    !this.subtitle.equals(articleObj.subtitle) ||
-                    !this.description.equals(articleObj.description) ||
-                    !this.link.equals(articleObj.link)){
-                return false;
-            }
-            return true;
-        }else {
-            return false;
-        }
+    @PreUpdate
+    private void onUpdate() {
+        super.setUpdatedAt();
     }
 
     @Override
     public int compareTo(Article o) {
         return getCreateOn().compareTo(o.getCreateOn());
+    }
+
+    @Override
+    public final boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+        Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
+        Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
+        if (thisEffectiveClass != oEffectiveClass) return false;
+        Article article = (Article) o;
+        return getId() != 0 && Objects.equals(getId(), article.getId());
+    }
+
+    @Override
+    public final int hashCode() {
+        return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
     }
 }

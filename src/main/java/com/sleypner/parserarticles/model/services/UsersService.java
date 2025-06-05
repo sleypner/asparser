@@ -10,20 +10,19 @@ public interface UsersService {
 
     Users save(Users users);
 
-    Users getById(int id);
+    Optional<Users> getById(int id);
 
     Users getByExternalId(String externalId);
 
-    Users getByUsername(String username);
-    Optional<Users> getOptionalByUsername(String username);
+    Optional<Users> getByUsername(String username);
 
     boolean verifyEmailCode(String email, int code);
 
-    void resendVerificationCode(String email);
+    boolean sendVerificationCode(String email);
 
     int generateRandomCode();
 
-    Users findByEmail(String email);
+    Optional<Users> getByEmail(String email);
 
     List<Users> search(String search);
 

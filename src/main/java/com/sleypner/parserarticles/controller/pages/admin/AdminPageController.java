@@ -1,12 +1,14 @@
-package com.sleypner.parserarticles.controller;
+package com.sleypner.parserarticles.controller.pages.admin;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
+@RequestMapping("/admin")
 public class AdminPageController {
-    @GetMapping("/admin")
+    @GetMapping("")
     String getDashboard(Model model) {
 
         model.addAttribute("loc", "dashboard");
@@ -14,7 +16,7 @@ public class AdminPageController {
         return "admin/dashboard";
     }
 
-    @GetMapping("/admin/users")
+    @GetMapping("/users")
     String getUsers(Model model) {
 
         model.addAttribute("loc", "users");
@@ -22,7 +24,7 @@ public class AdminPageController {
         return "admin/users";
     }
 
-    @GetMapping("/admin/settings")
+    @GetMapping("/settings")
     String getSettings(Model model) {
 
         model.addAttribute("loc", "settings");
@@ -30,7 +32,7 @@ public class AdminPageController {
         return "admin/settings";
     }
 
-    @GetMapping("/admin/statistics")
+    @GetMapping("/statistics")
     String getStatistics(Model model) {
 
         model.addAttribute("loc", "statistics");
@@ -38,7 +40,7 @@ public class AdminPageController {
         return "admin/statistics";
     }
 
-    @GetMapping("/admin/logs")
+    @GetMapping("/logs")
     String getLogs(Model model) {
 
         model.addAttribute("loc", "logs");

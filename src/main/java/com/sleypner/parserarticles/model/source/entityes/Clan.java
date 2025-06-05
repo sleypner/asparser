@@ -1,26 +1,30 @@
 package com.sleypner.parserarticles.model.source.entityes;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import lombok.experimental.Accessors;
+import lombok.experimental.SuperBuilder;
+import org.hibernate.proxy.HibernateProxy;
 
-import java.time.LocalDateTime;
 import java.util.Objects;
 
-@Getter
-@Setter
-@NoArgsConstructor
 @Entity
 @Table(name = "clans")
-public class Clan {
+@Getter
+@Setter
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
+@Accessors(chain = true)
+@ToString(callSuper = true)
+public class Clan extends AuditableEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @Column(name = "name")
     private String name;
     @Lob
-    @Column(name = "image", columnDefinition="BLOB")
+    @Column(name = "image", columnDefinition = "BLOB")
     private byte[] image;
     @Column(name = "server")
     private String server;
@@ -36,45 +40,30 @@ public class Clan {
     private int reputation;
     @Column(name = "alliance")
     private String alliance;
-    @Column(name = "created_date", columnDefinition = "TIMESTAMP(0)")
-    LocalDateTime createdDate;
-    @Column(name = "updated_date", columnDefinition = "TIMESTAMP(0)")
-    LocalDateTime updatedDate;
 
-    public Clan(String name,String server){
-        this.name = name;
-        this.server = server;
-        this.updatedDate = LocalDateTime.now().withNano(0);
+    @PrePersist
+    private void onCreate() {
+        super.setCreatedAt();
     }
 
-    public Clan(String name,
-                byte[] image,
-                String server,
-                Short level,
-                String leader,
-                Short playersCount,
-                String castle,
-                Integer reputation,
-                String alliance) {
-        this.name = name;
-        this.image = image;
-        this.server = server;
-        this.level = level;
-        this.leader = leader;
-        this.playersCount = playersCount;
-        this.castle = castle;
-        this.reputation = reputation;
-        this.alliance = alliance;
-        this.updatedDate = LocalDateTime.now().withNano(0);
+    @PreUpdate
+    private void onUpdate() {
+        super.setUpdatedAt();
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (!(obj instanceof Clan)){
-            return false;
-        }
-        Clan clanObj = (Clan) obj;
-        return Objects.equals(clanObj.getName(), this.getName()) &&
-                Objects.equals(clanObj.getServer(), this.getServer());
+    public final boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+        Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
+        Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
+        if (thisEffectiveClass != oEffectiveClass) return false;
+        Clan clan = (Clan) o;
+        return getId() != 0 && Objects.equals(getId(), clan.getId());
+    }
+
+    @Override
+    public final int hashCode() {
+        return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
     }
 }

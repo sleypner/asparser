@@ -1,4 +1,4 @@
-package com.sleypner.parserarticles.controller;
+package com.sleypner.parserarticles.controller.pages;
 
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 @Controller
-public class CustomErrorController implements ErrorController {
+public class ErrorPageController implements ErrorController {
 
     @RequestMapping(value = "/error", method = RequestMethod.GET)
     public String renderErrorPage(HttpServletRequest httpRequest) {

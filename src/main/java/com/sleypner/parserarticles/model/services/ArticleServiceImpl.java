@@ -10,15 +10,16 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Repository
+@Transactional
 public class ArticleServiceImpl implements ArticleService {
     @PersistenceContext
     private final EntityManager entityManager;
@@ -28,13 +29,11 @@ public class ArticleServiceImpl implements ArticleService {
         entityManager = theentityManager;
     }
 
-    @Transactional
     @Override
     public Article save(Article article) {
         return entityManager.merge(article);
     }
 
-    @Transactional
     @Override
     public Article deleteById(int id) {
         Article elem = entityManager.find(Article.class, id);

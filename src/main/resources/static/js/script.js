@@ -1,253 +1,202 @@
-function addData(chart, oldChart) {
-    let newData = oldChart.data
-
-    chart.data.labels = newData.labels
-
-    newData.datasets.forEach((datasets) => {
-        chart.data.datasets.push(datasets);
-    })
-    chart.update();
-}
-
-function removeData(chart) {
-    chart.data.labels.pop();
-    let l = chart.data.datasets.length
-    for (let i = 0; i < l; i++) {
-        chart.data.datasets.pop();
-    }
-    chart.update();
-}
-
-async function drawChart(chart, url) {
-    var now = moment().format("DD-MM-YYYYTHH%3Amm%3Ass");
-    var start = moment().subtract(5, 'years').format("DD-MM-YYYYTHH%3Amm%3Ass");
-    const baseUrl = document.location.origin + '/api/online?server=x5&interval=1800&period-start=' + start + '&period-end=' + now + '';
-    if (url == '') {
-        url = baseUrl;
-    }
-    try {
-        let response = await fetch(url);
-
-        if (!response.ok) {
-            throw new Error(`Response status: ${response.status}`);
-        }
-
-        const json = await response.json();
-        setChartTitle()
-
-        removeData(chart)
-        addData(chart, json)
-
-    } catch (error) {
-        console.error(error.message);
-    }
-}
-
 $(document).ready(function () {
-    $('.nav-link').on('click', function () {
-        this.classList.toggle('active');
-    })
-})
+    function addData(chart, oldChart) {
+        let newData = oldChart.data
 
-function formOnline(chart) {
-    let url = new URL("/api/online", document.location.origin)
+        chart.data.labels = newData.labels
 
-    let elements = document.forms["onlineChart"].children;
-    for (let i = 0; i < elements.length; i++) {
-        if (elements.item(i).name == "submit") continue;
-
-        url.searchParams.append(elements.item(i).name, elements.item(i).value);
+        newData.datasets.forEach((datasets) => {
+            chart.data.datasets.push(datasets);
+        })
+        chart.update();
     }
-    drawChart(chart, url);
-}
 
-function setChartTitle() {
-    let elements = document.forms["onlineChart"].children;
-    for (let i = 0; i < elements.length; i++) {
-        if (elements.item(i).name == "submit") continue;
-
-        if (isDateValid(elements.item(i).value)) {
-
-            const date = new Date(elements.item(i).value);
-
-            document.getElementById(elements.item(i).name).textContent = date.toLocaleString('en-GB');
-        } else if (elements.item(i).name == "interval") {
-            document.getElementById(elements.item(i).name).textContent = $("#" + elements.item(i).id + " :selected").text();
-        } else {
-            document.getElementById(elements.item(i).name).textContent = elements.item(i).value;
+    function removeData(chart) {
+        chart.data.labels.pop();
+        let l = chart.data.datasets.length
+        for (let i = 0; i < l; i++) {
+            chart.data.datasets.pop();
         }
-    }
-}
-
-function isDateValid(dateStr) {
-    let res = false;
-    if (!isNaN(dateStr)) {
-        res = false;
-    } else {
-        const date = new Date(dateStr);
-        res = date instanceof Date && !isNaN(date)
-    }
-    return res;
-}
-
-function playRoulette(straightVal, numberVal, coffer) {
-    spinWheel();
-
-    const formatNumber = (num) => {
-        return new Intl.NumberFormat('ru-RU').format(num);
-    };
-
-    const numberLimit = 36;
-    const coefficient = 35;
-    const random = Math.floor(Math.random() * (numberLimit + 1));
-
-    let rolledCount = parseInt(document.getElementById("rolledCount").textContent) || 0;
-    let rolledCountWon = parseInt(document.getElementById("rolledCountWon").textContent) || 0;
-    let resultValue, nowCoffer;
-
-    rolledCount += 1;
-
-    const logEntry = document.createElement("div");
-    logEntry.className = "log-entry";
-
-    if (numberVal == random) {
-        rolledCountWon += 1;
-        resultValue = straightVal * coefficient;
-        nowCoffer = Number(coffer) + Number(resultValue);
-
-        logEntry.innerHTML = `Play #${rolledCount}: <span class="win">Victory! You have won! ${formatNumber(resultValue)} Adena</span> (roll: ${random})`;
-    } else {
-        resultValue = straightVal;
-        nowCoffer = Number(coffer) - Number(resultValue);
-
-        logEntry.innerHTML = `Play #${rolledCount}: <span class="lose">Loss! You lost! ${formatNumber(resultValue)} Adena</span> (roll: ${random})`;
+        chart.update();
     }
 
-    document.getElementById("rouletteLog").prepend(logEntry);
-
-    if (rolledCountWon > 0) {
-        const winRate = Math.floor((rolledCountWon / rolledCount) * 1000) / 10;
-        document.getElementById("rolledCoefficientWon").textContent = winRate + ' %';
-    }
-
-    document.getElementById("rolledCount").textContent = rolledCount;
-    document.getElementById("rolledCountWon").textContent = rolledCountWon;
-    document.getElementById("playerCofferNum").textContent = formatNumber(nowCoffer);
-    document.getElementById("rolledNumber").textContent = random;
-
-    document.getElementById("rouletteLog").scrollTop = 0;
-
-    return nowCoffer;
-}
-
-function rouletteValidForm() {
-    const straightInput = document.querySelector('input[name="straight"]');
-    const numberInput = document.querySelector('input[name="number"]');
-    const cofferElement = document.getElementById("playerCofferNum");
-
-    const straightVal = parseInt(straightInput.value);
-    const numberVal = parseInt(numberInput.value);
-    const coffer = parseInt(cofferElement.textContent.replace(/\s/g, ''));
-
-    if (isNaN(straightVal) || isNaN(numberVal)) {
-        alert("Please enter correct values!");
-        return false;
-    }
-
-    if (straightVal < 5000 || straightVal > 500000000) {
-        alert("The bet must be between 5,000 and 500,000,000!");
-        return false;
-    }
-
-    if (numberVal < 0 || numberVal > 36) {
-        alert("The number must be between 0 and 36!");
-        return false;
-    }
-
-    if (straightVal > coffer) {
-        alert("You do not have enough funds for this bet!");
-        return false;
-    }
-
-    document.getElementById("straightVal").textContent = new Intl.NumberFormat('ru-RU').format(straightVal);
-    document.getElementById("numberVal").textContent = numberVal;
-
-    const newCoffer = playRoulette(straightVal, numberVal, coffer);
-
-    cofferElement.textContent = new Intl.NumberFormat('ru-RU').format(newCoffer);
-
-    return false;
-}
-
-function spinWheel() {
-    const wheel = document.getElementById('rouletteWheel');
-    wheel.style.transition = 'none';
-    wheel.style.transform = 'rotate(0deg)';
-
-    setTimeout(() => {
-        const spins = 3;
-        const degrees = 360 * spins + Math.floor(Math.random() * 360);
-        wheel.style.transition = 'transform 5s cubic-bezier(0.1, 0.7, 0.1, 1)';
-        wheel.style.transform = `rotate(${degrees}deg)`;
-
-        const numbers = [];
-        for (let i = 0; i <= 36; i++) {
-            numbers.push(i < 10 ? `0${i}` : i.toString());
+    async function drawChart(chart, url) {
+        var now = moment().format("DD-MM-YYYYTHH%3Amm%3Ass");
+        var start = moment().subtract(5, 'years').format("DD-MM-YYYYTHH%3Amm%3Ass");
+        const baseUrl = document.location.origin + '/api/online?server=x5&interval=1800&period-start=' + start + '&period-end=' + now + '';
+        if (url == '') {
+            url = baseUrl;
         }
-        let counter = 0;
-        const interval = setInterval(() => {
-            wheel.textContent = document.getElementById('rolledNumber').textContent;
-            counter++;
-            if (counter > 30) clearInterval(interval);
-        }, 100);
-    }, 10);
-}
+        try {
+            let response = await fetch(url);
 
-function formatNumber(num) {
-    let res = num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-    return res;
-}
-
-async function formEvents(name) {
-    let url = new URL("/api/" + name, document.location.origin)
-
-    const form = document.forms[name];
-    const formData = new FormData(form);
-
-    for (let [name, value] of formData) {
-        console.log(`${name}: ${value}`);
-        url.searchParams.append(name, value);
-    }
-
-    let response = await fetch(url);
-
-    if (!response.ok) {
-        throw new Error(`Response status: ${response.status}`);
-    }
-
-    const json = await response.json();
-
-    let oldData = document.getElementsByClassName("div-table-row");
-    while (oldData.length > 1) {
-        oldData[1].remove()
-    }
-
-    for (const obj of json) {
-        let row = $('<div class="div-table-row">')
-        for (const key in obj) {
-            if (key == "updatedDate" || key == "createdDate") {
-                continue;
+            if (!response.ok) {
+                throw new Error(`Response status: ${response.status}`);
             }
-            row.append(
-                $('<div class="div-table-col">').text(obj[key])
-            );
+
+            const json = await response.json();
+            setChartTitle()
+
+            removeData(chart)
+            addData(chart, json)
+
+        } catch (error) {
+            console.error(error.message);
         }
-        row.appendTo('#' + name + 'Table');
     }
-}
 
-$(document).ready(function () {
+    $(".nav-link").on('click', function () {
+        this.classList.toggle('active-status');
+    });
 
+    function formOnline(chart) {
+        let url = new URL("/api/online", document.location.origin)
+
+        let elements = document.forms["onlineChart"].children;
+        for (let i = 0; i < elements.length; i++) {
+            if (elements.item(i).name == "submit") continue;
+
+            url.searchParams.append(elements.item(i).name, elements.item(i).value);
+        }
+        drawChart(chart, url);
+    }
+
+    function setChartTitle() {
+        let elements = document.forms["onlineChart"].children;
+        for (let i = 0; i < elements.length; i++) {
+            if (elements.item(i).name == "submit") continue;
+
+            if (isISODateString(elements.item(i).value)) {
+
+                const date = new Date(elements.item(i).value);
+
+                document.getElementById(elements.item(i).name).textContent = date.toLocaleString('en-GB');
+            } else if (elements.item(i).name == "interval") {
+                document.getElementById(elements.item(i).name).textContent = $("#" + elements.item(i).id + " :selected").text();
+            } else {
+                document.getElementById(elements.item(i).name).textContent = elements.item(i).value;
+            }
+        }
+    }
+
+    // Roulette
+    function playRoulette(straightVal, numberVal, coffer) {
+        spinWheel();
+
+        const formatNumber = (num) => {
+            return new Intl.NumberFormat('ru-RU').format(num);
+        };
+
+        const numberLimit = 36;
+        const coefficient = 35;
+        const random = Math.floor(Math.random() * (numberLimit + 1));
+
+        let rolledCount = parseInt(document.getElementById("rolledCount").textContent) || 0;
+        let rolledCountWon = parseInt(document.getElementById("rolledCountWon").textContent) || 0;
+        let resultValue, nowCoffer;
+
+        rolledCount += 1;
+
+        const logEntry = document.createElement("div");
+        logEntry.className = "log-entry";
+
+        if (numberVal == random) {
+            rolledCountWon += 1;
+            resultValue = straightVal * coefficient;
+            nowCoffer = Number(coffer) + Number(resultValue);
+
+            logEntry.innerHTML = `Play #${rolledCount}: <span class="win">Victory! You have won! ${formatNumber(resultValue)} Adena</span> (roll: ${random})`;
+        } else {
+            resultValue = straightVal;
+            nowCoffer = Number(coffer) - Number(resultValue);
+
+            logEntry.innerHTML = `Play #${rolledCount}: <span class="lose">Loss! You lost! ${formatNumber(resultValue)} Adena</span> (roll: ${random})`;
+        }
+
+        document.getElementById("rouletteLog").prepend(logEntry);
+
+        if (rolledCountWon > 0) {
+            const winRate = Math.floor((rolledCountWon / rolledCount) * 1000) / 10;
+            document.getElementById("rolledCoefficientWon").textContent = winRate + ' %';
+        }
+
+        document.getElementById("rolledCount").textContent = rolledCount;
+        document.getElementById("rolledCountWon").textContent = rolledCountWon;
+        document.getElementById("playerCofferNum").textContent = formatNumber(nowCoffer);
+        document.getElementById("rolledNumber").textContent = random;
+
+        document.getElementById("rouletteLog").scrollTop = 0;
+
+        return nowCoffer;
+    }
+
+    $(".roulette-form").on("submit", function (e) {
+        rouletteValidForm()
+    })
+
+    function rouletteValidForm() {
+        const straightInput = document.querySelector('input[name="straight"]');
+        const numberInput = document.querySelector('input[name="number"]');
+        const cofferElement = document.getElementById("playerCofferNum");
+
+        const straightVal = parseInt(straightInput.value);
+        const numberVal = parseInt(numberInput.value);
+        const coffer = parseInt(cofferElement.textContent.replace(/\s/g, ''));
+
+        if (isNaN(straightVal) || isNaN(numberVal)) {
+            alert("Please enter correct values!");
+            return false;
+        }
+
+        if (straightVal < 5000 || straightVal > 500000000) {
+            alert("The bet must be between 5,000 and 500,000,000!");
+            return false;
+        }
+
+        if (numberVal < 0 || numberVal > 36) {
+            alert("The number must be between 0 and 36!");
+            return false;
+        }
+
+        if (straightVal > coffer) {
+            alert("You do not have enough funds for this bet!");
+            return false;
+        }
+
+        document.getElementById("straightVal").textContent = new Intl.NumberFormat('ru-RU').format(straightVal);
+        document.getElementById("numberVal").textContent = numberVal;
+
+        const newCoffer = playRoulette(straightVal, numberVal, coffer);
+
+        cofferElement.textContent = new Intl.NumberFormat('ru-RU').format(newCoffer);
+
+        return false;
+    }
+
+    function spinWheel() {
+        const wheel = document.getElementById('rouletteWheel');
+        wheel.style.transition = 'none';
+        wheel.style.transform = 'rotate(0deg)';
+
+        setTimeout(() => {
+            const spins = 3;
+            const degrees = 360 * spins + Math.floor(Math.random() * 360);
+            wheel.style.transition = 'transform 5s cubic-bezier(0.1, 0.7, 0.1, 1)';
+            wheel.style.transform = `rotate(${degrees}deg)`;
+
+            const numbers = [];
+            for (let i = 0; i <= 36; i++) {
+                numbers.push(i < 10 ? `0${i}` : i.toString());
+            }
+            let counter = 0;
+            const interval = setInterval(() => {
+                wheel.textContent = document.getElementById('rolledNumber').textContent;
+                counter++;
+                if (counter > 30) clearInterval(interval);
+            }, 100);
+        }, 10);
+    }
+
+    // Language switcher
     $('#languageSwitcher').click(function () {
         toggleLanguage();
     });
@@ -268,6 +217,7 @@ $(document).ready(function () {
             `);
     }
 
+    // Custom select
     const originalSelect = $('#originalSelect');
     const customMultiselect = $('#customMultiselect');
     const selectedItemsContainer = $('#selectedItemsContainer');
@@ -381,10 +331,18 @@ $(document).ready(function () {
 
         optionsContainer.find(`.option-item[data-value="${value}"]`).addClass('selected');
     });
-
-    //events form
+    // Events form
+    let debounceTimer;
     const content = document.querySelector(".main-content");
-    const formConstant = getFormConst(content);
+    let formConstant = {};
+    if (content !== null) {
+        formConstant = getFormConst(content);
+        if (formConstant !== null) {
+            addFormListeners();
+            initContentEvents();
+        }
+    }
+
 
     function getFormConst(content) {
         if (Object.keys(content.dataset).length > 0) {
@@ -399,52 +357,10 @@ $(document).ready(function () {
         }
     }
 
-    if (formConstant !== null) {
-        addFormListeners();
-        initContent();
-    }
-
-    async function loadData(formData) {
-        const modifiedFormData = new FormData();
-        for (const [key, value] of formData.entries()) {
-            if (key === 'sort') {
-                if (value === "Date ascending") {
-                    modifiedFormData.append(key, 'asc');
-                } else {
-                    modifiedFormData.append(key, 'desc');
-                }
-            } else {
-                modifiedFormData.append(key, value);
-            }
-        }
-        const data = Object.fromEntries(modifiedFormData.entries());
-        try {
-            const response = await fetch(formConstant.url, {
-                method: 'POST',
-                body: JSON.stringify(data),
-                headers: {
-                    'Content-Type': 'application/json',
-                    "X-CSRF-TOKEN": $('#_csrf').attr('content')
-                }
-            })
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return await response.json();
-
-
-        } catch (error) {
-            console.log("error: ", error);
-            return [];
-        }
-    }
-
-    let debounceTimer;
-
     function handleFieldChange() {
         clearTimeout(debounceTimer);
         debounceTimer = setTimeout(async () => {
-            await initContent();
+            await initContentEvents();
         }, 0);
     }
 
@@ -514,7 +430,7 @@ $(document).ready(function () {
                     if (key === "id") {
                         value = i;
                     }
-                    if (isDateString(value)) {
+                    if (isISODateString(value)) {
                         value = formatDate(obj[key]);
 
                     }
@@ -538,8 +454,6 @@ $(document).ready(function () {
             updateTimers(bosses);
             setInterval(() => updateTimers(bosses), 60000);
         } else if (formConstant.name === 'fortress-history' || formConstant.name === 'fortress') {
-            console.log(result);
-            console.log("sada")
             const tbody = document.querySelector("#" + formConstant.name + "Table tbody");
             const resultFrag = document.createDocumentFragment();
             let i = 0;
@@ -557,7 +471,7 @@ $(document).ready(function () {
                         value = value + " Hours.";
                     } else if (secondObject === "createdDate") {
                         continue;
-                    } else if (isDateString(value)) {
+                    } else if (isISODateString(value)) {
                         value = formatDate(value);
                     } else if (typeof value === "object") {
                         let secondTable = document.createElement("table");
@@ -633,7 +547,7 @@ $(document).ready(function () {
                                 secondValueRow.appendChild(clanName);
                                 continue;
                             }
-                            if (isDateString(secondValue)) {
+                            if (isISODateString(secondValue)) {
                                 secondValue = formatDate(secondValue);
                             }
                             let secondCol = document.createElement("td");
@@ -657,40 +571,6 @@ $(document).ready(function () {
             }
             tbody.replaceChildren(resultFrag);
         }
-    }
-
-    function capitalize(string) {
-        return string.charAt(0).toUpperCase() + string.slice(1);
-    }
-
-    function formatTime(seconds) {
-        if (seconds === null || isNaN(seconds)) return '--:--:--';
-
-        const hours = Math.floor(seconds / 3600);
-        const minutes = Math.floor((seconds % 3600) / 60);
-        const secs = Math.floor(seconds % 60);
-        return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-    }
-
-    function isDateString(string) {
-        return /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:\d{2})?$/.test(string);
-    }
-
-    function hasHtml(string) {
-        return /<[a-z][\s\S]*>/i.test(string);
-    }
-
-    function formatDate(date) {
-        if (!date) return 'None';
-        const d = new Date(date);
-        const day = String(d.getDate()).padStart(2, '0');
-        const month = String(d.getMonth() + 1).padStart(2, '0');
-        const year = d.getFullYear();
-        const hours = String(d.getHours()).padStart(2, '0');
-        const minutes = String(d.getMinutes()).padStart(2, '0');
-        const seconds = String(d.getSeconds()).padStart(2, '0');
-
-        return `${day}.${month}.${year} ${hours}:${minutes}:${seconds}`;
     }
 
     function initializeBossGrid(bosses) {
@@ -784,11 +664,11 @@ $(document).ready(function () {
         switch (status) {
             case 'active':
                 elements.progress.style.stroke = '#4CAF50';
-                elements.status.className = 'active';
+                elements.status.className = 'active-status';
                 break;
             case 'warning':
                 elements.progress.style.stroke = '#FF5722'
-                elements.status.className = 'warning';
+                elements.status.className = 'warning-status';
                 break;
             case 'expired':
                 elements.progress.style.stroke = '#CCFF00';
@@ -823,11 +703,11 @@ $(document).ready(function () {
         }
     }
 
-    async function initContent() {
-        showSkeleton()
-        const formData = new FormData(formConstant.form);
-        const result = await loadData(formData);
-        loadContent(result);
+    async function initContentEvents() {
+        showSkeleton();
+        const data = collectDataForm(formConstant.form);
+        const result = await sendRequest('POST', formConstant.url, data);
+        loadContent(result)
     }
 
     function addFormListeners() {
@@ -838,9 +718,10 @@ $(document).ready(function () {
 
         formConstant.form.addEventListener('submit', function (e) {
             e.preventDefault();
-            initContent();
+            initContentEvents();
         });
     }
+
 });
 
 

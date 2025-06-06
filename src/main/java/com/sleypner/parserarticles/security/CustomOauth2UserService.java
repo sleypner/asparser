@@ -20,16 +20,9 @@ import org.springframework.security.oauth2.core.user.OAuth2UserAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-import ua_parser.Client;
-import ua_parser.Parser;
 
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import static com.sleypner.parserarticles.special.Special.getAction;
+import java.util.*;
 
 @Service
 public class CustomOauth2UserService extends DefaultOAuth2UserService {
@@ -51,21 +44,16 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
         return (userRequest) -> {
             OAuth2User oAuth2User = delegate.loadUser(userRequest);
 
-            HttpServletRequest request =
-                    ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+            HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
 
             Map<String, Object> attributes = oAuth2User.getAttributes();
             Collection<? extends GrantedAuthority> authorities = oAuth2User.getAuthorities();
 
-            UserActionLogs userAction = getAction(request);
+            UserActionLogs userAction = UserActionLogs.getAction(null, request, "login");
             Users user = saveOauth2Users(userRequest, authorities, attributes, userAction);
 
 
-            return new CustomOauth2User(
-                    oAuth2User,
-                    userRequest.getClientRegistration().getClientName(),
-                    user.getAttributes()
-            );
+            return new CustomOauth2User(oAuth2User, userRequest.getClientRegistration().getClientName(), user.getAttributes());
         };
     }
 
@@ -78,17 +66,12 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
             Map<String, Object> attributes = oidcUser.getAttributes();
             Collection<? extends GrantedAuthority> authorities = oidcUser.getAuthorities();
 
-            HttpServletRequest request =
-                    ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+            HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
 
-            UserActionLogs userAction = getAction(request);
+            UserActionLogs userAction = UserActionLogs.getAction(null, request, "login");
             Users user = saveOauth2Users(userRequest, authorities, attributes, userAction);
 
-            return new CustomOidcUser(
-                    oidcUser,
-                    userRequest.getClientRegistration().getClientName(),
-                    user.getAttributes()
-            );
+            return new CustomOidcUser(oidcUser, userRequest.getClientRegistration().getClientName(), user.getAttributes());
         };
     }
 
@@ -104,73 +87,69 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
             case "google" -> {
                 String username = (String) attributes.get("given_name");
 
-                user = prepaerUsers(username.toLowerCase(), authorities, userAction);
+                user = userPreparation(username.toLowerCase(), userAction)
+                        .setExternalId((String) attributes.get("sub"))
+                        .setEmail((String) attributes.get("email"))
+                        .setName((String) attributes.get("given_name"))
+                        .setFirstName((String) attributes.get("given_name"))
+                        .setLastName((String) attributes.get("family_name"))
+                        .setImg((String) attributes.get("picture"));
 
-                user.setExternalId((String) attributes.get("sub"));
-                user.setEmail((String) attributes.get("email"));
-                user.setName((String) attributes.get("given_name"));
-                user.setFirstName((String) attributes.get("given_name"));
-                user.setLastName((String) attributes.get("family_name"));
-                user.setImg((String) attributes.get("picture"));
             }
             case "discord" -> {
                 String username = (String) attributes.get("username");
 
-                user = prepaerUsers(username.toLowerCase(), authorities, userAction);
+                user = userPreparation(username.toLowerCase(), userAction)
+                        .setExternalId((String) attributes.get("id"))
+                        .setEmail((String) attributes.get("email"))
+                        .setName((String) attributes.get("global_name"))
+                        .setImg((String) attributes.get("avatar"));
 
-                user.setExternalId((String) attributes.get("id"));
-                user.setEmail((String) attributes.get("email"));
-                user.setName((String) attributes.get("global_name"));
-                user.setImg((String) attributes.get("avatar"));
             }
             case "yandex" -> {
                 String username = (String) attributes.get("login");
-
-                user = prepaerUsers(username.toLowerCase(), authorities, userAction);
-
-                user.setExternalId((String) attributes.get("id"));
-                user.setEmail((String) attributes.get("default_email"));
-                user.setName((String) attributes.get("login"));
-                user.setFirstName((String) attributes.get("first_name"));
-                user.setLastName((String) attributes.get("last_name"));
-                String birthday = (String) attributes.get("birthday");
-                if (birthday != "") {
-                    user.setBirthday(LocalDateTime.parse(birthday));
-                }
-                user.setGender((String) attributes.get("gender"));
                 Map<String, Object> phones = (Map<String, Object>) attributes.get("default_phone");
-                user.setPhone((String) phones.get("number"));
-                user.setImg((String) attributes.get("default_avatar_id"));
+                String birthday = (String) attributes.get("birthday");
+
+                user = userPreparation(username.toLowerCase(), userAction)
+                        .setExternalId((String) attributes.get("id"))
+                        .setEmail((String) attributes.get("default_email"))
+                        .setName((String) attributes.get("login"))
+                        .setFirstName((String) attributes.get("first_name"))
+                        .setLastName((String) attributes.get("last_name"))
+                        .setBirthday(!Objects.equals(birthday, "") ? LocalDateTime.parse(birthday) : null)
+                        .setGender((String) attributes.get("gender"))
+                        .setPhone((String) phones.get("number"))
+                        .setImg((String) attributes.get("default_avatar_id"));
             }
         }
-        user.setEnabled(true);
-        user.setOauth(1);
-        user.setToken(token);
-        user.setProvider(providerId);
+        user.setEnabled(true)
+                .setOauth(1)
+                .setToken(token)
+                .setProvider(providerId);
         user = usersService.save(user);
         for (GrantedAuthority authority : authorities) {
             if (authority instanceof OAuth2UserAuthority) {
                 List<Roles> savedRoles = rolesService.getByUserId(user.getId());
                 if (savedRoles.isEmpty()) {
-                    rolesService.save(new Roles(user.getUsername(), authority.getAuthority(), user));
+                    rolesService.save(Roles.builder()
+                            .username(user.getUsername())
+                            .role(authority.getAuthority())
+                            .user(user).build());
                 }
             }
         }
 
-        userAction.setUser(user);
-        userAction.setActionType("oauth2 login");
+        userAction.setUser(user)
+                .setActionType("oauth2 login");
         userActionLogsService.save(userAction);
 
         return user;
     }
 
-    public Users prepaerUsers(String username, Collection<? extends GrantedAuthority> authorities, UserActionLogs userAction) {
-        return usersService.getOptionalByUsername(username).orElseGet(() -> {
-            Users newUser = new Users();
-            newUser.setUsername(username);
-
-            newUser.setUserActionLogs(Set.of(userAction));
-            return newUser;
-        });
+    public Users userPreparation(String username, UserActionLogs userAction) {
+        return usersService.getByUsername(username).orElseGet(() -> new Users()
+                .setUsername(username)
+                .setUserActionLogs(Set.of(userAction)));
     }
 }

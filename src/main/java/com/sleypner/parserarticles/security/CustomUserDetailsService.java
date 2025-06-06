@@ -12,12 +12,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.*;
-
-import static com.sleypner.parserarticles.special.Special.getAction;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
@@ -26,29 +25,23 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Autowired
     private UserActionLogsService userActionLogsService;
 
-
-
+    @Transactional
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Users savedUser = usersService.getByUsername(username);
-        Collection<? extends GrantedAuthority> authorities = loadUserAuthorities(savedUser.getRoles());
-        Map<String, Object> attributes = savedUser.getAttributes();
-        CustomUser user = new CustomUser(username, savedUser.getPassword(), savedUser.isEnabled(), authorities, attributes);
+        Optional<Users> optUser = usersService.getByUsername(username);
+        optUser.orElseThrow(() -> new UsernameNotFoundException(username));
 
-        HttpServletRequest request =
-                ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        Users user = optUser.get();
 
-        UserActionLogs userAction = getAction(request);
-        userAction.setActionType("login");
-        userAction.setUser(savedUser);
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+
+        UserActionLogs userAction = UserActionLogs.getAction(user,request,"login");
         userActionLogsService.save(userAction);
 
-        if(user != null && user.isEnabled()) {
-            return user;
-        }
-        else {
-            throw new UsernameNotFoundException("username not found");
-        }
+        Collection<? extends GrantedAuthority> authorities = loadUserAuthorities(user.getRoles());
+        Map<String, Object> attributes = user.getAttributes();
+
+        return new CustomUser(username, user.getPassword(), user.isEnabled(), authorities, attributes);
     }
 
     private Collection<? extends GrantedAuthority> loadUserAuthorities(Set<Roles> roles) {

@@ -3,10 +3,10 @@ package com.sleypner.parserarticles.security;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -21,7 +21,6 @@ public class CustomOauth2User implements OAuth2User {
         this.clientName = clientName;
         this.attributes = attributes;
     }
-
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

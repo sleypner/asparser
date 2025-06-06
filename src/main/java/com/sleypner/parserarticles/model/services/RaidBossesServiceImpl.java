@@ -4,13 +4,15 @@ import com.sleypner.parserarticles.model.source.entityes.RaidBosses;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+
 @Repository
+@Transactional
 public class RaidBossesServiceImpl implements RaidBossesService {
 
     @PersistenceContext

@@ -1,9 +1,10 @@
-package com.sleypner.parserarticles.controller;
+package com.sleypner.parserarticles.controller.api;
 
 import com.sleypner.parserarticles.model.services.ClanService;
 import com.sleypner.parserarticles.model.services.FortressSkillsService;
 import com.sleypner.parserarticles.model.source.entityes.Clan;
 import com.sleypner.parserarticles.model.source.entityes.FortressSkills;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,19 +18,11 @@ import java.util.Random;
 
 @RestController
 @RequestMapping("/content")
-public class ContentController {
-    FortressSkillsService fortressSkillsService;
-    ClanService clanService;
-    Logger logger = LoggerFactory.getLogger(ContentController.class);
-
-    @Autowired
-    public ContentController(FortressSkillsService fortressSkillsService, ClanService clanService) {
-        this.fortressSkillsService = fortressSkillsService;
-        this.clanService = clanService;
-    }
-
-    public ContentController() {
-    }
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
+public class ContentRestController {
+    private final FortressSkillsService fortressSkillsService;
+    private final ClanService clanService;
+    private final Logger logger = LoggerFactory.getLogger(ContentRestController.class);
 
     @GetMapping(value = "/fortress-skills/image/{id}", produces = MediaType.IMAGE_PNG_VALUE)
     public @ResponseBody byte[] showFortressSkillsImage(@PathVariable Integer id) throws IOException {
@@ -56,11 +49,7 @@ public class ContentController {
         var ran = new Random().ints(36);
         var num = ran.findAny();
         if (num.isPresent()) {
-            if (num.getAsInt() == number) {
-                return true;
-            } else {
-                return false;
-            }
+            return num.getAsInt() == number;
         } else {
             logger.atError()
                     .addKeyValue("exception_class", this.getClass().getSimpleName())

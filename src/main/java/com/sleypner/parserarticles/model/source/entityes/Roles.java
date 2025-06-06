@@ -1,19 +1,29 @@
 package com.sleypner.parserarticles.model.source.entityes;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import lombok.experimental.Accessors;
+import lombok.experimental.SuperBuilder;
+import org.hibernate.proxy.HibernateProxy;
 
-import java.time.LocalDateTime;
-import java.util.Locale;
 import java.util.Objects;
 
-@Getter
-@Setter
 @Entity
 @Table(name = "roles")
-public class Roles {
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id"
+)
+@Getter
+@Setter
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
+@Accessors(chain = true)
+@ToString(callSuper = true)
+public class Roles extends AuditableEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -23,37 +33,38 @@ public class Roles {
     private String role;
     @ManyToOne()
     @JoinColumn(name = "user_id")
+    @ToString.Exclude
     private Users user;
-    @Column(name = "created_date", columnDefinition = "TIMESTAMP(0)")
-    private LocalDateTime createdDate;
-    @Column(name = "updated_date", columnDefinition = "TIMESTAMP(0)")
-    private LocalDateTime updatedDate;
 
-    public Roles(String username, String role, Users user) {
-        this.createdDate = LocalDateTime.now().withNano(0);
-        this.username = username.toLowerCase(Locale.ROOT);
-        this.role = role;
-        this.user = user;
-    }
-    public Roles(String role) {
-        this.createdDate = LocalDateTime.now().withNano(0);
+    public Roles(int id, String role) {
+        this.id = id;
+        this.username = "admin";
         this.role = role;
     }
-    public Roles() {
-        this.createdDate = LocalDateTime.now().withNano(0);
+
+    @PrePersist
+    private void onCreate() {
+        super.setCreatedAt();
+    }
+
+    @PreUpdate
+    private void onUpdate() {
+        super.setUpdatedAt();
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (!(obj instanceof Roles)) {
-            return false;
-        }
-        Roles rolesObj = (Roles) obj;
-        return Objects.equals(rolesObj.getRole(), this.getRole()) &&
-                Objects.equals(rolesObj.getUsername(), this.getUsername());
+    public final boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+        Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
+        Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
+        if (thisEffectiveClass != oEffectiveClass) return false;
+        Roles roles = (Roles) o;
+        return getId() != 0 && Objects.equals(getId(), roles.getId());
     }
 
-    public void setUsername(String username) {
-        this.username = username.toLowerCase(Locale.ROOT);
+    @Override
+    public final int hashCode() {
+        return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
     }
 }

@@ -1,19 +1,23 @@
 package com.sleypner.parserarticles.model.source.entityes;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import lombok.experimental.Accessors;
+import lombok.experimental.SuperBuilder;
+import org.hibernate.proxy.HibernateProxy;
 
-import java.time.LocalDateTime;
+import java.util.Objects;
 
-
-@Getter
-@Setter
-@NoArgsConstructor
 @Entity
 @Table(name = "fortress_history")
-public class FortressHistory implements Comparable<FortressHistory> {
+@Getter
+@Setter
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
+@Accessors(chain = true)
+@ToString(callSuper = true)
+public class FortressHistory extends AuditableEntity implements Comparable<FortressHistory> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,30 +30,36 @@ public class FortressHistory implements Comparable<FortressHistory> {
     private long coffer;
     @Column(name = "hold_time")
     private int holdTime;
-    @Column(name = "created_date", columnDefinition = "TIMESTAMP(0)")
-    LocalDateTime createdDate;
-    @Column(name = "updated_date", columnDefinition = "TIMESTAMP(0)")
-    LocalDateTime updatedDate;
 
-    public FortressHistory(long coffer, int holdTime) {
-        this.createdDate = LocalDateTime.now().withNano(0);
-        this.coffer = coffer;
-        this.holdTime = holdTime;
-        this.updatedDate = LocalDateTime.now().withNano(0);
+    @PrePersist
+    private void onCreate() {
+        super.setCreatedAt();
     }
 
-    public FortressHistory(int fortressId, int clanId, long coffer, int holdTime) {
-        this.createdDate = LocalDateTime.now().withNano(0);
-        this.fortressId = fortressId;
-        this.clanId = clanId;
-        this.coffer = coffer;
-        this.holdTime = holdTime;
-        this.updatedDate = LocalDateTime.now().withNano(0);
+    @PreUpdate
+    private void onUpdate() {
+        super.setUpdatedAt();
     }
 
     @Override
     public int compareTo(FortressHistory o) {
         return getUpdatedDate().compareTo(o.getUpdatedDate());
+    }
+
+    @Override
+    public final boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+        Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
+        Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
+        if (thisEffectiveClass != oEffectiveClass) return false;
+        FortressHistory that = (FortressHistory) o;
+        return getId() != 0 && Objects.equals(getId(), that.getId());
+    }
+
+    @Override
+    public final int hashCode() {
+        return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
     }
 }
 

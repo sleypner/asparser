@@ -1,6 +1,5 @@
-package com.sleypner.parserarticles.controller;
+package com.sleypner.parserarticles.controller.api;
 
-import com.sleypner.parserarticles.exceptions.ArticleNotFoundExceptions;
 import com.sleypner.parserarticles.model.services.*;
 import com.sleypner.parserarticles.model.source.entityes.*;
 import com.sleypner.parserarticles.model.source.other.FortressTable;
@@ -9,9 +8,11 @@ import com.sleypner.parserarticles.model.source.other.OnlineChartData;
 import com.sleypner.parserarticles.model.source.other.OnlineChartOptions;
 import com.sleypner.parserarticles.parsing.Processing;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -20,9 +21,10 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
-public class ApiController {
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
+public class ApiRestController {
 
-    Logger logger = LoggerFactory.getLogger(ApiController.class);
+    private final Logger logger = LoggerFactory.getLogger(ApiRestController.class);
     private final ArticleService articleService;
     private final OnlineStatusService onlineStatusService;
     private final Processing processing;
@@ -34,73 +36,9 @@ public class ApiController {
     private final UsersService usersService;
     private final RolesService rolesService;
 
-    @Autowired
-    public ApiController(ArticleService articleService,
-                         OnlineStatusService onlineStatusService,
-                         Processing processing,
-                         EventsService eventsService,
-                         RaidBossesService raidBossesService,
-                         FortressHistoryService fortressHistoryService,
-                         FortressService fortressService,
-                         ClanService clanService, UsersService usersService, RolesService rolesService) {
-        this.articleService = articleService;
-        this.onlineStatusService = onlineStatusService;
-        this.processing = processing;
-        this.eventsService = eventsService;
-        this.raidBossesService = raidBossesService;
-        this.fortressHistoryService = fortressHistoryService;
-        this.fortressService = fortressService;
-        this.clanService = clanService;
-        this.usersService = usersService;
-        this.rolesService = rolesService;
-    }
-
-    @GetMapping(value = "/articles/{id}", produces = "application/json")
-    public Article goArticleByID(@PathVariable("id") int id) {
-        if ((id > articleService.getAll().size() || id < 0)) {
-            String message = "article id not found - " + id;
-            logger.atError()
-//                    .setMessage(message)
-                    .addKeyValue("exception_class", this.getClass().getSimpleName())
-                    .addKeyValue("error_message", message)
-                    .log();
-
-            throw new ArticleNotFoundExceptions(message);
-        }
-        return articleService.getById(id);
-    }
-
-    @GetMapping(value = "/articles", produces = "application/json")
-    public List<Article> getArticlesByDateAndMore(@RequestParam(name = "title", required = false) String title,
-                                                  @RequestParam(name = "subtitle", required = false) String subtitle,
-                                                  @RequestParam(name = "description", required = false) String description,
-                                                  @RequestParam(name = "dateStart", required = false) LocalDateTime dateStart,
-                                                  @RequestParam(name = "dateEnd", required = false) LocalDateTime dateEnd) {
-
-        return articleService.getByDateAndMore(title, subtitle, description, dateStart, dateEnd);
-    }
-
-    @DeleteMapping(value = "/articles/{id}", produces = "application/json")
-    public void deleteArticleByID(@PathVariable("id") int id) {
-        if ((id > articleService.getAll().size() || id < 0)) {
-
-            String message = "article id not found - " + id;
-
-            logger.atError()
-//                    .setMessage(message)
-                    .addKeyValue("exception_class", this.getClass().getSimpleName())
-                    .addKeyValue("error_message", message)
-                    .log();
-            throw new ArticleNotFoundExceptions(message);
-        }
-        articleService.deleteById(id);
-    }
-
-    @RequestMapping(value = "/articles", produces = "application/json", method = RequestMethod.POST)
+    @RequestMapping(value = "/articles", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
     public List<Article> getArticles(@RequestBody FormData data) {
-        List<Article> articleList = new ArrayList<>();
-
-        articleList = articleService.getAll();
+        List<Article> articleList = articleService.getAll();
 
         if (Objects.equals(data.sort, "asc")) {
             articleList.sort(Comparator.comparing(Article::getCreateOn));
@@ -111,15 +49,7 @@ public class ApiController {
         return articleList;
     }
 
-    @PostMapping(value = "/articles/parse", produces = "application/json")
-    public Map<String, Integer> parseArticles(@RequestParam(name = "force", required = true) boolean force) {
-        if (force) {
-            return processing.processingArticles();
-        }
-        return null;
-    }
-
-    @GetMapping(value = "/online", produces = "application/json")
+    @GetMapping(value = "/online", produces = MediaType.APPLICATION_JSON_VALUE)
     public OnlineChartOptions getOnline(
             @RequestParam(name = "server", required = false) String server,
             @RequestParam(name = "period-start", required = false) LocalDateTime periodStart,
@@ -136,7 +66,7 @@ public class ApiController {
         return new OnlineChartOptions("line", new OnlineChartData().getChartData(newListChart));
     }
 
-    @RequestMapping(value = "/events", produces = "application/json", method = RequestMethod.POST)
+    @RequestMapping(value = "/events", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
     public List<Events> getEvents(@RequestBody FormData data) {
         List<Events> listEvents = new ArrayList<>();
         if (Objects.equals(data.server, "all")) {
@@ -158,7 +88,7 @@ public class ApiController {
         return listEvents;
     }
 
-    @RequestMapping(value = "/bosses", produces = "application/json", method = RequestMethod.POST)
+    @RequestMapping(value = "/bosses", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
     public List<RaidBosses> getBosses(
             @RequestBody(required = false) FormData data
     ) {
@@ -188,7 +118,7 @@ public class ApiController {
         return listBosses;
     }
 
-    @RequestMapping(value = "/fortress", produces = "application/json", method = RequestMethod.POST)
+    @RequestMapping(value = "/fortress", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
     public List<FortressTable> getFortress(
             @RequestBody(required = false) FormData data
     ) {
@@ -206,15 +136,15 @@ public class ApiController {
 
             Clan clan = clanService.getById(fortressHistory.getClanId());
 
-            FortressTable fortressTable = new FortressTable(
-                    fortress.getName(),
-                    fortress.getServer(),
-                    fortress.getSkills().stream().toList(),
-                    fortressHistory.getUpdatedDate(),
-                    clan,
-                    fortressHistory.getCoffer(),
-                    fortressHistory.getHoldTime()
-            );
+            FortressTable fortressTable = FortressTable.builder()
+                    .name(fortress.getName())
+                    .server(fortress.getServer())
+                    .skills(fortress.getSkills().stream().toList())
+                    .updatedDate(fortress.getUpdatedDate())
+                    .clan(clan)
+                    .coffer(fortressHistory.getCoffer())
+                    .holdTime(fortressHistory.getHoldTime())
+                    .build();
             if (fortressTable.getSkills() == null || fortressTable.getSkills().isEmpty()) {
                 fortressTable.setSkills(new ArrayList<>());
             }
@@ -224,10 +154,8 @@ public class ApiController {
         return fortressTableList;
     }
 
-    @RequestMapping(value = "/fortress-history", produces = "application/json", method = RequestMethod.POST)
-    public List<FortressTable> getFortressHistory(
-            @RequestBody(required = false) FormData data
-    ) {
+    @RequestMapping(value = "/fortress-history", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
+    public List<FortressTable> getFortressHistory(@RequestBody(required = false) FormData data) {
         List<FortressHistory> fortressHistoryList;
 
         if (Objects.equals(data.server, "all")) {
@@ -251,15 +179,16 @@ public class ApiController {
             Fortress fortress = fortressService.getById(fortressHistory.getFortressId());
             Clan clan = clanService.getById(fortressHistory.getClanId());
 
-            FortressTable fortressTable = new FortressTable(
-                    fortress.getName(),
-                    fortress.getServer(),
-                    fortress.getSkills().stream().toList(),
-                    fortressHistory.getUpdatedDate(),
-                    clan,
-                    fortressHistory.getCoffer(),
-                    fortressHistory.getHoldTime()
-            );
+            FortressTable fortressTable = FortressTable.builder()
+                    .name(fortress.getName())
+                    .server(fortress.getServer())
+                    .skills(fortress.getSkills().stream().toList())
+                    .updatedDate(fortress.getUpdatedDate())
+                    .clan(clan)
+                    .coffer(fortressHistory.getCoffer())
+                    .holdTime(fortressHistory.getHoldTime())
+                    .build();
+
             if (fortressTable.getSkills() == null || fortressTable.getSkills().isEmpty()) {
                 fortressTable.setSkills(new ArrayList<>());
             }
@@ -280,5 +209,7 @@ public class ApiController {
             this.type = "";
         }
     }
+
+
 }
 

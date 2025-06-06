@@ -4,13 +4,14 @@ import com.sleypner.parserarticles.model.source.entityes.Clan;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Repository
+@Transactional
 public class ClanServiceImpl implements ClanService {
     @PersistenceContext
     private final EntityManager entityManager;
@@ -26,14 +27,12 @@ public class ClanServiceImpl implements ClanService {
         return query.getResultList();
     }
 
-    @Transactional
     @Override
     public Clan save(Clan clan) {
         entityManager.persist(clan);
         return getByNameAndServer(clan.getName(), clan.getServer());
     }
 
-    @Transactional
     @Override
     public Clan update(Clan clan) {
         return entityManager.merge(clan);

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <body>
 <div th:fragment="my-menu">
   <nav class="navbar navbar-expand-lg navbar-custom sticky-top mb-4">
@@ -16,7 +16,7 @@
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav me-auto">
           <li class="nav-item">
-            <a class="nav-link " th:classappend="${loc == 'index'} ? 'active'" href="#" th:href="@{/}"><i class="fas fa-home me-1"></i>Home</a>
+            <a class="nav-link " th:classappend="${loc == 'articles'} ? 'active'" href="#" th:href="@{/}"><i class="fas fa-home me-1"></i>Home</a>
           </li>
           <li class="nav-item" hidden="hidden">
             <a class="nav-link" th:classappend="${loc == 'swagger-ui-custom.html'} ? 'active'" href="#" th:href="@{/swagger-ui-custom.html}"><i class="fas fa-tape me-1"></i>Api</a>
@@ -39,12 +39,12 @@
           <li class="nav-item">
             <a class="nav-link" th:classappend="${loc == 'roulette'} ? 'active'" href="#" th:href="@{/roulette}"><i class="fas fa-gamepad me-1"></i>Roulette</a>
           </li>
-          <li th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}" class="nav-item">
+          <li sec:authorize="hasRole('ROLE_ADMIN')" class="nav-item">
             <a class="nav-link" th:classappend="${loc == 'admin'} ? 'active'" href="#" th:href="@{/admin}"><i class="fas fa-screwdriver-wrench me-1"></i>Admin Panel</a>
           </li>
         </ul>
         <div class="d-flex">
-          <div th:if="${#authorization.expression('isAuthenticated()')}" class="user-profile">
+          <div sec:authorize="isAuthenticated()" class="user-profile">
             <div class="dropdown">
               <a class="btn dropdown-toggle user-btn" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown">
                 <i class="fas fa-user-circle me-1"></i>
@@ -55,7 +55,7 @@
                 <li style="display: none"><a class="dropdown-item" href="#" th:href="@{/settings(i=${#authentication.principal.attributes.id})}"><i class="fas fa-cog me-2"></i> Settings</a></li>
                 <li><hr class="dropdown-divider"></li>
                 <li>
-                  <form th:action="@{/logout}" method="post">
+                  <form th:action="@{/auth/logout}" method="post">
                     <button class="dropdown-item" type="submit">
                       <i class="fas fa-sign-out-alt me-2"></i> Log out
                     </button>
@@ -65,8 +65,8 @@
             </div>
           </div>
           <div th:unless="${#authorization.expression('isAuthenticated()')}" class="user-profile">
-            <a class="btn btn-secondary" th:href="@{/login}">Log in</a>
-            <a class="btn btn-secondary" th:href="@{/register}">Sign up</a>
+            <a class="btn btn-secondary" th:href="@{/auth/signin}">Log in</a>
+            <a class="btn btn-secondary" th:href="@{/auth/signup}">Sign up</a>
           </div>
           <div class="language-switcher">
             <div class="language-btn" id="languageSwitcher">

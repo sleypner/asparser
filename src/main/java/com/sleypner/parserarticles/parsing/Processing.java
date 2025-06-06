@@ -10,6 +10,7 @@ import com.sleypner.parserarticles.parsing.raw.EventsParser;
 import com.sleypner.parserarticles.parsing.raw.FortressParser;
 import com.sleypner.parserarticles.parsing.raw.OnlineParser;
 import com.sleypner.parserarticles.special.HttpAction;
+import lombok.RequiredArgsConstructor;
 import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -20,32 +21,20 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @Component
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class Processing {
 
-    Parser parser;
-    Output output;
-    EventsService eventsService;
-    HttpAction httpAction;
-    FortressParser fortressParser;
-    ArticlesParser articlesParser;
-    EventsParser eventsParser;
-    OnlineParser onlineParser;
-
-    @Autowired
-    public Processing(Parser parser, Output output,
-                      EventsService eventsService, HttpAction httpAction) {
-        this.parser = parser;
-        this.output = output;
-        this.eventsService = eventsService;
-        this.httpAction = httpAction;
-    }
-
-    public Processing() {
-    }
+    private final Parser parser;
+    private final Output output;
+    private final EventsService eventsService;
+    private final HttpAction httpAction;
+    private final FortressParser fortressParser;
+    private final ArticlesParser articlesParser;
+    private final EventsParser eventsParser;
+    private final OnlineParser onlineParser;
 
     public Map<String, Integer> processingArticles() {
         Map<String, Integer> result = new HashMap<>();
-        articlesParser = new ArticlesParser();
         List<URI> uris = articlesParser.getUris();
 
         Map<String, Integer> savedArticles = new HashMap<>();
@@ -65,8 +54,6 @@ public class Processing {
 
     public Map<String, Integer> processingOnlineArticles() {
         Map<String, Integer> result = new HashMap<>();
-        articlesParser = new ArticlesParser();
-        onlineParser = new OnlineParser();
         List<URI> articlesUris = articlesParser.getUris();
         List<URI> onlineUris = onlineParser.getUris();
 
@@ -98,7 +85,6 @@ public class Processing {
 
     public Map<String, Integer> processingFortress() {
         Map<String, Integer> result = new HashMap<>();
-        fortressParser = new FortressParser();
         List<URI> uris = fortressParser.getUris();
 
         List<HttpResponse<String>> responses = httpAction.getHttpResponses(uris);
@@ -110,7 +96,10 @@ public class Processing {
             for (FortressParser fp : thisFortressList) {
                 String urlClan = fp.getClanUrl();
                 if (urlClan.equals("NPC")) {
-                    fp.setClan(new Clan("NPC", fp.getFortress().getServer()));
+                    fp.setClan(Clan.builder()
+                            .name("NPC")
+                            .server(fp.getFortress().getServer())
+                            .build());
                     continue;
                 }
                 HttpResponse<String> clanResponse = httpAction.getHttpResponse(URI.create(urlClan));
@@ -126,7 +115,6 @@ public class Processing {
 
     public Map<String, Integer> processingEventsAndBosses() {
         Map<String, Integer> result = new HashMap<>();
-        eventsParser = new EventsParser();
         List<URI> uris = eventsParser.getUris();
         LocalDateTime lastDate = eventsService.getLastEntryDate();
         List<HttpResponse<String>> response = httpAction.getHttpResponses(uris);

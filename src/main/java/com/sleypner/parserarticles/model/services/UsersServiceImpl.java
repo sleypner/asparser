@@ -2,21 +2,23 @@ package com.sleypner.parserarticles.model.services;
 
 import com.sleypner.parserarticles.model.source.entityes.Users;
 import com.sleypner.parserarticles.model.source.entityes.VerificationCode;
+import com.sleypner.parserarticles.special.Special;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
+
 
 @Repository
+@Transactional
 public class UsersServiceImpl implements UsersService {
 
     @PersistenceContext
@@ -31,28 +33,40 @@ public class UsersServiceImpl implements UsersService {
         this.verificationCodeService = verificationCodeService;
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<Users> getAll() {
-        TypedQuery<Users> query = entityManager.createQuery("FROM Users users", Users.class);
+        TypedQuery<Users> query = entityManager.createQuery(
+                "SELECT u FROM Users u " +
+                        "LEFT JOIN FETCH u.roles " +
+                        "LEFT JOIN FETCH u.userActionLogs ", Users.class);
         return query.getResultList();
     }
 
-    @Transactional
     @Override
     public Users save(Users users) {
         return entityManager.merge(users);
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public Users getById(int id) {
-        return entityManager.find(Users.class, id);
+    public Optional<Users> getById(int id) {
+        TypedQuery<Users> query = entityManager.createQuery(
+                "SELECT u FROM Users u " +
+                        "LEFT JOIN FETCH u.roles " +
+                        "LEFT JOIN FETCH u.userActionLogs " +
+                        "WHERE u.id = :id", Users.class);
+        query.setParameter("id", id);
+        return query.getResultStream().findFirst();
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Users getByExternalId(String externalId) {
         TypedQuery<Users> query = entityManager.createQuery(
                 "SELECT u FROM Users u " +
-                        "JOIN FETCH u.roles " +
+                        "LEFT JOIN FETCH u.roles " +
+                        "LEFT JOIN FETCH u.userActionLogs " +
                         "WHERE u.externalId = :externalId", Users.class);
         query.setParameter("externalId", externalId);
         query.setMaxResults(1);
@@ -62,10 +76,9 @@ public class UsersServiceImpl implements UsersService {
         }
         return usersList.getFirst();
     }
-    @Transactional
+
     @Override
-    @Cacheable("users")
-    public Optional<Users> getOptionalByUsername(String username) {
+    public Optional<Users> getByUsername(String username) {
         TypedQuery<Users> query = entityManager.createQuery(
                 "SELECT u FROM Users u " +
                         "LEFT JOIN FETCH u.roles " +
@@ -74,84 +87,84 @@ public class UsersServiceImpl implements UsersService {
         query.setParameter("username", username);
         return query.getResultStream().findFirst();
     }
-    @Transactional
-    @Override
-    public Users getByUsername(String username) {
-        TypedQuery<Users> query = entityManager.createQuery(
-                "SELECT u FROM Users u " +
-                        "LEFT JOIN FETCH u.roles " +
-                        "LEFT JOIN FETCH u.userActionLogs " +
-                        "WHERE u.username = :username", Users.class);
-        query.setParameter("username", username);
-        query.setMaxResults(1);
-        List<Users> usersList = query.getResultList();
-        if (usersList.isEmpty()) {
-            return null;
-        }
-        return usersList.getFirst();
-    }
 
     @Transactional
     @Override
     public boolean verifyEmailCode(String email, int code) {
-        VerificationCode verificationCode = verificationCodeService.findByEmail(email);
-
+        VerificationCode verificationCode = verificationCodeService.findByEmail(email).orElse(null);
         if (verificationCode != null && verificationCode.getVerificationCode() == code && !verificationCode.isExpired()) {
 
-            Users user = this.findByEmail(email);
-            user.setEnabled(true);
-            this.save(user);
-            verificationCodeService.delete(verificationCode);
+            Users user = this.getByEmail(email).orElse(null);
+            if (user != null) {
+                user.setEnabled(true);
+                this.save(user);
+                verificationCodeService.delete(verificationCode);
 
-            return true;
+                return true;
+            }
         }
 
         return false;
     }
 
-    @Transactional
     @Override
-    public void resendVerificationCode(String email) {
-        int newCode = generateRandomCode();
-        VerificationCode verificationCode = verificationCodeService.findByEmail(email);
+    public boolean sendVerificationCode(String email) {
 
-        if (verificationCode == null) {
-            verificationCode = new VerificationCode(email, newCode);
-        } else {
-            verificationCode.setVerificationCode(newCode);
-            verificationCode.setUpdatedDate(LocalDateTime.now());
-            verificationCode.setExpiryDate(LocalDateTime.now().plusMinutes(1));
+        Optional<VerificationCode> dbVerificationCode = verificationCodeService.findByEmail(email);
+        int code = generateRandomCode();
+
+        if (dbVerificationCode.isPresent()) {
+
+            LocalDateTime expiryDate = dbVerificationCode.get().getExpiryDate();
+            LocalDateTime now = LocalDateTime.now().withNano(0);
+            LocalDateTime updatedDate = dbVerificationCode.get().getUpdatedDate();
+
+            long duration = Duration.between(updatedDate, now).toMinutes();
+
+            if (expiryDate.isAfter(now) && duration > 1) {
+
+                verificationCodeService.save(dbVerificationCode.get()
+                        .setVerificationCode(code)
+                        .setExpiryDate(now.plusMinutes(15)));
+
+                return (emailService.sendCode(email, code));
+            }
+            return false;
         }
 
-        verificationCodeService.save(verificationCode);
-        emailService.sendVerificationCode(email, newCode);
+        verificationCodeService.save(VerificationCode.builder()
+                .email(email)
+                .verificationCode(code)
+                .build());
+
+        return (emailService.sendCode(email, code));
     }
 
+    @Transactional(propagation = Propagation.NEVER)
     @Override
     public int generateRandomCode() {
-        return new Random().nextInt(999999);
+        return Special.randomInt(100000, 999999);
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public Users findByEmail(String email) {
+    public Optional<Users> getByEmail(String email) {
         TypedQuery<Users> query = entityManager.createQuery(
                 "SELECT u FROM Users u " +
-                        "JOIN FETCH u.roles " +
+                        "LEFT JOIN FETCH u.roles " +
+                        "LEFT JOIN FETCH u.userActionLogs " +
                         "WHERE u.email = :email", Users.class);
         query.setParameter("email", email);
-        query.setMaxResults(1);
-        List<Users> usersList = query.getResultList();
-        if (usersList.isEmpty()) {
-            return null;
-        }
-        return usersList.getFirst();
+        return query.getResultStream().findFirst();
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<Users> search(String search) {
         TypedQuery<Users> query = entityManager.createQuery(
                 "SELECT u FROM Users u " +
-                        "JOIN FETCH u.roles " +
+                        "LEFT JOIN FETCH u.roles " +
+                        "LEFT JOIN FETCH u.userActionLogs " +
                         "WHERE u.email LIKE CONCAT('%',:search,'%') OR u.name LIKE CONCAT('%',:search,'%') OR u.username LIKE CONCAT('%',:search,'%')", Users.class);
         query.setParameter("search", search);
         List<Users> usersList = query.getResultList();
@@ -161,13 +174,11 @@ public class UsersServiceImpl implements UsersService {
         return usersList;
     }
 
-    @Transactional
     @Override
     public void delete(int id) {
         entityManager.remove(entityManager.find(Users.class, id));
     }
 
-    @Transactional
     @Override
     public Users update(Users user) {
         return entityManager.merge(user);

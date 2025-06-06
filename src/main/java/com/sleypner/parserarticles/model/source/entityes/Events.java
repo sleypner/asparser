@@ -1,47 +1,66 @@
 package com.sleypner.parserarticles.model.source.entityes;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import lombok.experimental.Accessors;
+import lombok.experimental.SuperBuilder;
+import org.hibernate.proxy.HibernateProxy;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
-@Getter
-@Setter
-@NoArgsConstructor
 @Entity
 @Table(name = "events")
-public class Events implements Comparable<Events> {
+@Getter
+@Setter
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
+@Accessors(chain = true)
+@ToString(callSuper = true)
+public class Events extends AuditableEntity implements Comparable<Events> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int id;
+    private int id;
     @Column(name = "title")
-    String title;
-    @Column(name = "description",columnDefinition = "LONGTEXT")
-    String description;
-    @Column(name = "date",columnDefinition = "TIMESTAMP(0)")
-    LocalDateTime date;
+    private String title;
+    @Column(name = "description", columnDefinition = "LONGTEXT")
+    private String description;
+    @Column(name = "date", columnDefinition = "TIMESTAMP(0)")
+    private LocalDateTime date;
     @Column(name = "server")
-    String server;
+    private String server;
     @Column(name = "type")
-    String type;
-    @Column(name = "created_date", columnDefinition = "TIMESTAMP(0)")
-    LocalDateTime createdDate;
-    @Column(name = "updated_date", columnDefinition = "TIMESTAMP(0)")
-    LocalDateTime updatedDate;
+    private String type;
 
-    public Events(String title, String description, LocalDateTime date, String server,String type) {
-        this.title = title;
-        this.description = description;
-        this.date = date;
-        this.server = server;
-        this.type = type;
-        this.createdDate = LocalDateTime.now().withNano(0);
+    @PrePersist
+    private void onCreate() {
+        super.setCreatedAt();
+    }
+
+    @PreUpdate
+    private void onUpdate() {
+        super.setUpdatedAt();
     }
 
     @Override
     public int compareTo(Events o) {
         return getDate().compareTo(o.getDate());
+    }
+
+    @Override
+    public final boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+        Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
+        Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
+        if (thisEffectiveClass != oEffectiveClass) return false;
+        Events events = (Events) o;
+        return getId() != 0 && Objects.equals(getId(), events.getId());
+    }
+
+    @Override
+    public final int hashCode() {
+        return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
     }
 }

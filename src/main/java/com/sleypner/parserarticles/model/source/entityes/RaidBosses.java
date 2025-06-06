@@ -1,20 +1,24 @@
 package com.sleypner.parserarticles.model.source.entityes;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import lombok.experimental.Accessors;
+import lombok.experimental.SuperBuilder;
+import org.hibernate.proxy.HibernateProxy;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-@Getter
-@Setter
-@NoArgsConstructor
 @Entity
 @Table(name = "raid_bosses")
-public class RaidBosses implements Comparable<RaidBosses> {
+@Getter
+@Setter
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
+@Accessors(chain = true)
+@ToString(callSuper = true)
+public class RaidBosses extends AuditableEntity implements Comparable<RaidBosses> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,47 +44,13 @@ public class RaidBosses implements Comparable<RaidBosses> {
     private String lastKillersClan;
     @Column(name = "attackers_count")
     private int attackersCount;
-    @Column(name = "created_date", columnDefinition = "TIMESTAMP(0)")
-    private LocalDateTime createdDate;
-    @Column(name = "updated_date", columnDefinition = "TIMESTAMP(0)")
-    private LocalDateTime updatedDate;
 
-    public RaidBosses(String name, String type, String server, LocalDateTime date) {
-        this.name = name;
-        this.type = type;
-        this.server = server;
+    public RaidBosses setDate(LocalDateTime date) {
         this.date = date;
-        if(date != null) {
+        if (date != null) {
             SetRespawnBoss();
         }
-        this.createdDate = LocalDateTime.now().withNano(0);
-
-    }
-
-    public RaidBosses(String name, String type, String server, LocalDateTime date, String lastKiller, String lastKillersClan, int attackersCount) {
-        this.name = name;
-        this.type = type;
-        this.server = server;
-        this.date = date;
-        if(date != null) {
-            SetRespawnBoss();
-        }
-        this.lastKiller = lastKiller;
-        this.lastKillersClan = lastKillersClan;
-        this.attackersCount = attackersCount;
-        this.createdDate = LocalDateTime.now().withNano(0);
-    }
-
-
-    public LocalDateTime getDate() {
-        return date;
-    }
-
-    public void setDate(LocalDateTime date) {
-        this.date = date;
-        if(date != null) {
-            SetRespawnBoss();
-        }
+        return this;
     }
 
     @Override
@@ -88,15 +58,14 @@ public class RaidBosses implements Comparable<RaidBosses> {
         return getDate().compareTo(o.getDate());
     }
 
-    private void SetRespawnBoss(){
+    private void SetRespawnBoss() {
         String bossType = getType();
         String bossName = getName();
-        if(Objects.equals(bossType, "Key Bosses")){
+        if (Objects.equals(bossType, "Key Bosses")) {
             this.respawnStart = getDate().plusHours(18);
             this.respawnEnd = getDate().plusHours(30);
-        }
-        else if(Objects.equals(bossType, "Epic Bosses")){
-            switch (bossName){
+        } else if (Objects.equals(bossType, "Epic Bosses")) {
+            switch (bossName) {
                 case "Core":
                     this.respawnStart = getDate().plusHours(20);
                     this.respawnEnd = getDate().plusHours(28);
@@ -127,5 +96,31 @@ public class RaidBosses implements Comparable<RaidBosses> {
                     break;
             }
         }
+    }
+
+    @PrePersist
+    private void onCreate() {
+        super.setCreatedAt();
+    }
+
+    @PreUpdate
+    private void onUpdate() {
+        super.setUpdatedAt();
+    }
+
+    @Override
+    public final boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+        Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
+        Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
+        if (thisEffectiveClass != oEffectiveClass) return false;
+        RaidBosses that = (RaidBosses) o;
+        return getId() != 0 && Objects.equals(getId(), that.getId());
+    }
+
+    @Override
+    public final int hashCode() {
+        return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
     }
 }

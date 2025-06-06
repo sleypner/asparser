@@ -7,7 +7,7 @@
     <title>AsParser - Email confirmation</title>
 </head>
 <body>
-<div class="verification-container">
+<div class="verification-container auth-container" id="verificationPage">
     <div th:if="${verified}" class="text-center">
         <div class="verification-icon">
             <i class="fas fa-check-circle"></i>
@@ -18,7 +18,7 @@
         <div class="verification-text">
             Your email <span class="email-address" th:text="${email}">user@example.com</span> successfully confirmed.
         </div>
-        <a th:href="@{/login}" class="btn btn-verify">
+        <a th:href="@{/auth/signin}" class="btn btn-verify">
             <i class="fas fa-sign-in-alt me-2"></i> Log in
         </a>
     </div>
@@ -30,11 +30,11 @@
             <h2>Confirm your email</h2>
         </div>
         <div class="verification-text">
-            We have sent a 6-digit confirmation code to your address
+            We have sent a 6-digit confirmation code to your email address
             <span class="email-address" th:text="${email}">user@example.com</span>.
             Enter code here:
         </div>
-        <form th:action="@{/verify-code}" method="post" id="verificationForm">
+        <form th:action="@{/auth/verify-code}" method="post" id="verificationForm">
             <div class="code-input-container">
                 <input type="text" class="code-input" name="digit1" maxlength="1" pattern="\d" required
                        oninput="moveToNext(this, 'digit2')">

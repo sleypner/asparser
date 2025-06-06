@@ -5,15 +5,16 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 @Repository
+@Transactional
 public class RolesServiceImpl implements RolesService {
     @PersistenceContext
     private final EntityManager entityManager;
@@ -29,13 +30,11 @@ public class RolesServiceImpl implements RolesService {
         return query.getResultList();
     }
 
-    @Transactional
     @Override
     public Roles save(Roles roles) {
         return entityManager.merge(roles);
     }
 
-    @Transactional
     @Override
     public Set<Roles> saveAll(Set<Roles> roles) {
         Set<Roles> savedRoles = new HashSet<Roles>();
@@ -58,13 +57,11 @@ public class RolesServiceImpl implements RolesService {
         }
     }
 
-    @Transactional
     @Override
     public void delete(Roles roles) {
         entityManager.remove(roles);
     }
 
-    @Transactional
     @Override
     public void deleteByUserId(int id) {
         entityManager.createQuery("DELETE FROM Roles r WHERE r.user.id = :id");

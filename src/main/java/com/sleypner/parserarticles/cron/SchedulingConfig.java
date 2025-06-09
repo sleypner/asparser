@@ -20,23 +20,23 @@ public class SchedulingConfig {
         this.processing = processing;
         this.env = env;
     }
-//    @Scheduled(cron = "${parse.articles.cron}", zone = "${parse.zone}")
-//    public void scheduleParsingArticle() {
-//        logger.atInfo().addKeyValue("parser", processing.processingArticles()).addKeyValue("type", "articles").log();
-//    }
-//
-//    @Scheduled(cron = "${parse.fortress.cron}", zone = "${parse.zone}")
-//    public void scheduleParsingFortress() {
-//        logger.atInfo().addKeyValue("parser", processing.processingFortress()).addKeyValue("type", "fortress").log();
-//    }
-//
-//    @Scheduled(fixedDelayString = "${parse.online.delay}", initialDelayString = "${parse.online.initial-delay}", zone = "${parse.zone}")
-//    public void scheduleParsingOnline() {
-//        logger.atInfo().addKeyValue("parser", processing.processingOnlineArticles()).addKeyValue("type", "online_articles").log();
-//    }
-//
-//    @Scheduled(fixedDelayString = "${parse.events.delay}", initialDelayString = "${parse.events.initial-delay}", zone = "${parse.zone}")
-//    public void scheduleParsingEvents() {
-//        logger.atInfo().addKeyValue("parser", processing.processingEventsAndBosses()).addKeyValue("type", "events").log();
-//    }
+    @Scheduled(cron = "${parse.articles.cron}", zone = "${parse.zone}")
+    public void scheduleParsingArticle() {
+        logger.atInfo().addKeyValue("scheduleParsingArticle", processing.processingArticles()).addKeyValue("type", "articles").log();
+    }
+
+    @Scheduled(cron = "${parse.fortress.cron}", zone = "${parse.zone}")
+    public void scheduleParsingFortress() {
+        logger.atInfo().addKeyValue("scheduleParsingFortress", processing.processingFortress()).addKeyValue("type", "fortress").log();
+    }
+
+    @Scheduled(fixedDelayString = "${parse.online.delay}", initialDelayString = "${parse.online.initial-delay}", zone = "${parse.zone}")
+    public void scheduleParsingOnline() {
+        logger.atInfo().addKeyValue("scheduleParsingOnline", processing.processingOnlineArticles()).addKeyValue("type", "online_articles").log();
+    }
+
+    @Scheduled(fixedDelayString = "${parse.events.delay}", initialDelayString = "${parse.events.initial-delay}", zone = "${parse.zone}")
+    public void scheduleParsingEvents() {
+        logger.atInfo().addKeyValue("scheduleParsingEvents", processing.processingEventsAndBosses()).addKeyValue("type", "events").log();
+    }
 }

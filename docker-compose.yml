@@ -6,7 +6,7 @@ services:
       db:
         condition: service_healthy
     ports:
-      - 8080:8080
+      - "2828:8080"
   db:
     image: mariadb:11.7.2
     environment:
@@ -17,7 +17,7 @@ services:
       MARIADB_CHARACTER_SET_SERVER: 'utf8mb4'
       MARIADB_COLLATION_SERVER: 'utf8mb4_unicode_ci'
     ports:
-      - 3306:3306
+      - "3306:3306"
     volumes:
       - "./mariadb_volume:/var/lib/mysql"
     healthcheck:

@@ -10,17 +10,72 @@
 oauth2:
   client:
     google:
-      client-id: ${OAUTH2_GOOGLE_CLIENT_ID}
-      client-secret: ${OAUTH2_GOOGLE_CLIENT_SECRET}
-      redirect-uri: ${OAUTH2_GOOGLE_REDIRECT_HOST}
+      client-id: ${OAUTH2_GOOGLE_CLIENT_ID:}
+      client-secret: ${OAUTH2_GOOGLE_CLIENT_SECRET:}
       attribute-key: "sub"
     discord:
-      client-id: ${OAUTH2_DISCORD_CLIENT_ID}
-      client-secret: ${OAUTH2_DISCORD_CLIENT_SECRET}
-      redirect-uri: ${OAUTH2_DISCORD_REDIRECT_HOST}
+      client-id: ${OAUTH2_DISCORD_CLIENT_ID:}
+      client-secret: ${OAUTH2_DISCORD_CLIENT_SECRET:}
       attribute-key: "username"
     yandex:
-      client-id: ${OAUTH2_YANDEX_CLIENT_ID}
-      client-secret: ${OAUTH2_YANDEX_CLIENT_SECRET}
-      redirect-uri: ${OAUTH2_YANDEX_REDIRECT_HOST}
+      client-id: ${OAUTH2_YANDEX_CLIENT_ID:}
+      client-secret: ${OAUTH2_YANDEX_CLIENT_SECRET:}
       attribute-key: "first_name"
+
+
+parse:
+  zone: ${PARSE_TIME_ZONE:Europe/Helsinki}
+  articles:
+    cron: ${PARSE_ARTICLES_CRONE_EX:-}
+  fortress:
+    cron: ${PARSE_FORTRESS_CRONE_EX:0 0 12 * * ?}
+  online:
+    delay: ${PARSE_ONLINE_DELAY:600000}
+    initial-delay: ${PARSE_ONLINE_DELAY_INIT:60000}
+  events:
+    delay: ${PARSE_EVENTS_DELAY:1200000}
+    initial-delay: ${PARSE_EVENTS_DELAY_INIT:60000}
+
+spring:
+  profiles:
+    active: ${SPRING_PROFILE:prod}
+  # Google smtp
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${G_APP_USER:}
+    password: ${G_APP_PASS:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enabled: true
+
+smtp:
+  mail:
+    from: ${G_APP_USER:}
+
+server:
+  port: ${SERVER_PORT:8080}
+
+google:
+  recaptcha:
+    secret: ${GOOGLE_CAPTCHA:}
+
+# Database
+db:
+  url: ${DB_CONNECT_URL:jdbc:mariadb://db:3306/asparser_db}
+  username: ${DB_CONNECT_USERNAME:asparser}
+  password: ${DB_CONNECT_PASSWORD:as4561}
+
+# Admin user
+admin:
+  username: ${ADMIN_USERNAME:admin}
+  password: ${ADMIN_PASSWORD:admin123}
+logging:
+  level:
+    root: ${LOGGING_LEVEL:info}
+
+host:
+  url: ${HOST_URL:http://localhost:8080}

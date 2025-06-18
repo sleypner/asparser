@@ -523,7 +523,7 @@ $(document).ready(function () {
                         let secondValueRow = document.createElement("tr");
                         let secondHeadRow = document.createElement("tr");
                         for (const thirdObject in value) {
-                            if (thirdObject === "id" || thirdObject === "image" || thirdObject === "updatedDate" || thirdObject === "createdDate") {
+                            if (thirdObject === "id" || thirdObject === "image" || thirdObject === "updatedDate" || thirdObject === "createdDate" || thirdObject === "server") {
                                 continue;
                             }
                             let secondHeadCol = document.createElement("th");
@@ -532,7 +532,7 @@ $(document).ready(function () {
                         }
                         for (const thirdObject in value) {
                             let secondValue = value[thirdObject];
-                            if (thirdObject === "id" || thirdObject === "image" || thirdObject === "updatedDate" || thirdObject === "createdDate") {
+                            if (thirdObject === "id" || thirdObject === "image" || thirdObject === "updatedDate" || thirdObject === "createdDate" || thirdObject === "server") {
                                 continue;
                             }
                             if (thirdObject === "name") {

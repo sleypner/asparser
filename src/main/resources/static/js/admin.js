@@ -470,7 +470,8 @@ if (document.location.pathname === '/admin/users') {
             });
         }
     }
-} else if (document.location.pathname === '/admin/settings') {
+}
+else if (document.location.pathname === '/admin/settings') {
     $(document).ready(function () {
         loadSettings();
 

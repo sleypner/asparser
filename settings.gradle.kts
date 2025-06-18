@@ -1,1 +1,2 @@
-rootProject.name = "parserarticles"
+rootProject.name = "asparser"
+

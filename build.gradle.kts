@@ -11,14 +11,14 @@ version = "1.1-SNAPSHOT"
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(22)
+        languageVersion.set(JavaLanguageVersion.of(22))
     }
 }
 application {
-    mainClass = "dev.sleypner.asparser.Application"
+    mainClass.set("dev.sleypner.asparser.Application")
 }
 springBoot {
-    mainClass = "dev.sleypner.asparser.Application"
+    mainClass.set("dev.sleypner.asparser.Application")
 }
 repositories {
     mavenCentral()
@@ -60,6 +60,7 @@ dependencies {
     implementation("net.logstash.logback:logstash-logback-encoder:8.0")
     implementation("systems.manifold:manifold-ext-rt:2025.1.20")
     annotationProcessor("systems.manifold:manifold-ext:2025.1.20")
+    compileOnly("systems.manifold:manifold-all:2025.1.20")
 
     implementation("org.postgresql:postgresql:42.7.5")
 

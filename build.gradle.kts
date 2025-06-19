@@ -24,6 +24,13 @@ repositories {
     mavenCentral()
 }
 
+tasks.withType<JavaCompile>().configureEach {
+    options.compilerArgs.add("-Xplugin:Manifold")
+}
+tasks.withType<Test> {
+    useJUnitPlatform()
+}
+
 dependencies {
 
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
@@ -67,9 +74,4 @@ dependencies {
     //DeepSeekClient
     implementation("com.openai:openai-java:2.8.1")
 }
-tasks.withType<JavaCompile> {
-    options.compilerArgs.add("-Xplugin:Manifold")
-}
-tasks.withType<Test> {
-    useJUnitPlatform()
-}
+

@@ -39,7 +39,7 @@ public abstract class BaseOrchestrationService<T> implements OrchestrationServic
                 .flatMap(uri -> {
                     log.debug("Processing URI: {}", uri);
                     return processSinglePage(uri)
-                            .doOnSubscribe(_ -> handleSubscribe(uri))
+                            .doOnSubscribe(sub -> handleSubscribe(uri))
                             .onErrorResume(e -> handleError(uri, e));
                 })
                 .doOnComplete(this::handleComplete)

@@ -70,8 +70,12 @@ dependencies {
 
     // Manifold
     implementation("systems.manifold:manifold-ext-rt:2025.1.20")
-    annotationProcessor("systems.manifold:manifold-ext:2025.1.20")
-    compileOnly("systems.manifold:manifold-all:2025.1.20")
+    annotationProcessor ("systems.manifold:manifold-ext:2025.1.20")
+    compileOnly ("systems.manifold:manifold-all:2025.1.20")
+
+    testImplementation ("systems.manifold:manifold-ext-rt:2025.1.20")
+    testAnnotationProcessor ("systems.manifold:manifold-ext:2025.1.20")
+    testCompileOnly ("systems.manifold:manifold-all:2025.1.20")
 
     // Utility
     implementation("com.github.ua-parser:uap-java:1.6.1")

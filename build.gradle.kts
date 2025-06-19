@@ -3,6 +3,7 @@ plugins {
     java
     id("org.springframework.boot") version "3.3.1"
     id("io.spring.dependency-management") version "1.1.5"
+    id("systems.manifold.manifold-gradle-plugin") version "0.0.2-alpha"
 }
 
 group = "dev.sleypner"
@@ -62,6 +63,9 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok:1.18.36")
     implementation("io.github.resilience4j:resilience4j-reactor:2.3.0")
     implementation("io.github.resilience4j:resilience4j-ratelimiter:2.3.0")
+
+    //DeepSeekClient
+    implementation("com.openai:openai-java:2.8.1")
 }
 tasks.withType<JavaCompile> {
     options.compilerArgs.add("-Xplugin:Manifold")

@@ -4,7 +4,7 @@ COPY ./ /build_src
 
 WORKDIR /build_src
 
-RUN gradle -no-daemon --stacktrace --info --debug --refresh-dependencies build
+RUN gradle -no-daemon --stacktrace --info --debug --refresh-dependencies --no-daemon && \ls -la /app/build/libs/ build
 
 FROM openjdk:21-slim-bookworm AS runtime
 

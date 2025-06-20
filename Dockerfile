@@ -1,11 +1,13 @@
-FROM gradle:jdk21-jammy AS build
+FROM gradle:jdk22-jammy AS build
 
 WORKDIR /build_src
 COPY . .
 
-RUN gradle build && \ls -la /build_src/build/libs/
+RUN gradle build -no-daemon
 
-FROM openjdk:21-slim-bookworm AS runtime
+RUN ls -la /build_src/build/libs/
+
+FROM openjdk:22-slim-bookworm AS runtime
 
 COPY --from=build /build_src/build/libs/*.jar app.jar
 

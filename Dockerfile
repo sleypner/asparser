@@ -1,13 +1,14 @@
 FROM gradle:jdk22-jammy AS build
 
-COPY ./ /build_src
-
 WORKDIR /build_src
+COPY . .
 
-RUN gradle build
+RUN gradle build -no-daemon
+
+RUN ls -la /build_src/build/libs/
 
 FROM openjdk:22-slim-bookworm AS runtime
 
-COPY --from=build /build_src/build/libs/parserarticles-1.1-SNAPSHOT.jar app.jar
+COPY --from=build /build_src/build/libs/*.jar app.jar
 
 ENTRYPOINT ["java","-jar","/app.jar"]

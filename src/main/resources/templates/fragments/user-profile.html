@@ -9,7 +9,7 @@
             <div class="profile-info">
                 <div class="profile-header-info">
                     <h2 th:text="${#authentication.principal.attributes.first_name}+' '+${#authentication.principal.attributes.last_name}"></h2>
-                    <div class="profile-roles" th:each="role : ${#authentication.principal.attributes.roles}">
+                    <div class="profile-role" th:each="role : ${#authentication.principal.attributes.role}">
                         <span th:text="${role.role}" class="badge-role ms-2"></span>
                     </div>
                 </div>

@@ -1,13 +1,12 @@
 FROM gradle:jdk21-jammy AS build
 
-COPY ./ /build_src
-
 WORKDIR /build_src
+COPY . .
 
-RUN gradle build -no-daemon --stacktrace --info --debug --refresh-dependencies --no-daemon && \ls -la /app/build/libs/
+RUN gradle build && \ls -la /build_src/build/libs/
 
 FROM openjdk:21-slim-bookworm AS runtime
 
-COPY --from=build /build_src/build/libs/parserarticles-1.1-SNAPSHOT.jar app.jar
+COPY --from=build /build_src/build/libs/*.jar app.jar
 
 ENTRYPOINT ["java","-jar","/app.jar"]

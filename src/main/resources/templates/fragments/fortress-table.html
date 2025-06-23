@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
-<div th:fragment="fortress-table" class="main-content event-form" th:data-name="${loc}" data-form-type="event-form">
+<div th:fragment="table" class="main-content event-form" th:data-name="${loc}" data-form-type="event-form">
     <h1 class="mb-4 text-center main-title">Fortress</h1>
     <div class=".d-flex flex-column">
-        <div th:replace="~{fragments/event-form :: form}"></div>
+        <div th:replace="~{fragments/events-form :: form}"></div>
         <div class="table-responsive">
             <table th:id="${loc + 'Table'}" class="table table-custom table-hover">
                 <thead>

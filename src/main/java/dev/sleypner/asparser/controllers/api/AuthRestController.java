@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import dev.sleypner.asparser.util.StringExtension;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -98,7 +99,9 @@ public class AuthRestController {
 
         if (!optionalDbUser.isPresent()) {
 
-            user = usersService.save(user.setPassword("{bcrypt}" + user.getPassword().encodeBCrypt())
+            String newPassword = StringExtension.createPassword(user.getPassword());
+
+            user = usersService.save(user.setPassword(newPassword)
                     .setName(username));
 
             rolesService.save(Role.builder()

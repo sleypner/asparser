@@ -4,6 +4,7 @@ import dev.sleypner.asparser.domain.model.Role;
 import dev.sleypner.asparser.domain.model.User;
 import dev.sleypner.asparser.service.core.auth.roles.RolesService;
 import dev.sleypner.asparser.service.core.auth.user.UsersService;
+import dev.sleypner.asparser.util.StringExtension;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -33,13 +34,14 @@ public class DefaultUser {
         if (admin == null) {
             // login: admin Password: admin123
             String username = environment.getProperty("admin.username");
-            String password = environment.getProperty("admin.password").createPassword();
+            String password = environment.getProperty("admin.password");
+            String newPassword = StringExtension.createPassword(password);
             User newUser = usersService.save(User.builder()
                     .enabled(true)
                     .username(username)
-                    .password(password)
+                    .password(newPassword)
                     .email("admin@admin.ru")
-                    .name(username.capitalizeFirstLetter())
+                    .name(StringExtension.capitalizeFirstLetter(username))
                     .build());
 
             String[] rolesArr = {"ROLE_USER", "ROLE_MANAGER", "ROLE_ADMIN"};

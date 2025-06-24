@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <th:block th:insert="~{fragments/head :: my-head}"></th:block>
+    <th:block th:insert="~{fragments/head :: head}"></th:block>
     <link rel="stylesheet" th:href="@{/css/user.css}">
     <script th:src="@{/js/user.js}"></script>
     <title>Article Parser - Settings</title>
 </head>
 <body>
-<div th:replace="~{fragments/menu :: my-menu}"></div>
+<div th:replace="~{fragments/menu :: menu}"></div>
 <div th:replace="~{fragments/user-settings :: settings}"></div>
-<div th:replace="~{fragments/footer :: my-footer}"></div>
+<div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>

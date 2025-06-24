@@ -3,6 +3,7 @@ package dev.sleypner.asparser.service.parser.bosses.persistence;
 import dev.sleypner.asparser.domain.model.RaidBoss;
 import dev.sleypner.asparser.domain.model.Server;
 import dev.sleypner.asparser.service.parser.shared.PersistenceManager;
+import dev.sleypner.asparser.util.StringExtension;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
@@ -64,8 +65,15 @@ public class RaidBossesPersistenceImpl implements RaidBossesPersistence, Persist
 
     @Override
     public List<RaidBoss> getByServer(String server) {
-        TypedQuery<RaidBoss> query = em.createQuery("SELECT b FROM RaidBoss b WHERE b.server = :server ORDER BY b.date DESC", RaidBoss.class);
-        query.setParameter("server", server);
+        TypedQuery<RaidBoss> query = em.createQuery(
+                "SELECT b FROM RaidBoss b " +
+                        "JOIN FETCH b.server s " +
+                "WHERE LOWER(CONCAT(s.name, s.rates)) = :server " +
+                "ORDER BY b.date DESC", RaidBoss.class
+        );
+
+        String serverProcess = StringExtension.trimAll(server.toLowerCase());
+        query.setParameter("server", serverProcess);
 
         return query.getResultList();
     }

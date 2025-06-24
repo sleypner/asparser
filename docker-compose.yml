@@ -1,7 +1,8 @@
 services:
   article-parser:
-    env_file: "variables.env"
     image: sleypnersfa/asparser:latest
+    container_name: asparser
+    env_file: "variables.env"
     depends_on:
       db:
         condition: service_healthy
@@ -9,6 +10,7 @@ services:
       - "2828:8080"
   db:
     image: mariadb:11.7.2
+    container_name: mariadb
     environment:
       MARIADB_ROOT_PASSWORD: 'root123'
       MARIADB_USER: 'asparser'

@@ -3,7 +3,7 @@ plugins {
     java
     id("org.springframework.boot") version "3.3.1"
     id("io.spring.dependency-management") version "1.1.5"
-    id("systems.manifold.manifold-gradle-plugin") version "0.0.2-alpha"
+//    id("systems.manifold.manifold-gradle-plugin") version "0.0.2-alpha"
 }
 
 group = "dev.sleypner"
@@ -24,9 +24,9 @@ repositories {
     mavenCentral()
 }
 
-tasks.withType<JavaCompile>().configureEach {
-    options.compilerArgs.add("-Xplugin:Manifold")
-}
+//tasks.withType<JavaCompile>().configureEach {
+//    options.compilerArgs.add("-Xplugin:Manifold")
+//}
 tasks.withType<Test> {
     useJUnitPlatform()
 }
@@ -69,13 +69,13 @@ dependencies {
     implementation("net.logstash.logback:logstash-logback-encoder:8.0")
 
     // Manifold
-    implementation("systems.manifold:manifold-ext-rt:2025.1.20")
-    annotationProcessor ("systems.manifold:manifold-ext:2025.1.20")
-    compileOnly ("systems.manifold:manifold-all:2025.1.20")
-
-    testImplementation ("systems.manifold:manifold-ext-rt:2025.1.20")
-    testAnnotationProcessor ("systems.manifold:manifold-ext:2025.1.20")
-    testCompileOnly ("systems.manifold:manifold-all:2025.1.20")
+//    implementation("systems.manifold:manifold-ext-rt:2025.1.20")
+//    annotationProcessor ("systems.manifold:manifold-ext:2025.1.20")
+//    compileOnly ("systems.manifold:manifold-all:2025.1.20")
+//
+//    testImplementation ("systems.manifold:manifold-ext-rt:2025.1.20")
+//    testAnnotationProcessor ("systems.manifold:manifold-ext:2025.1.20")
+//    testCompileOnly ("systems.manifold:manifold-all:2025.1.20")
 
     // Utility
     implementation("com.github.ua-parser:uap-java:1.6.1")

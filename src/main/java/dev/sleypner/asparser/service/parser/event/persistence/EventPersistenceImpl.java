@@ -1,7 +1,9 @@
 package dev.sleypner.asparser.service.parser.event.persistence;
 
 import dev.sleypner.asparser.domain.model.Event;
+import dev.sleypner.asparser.domain.model.RaidBoss;
 import dev.sleypner.asparser.service.parser.shared.PersistenceManager;
+import dev.sleypner.asparser.util.StringExtension;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
@@ -49,8 +51,14 @@ public class EventPersistenceImpl implements EventPersistence, PersistenceManage
 
     @Override
     public List<Event> getByServer(String server) {
-        TypedQuery<Event> query = em.createQuery("SELECT e FROM Event e WHERE e.server = :server ORDER BY e.date DESC", Event.class);
-        query.setParameter("server", server);
+        TypedQuery<Event> query = em.createQuery(
+                "SELECT e FROM Event e " +
+                        "JOIN FETCH e.server s " +
+                        "WHERE LOWER(CONCAT(s.name, s.rates)) = :server " +
+                        "ORDER BY e.date DESC", Event.class
+        );
+        String serverProcess = StringExtension.trimAll(server.toLowerCase());
+        query.setParameter("server", serverProcess);
         return query.getResultList();
     }
 

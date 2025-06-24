@@ -49,10 +49,12 @@ public class ClanPersistenceImpl implements ClanPersistence, PersistenceManager<
     }
 
     @Override
-    public Clan getByNameAndServer(String clanName, String serverName) {
-        TypedQuery<Clan> query = em.createQuery("SELECT c FROM Clan c WHERE c.name = :clanName AND c.server = :serverName", Clan.class);
+    public Clan getByNameAndServer(String clanName, String server) {
+        TypedQuery<Clan> query = em.createQuery("SELECT c FROM Clan c " +
+                "JOIN FETCH c.server s " +
+                "WHERE c.name = :clanName AND LOWER(CONCAT(s.name, s.rates)) = :server", Clan.class);
         query.setParameter("clanName", clanName);
-        query.setParameter("serverName", serverName);
+        query.setParameter("serverName", server);
         query.setMaxResults(1);
         List<Clan> clanList = query.getResultList();
         if (clanList.isEmpty()) {

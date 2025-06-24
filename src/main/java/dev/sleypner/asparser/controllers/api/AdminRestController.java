@@ -4,6 +4,7 @@ import dev.sleypner.asparser.domain.model.Role;
 import dev.sleypner.asparser.domain.model.User;
 import dev.sleypner.asparser.service.core.auth.roles.RolesService;
 import dev.sleypner.asparser.service.core.auth.user.UsersService;
+import dev.sleypner.asparser.util.StringExtension;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,7 +88,7 @@ public class AdminRestController {
                 }
                 String password = user.getPassword();
                 if (password != null) {
-                    String newPassword = password.createPassword();
+                    String newPassword = StringExtension.createPassword(password);
                     if (!(newPassword.equals(savedUser.getPassword()))) {
                         savedUser.setPassword(newPassword);
                     }

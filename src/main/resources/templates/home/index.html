@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <th:block th:insert="~{fragments/head :: my-head}"></th:block>
+    <th:block th:insert="~{fragments/head :: head}"></th:block>
     <script th:src="@{/js/script.js}"></script>
     <title>AsParser - Home page</title>
 </head>
 <body>
-<div th:replace="~{fragments/menu :: my-menu}"></div>
+<div th:replace="~{fragments/menu :: menu}"></div>
 
-<div th:replace="~{fragments/article-table :: article-table}"></div>
+<div th:replace="~{fragments/article-table :: table}"></div>
 
-<div th:replace="~{fragments/footer :: my-footer}"></div>
+<div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>

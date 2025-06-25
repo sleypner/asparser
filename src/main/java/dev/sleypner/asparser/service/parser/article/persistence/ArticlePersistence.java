@@ -6,15 +6,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ArticlePersistence {
-    List<Article> query();
 
-    Article getById(int id);
+    Article getById(Integer id);
 
     List<Article> getAll();
 
     Article save(Article article);
-
-    Article deleteById(int id);
 
     List<Article> getByDate(LocalDateTime dateStart, LocalDateTime dateEnd);
 

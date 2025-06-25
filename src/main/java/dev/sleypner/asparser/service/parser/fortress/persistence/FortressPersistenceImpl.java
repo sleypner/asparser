@@ -1,7 +1,8 @@
 package dev.sleypner.asparser.service.parser.fortress.persistence;
 
 import dev.sleypner.asparser.domain.model.Fortress;
-import dev.sleypner.asparser.service.parser.shared.PersistenceManager;
+import dev.sleypner.asparser.service.parser.shared.DateRepository;
+import dev.sleypner.asparser.service.parser.shared.RepositoryManager;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
@@ -14,51 +15,54 @@ import java.util.Set;
 
 @Repository
 @Transactional
-public class FortressPersistenceImpl implements FortressPersistence, PersistenceManager<Fortress> {
+public class FortressPersistenceImpl implements FortressPersistence, RepositoryManager<Fortress>, DateRepository<Fortress> {
     @PersistenceContext
-    private final EntityManager entityManager;
+    private final EntityManager em;
 
     @Autowired
     public FortressPersistenceImpl(EntityManager entityManager) {
-        this.entityManager = entityManager;
+        this.em = entityManager;
     }
 
     @Override
     public List<Fortress> getAll() {
-        TypedQuery<Fortress> query = entityManager.createQuery("SELECT f FROM Fortress f JOIN FETCH f.skills", Fortress.class);
+        TypedQuery<Fortress> query = em.createQuery("SELECT f FROM Fortress f JOIN FETCH f.skills", getEntityClass());
         return query.getResultList();
     }
 
     @Override
     public Fortress save(Fortress fortress) {
-        entityManager.persist(fortress);
-        System.out.println(fortress);
-        return fortress;
+        return em.merge(fortress);
     }
 
     @Override
     public Fortress update(Fortress fortress) {
-        return entityManager.merge(fortress);
+        return em.merge(fortress);
     }
 
     @Override
     public void delete(Fortress fortress) {
-        entityManager.remove(fortress);
+        em.remove(fortress);
+    }
+
+    @Override
+    public Fortress getById(Integer id) {
+        return em.find(getEntityClass(), id);
     }
 
     @Override
     public Fortress getById(int id) {
-        TypedQuery<Fortress> query = entityManager.createQuery(
+        TypedQuery<Fortress> query = em.createQuery(
                 "SELECT f FROM Fortress f " +
                         "JOIN FETCH f.skills " +
-                        "WHERE f.id = :id", Fortress.class);
+                        "WHERE f.id = :id", getEntityClass());
         query.setParameter("id", id);
         return query.getResultList().get(0);
     }
 
     @Override
     public Fortress getByNameAndServer(String fortressName, String serverName) {
-        TypedQuery<Fortress> query = entityManager.createQuery("SELECT f FROM Fortress f WHERE f.name = :fortressName AND f.server = :serverName", Fortress.class);
+        TypedQuery<Fortress> query = em.createQuery("SELECT f FROM Fortress f WHERE f.name = :fortressName AND f.server = :serverName", getEntityClass());
         query.setParameter("fortressName", fortressName);
         query.setParameter("serverName", serverName);
         return query.getResultList().get(0);
@@ -66,17 +70,17 @@ public class FortressPersistenceImpl implements FortressPersistence, Persistence
 
     @Override
     public long getCount() {
-        return entityManager.createQuery("SELECT COUNT(f) FROM Fortress f", Long.class).getSingleResult();
+        return em.createQuery("SELECT COUNT(f) FROM Fortress f", Long.class).getSingleResult();
     }
 
     @Override
     public Set<Fortress> save(Set<Fortress> set) {
-        return Set.of();
+        return em.merge(set);
     }
 
     @Override
     public EntityManager getEm() {
-        return entityManager;
+        return em;
     }
 
     @Override

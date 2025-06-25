@@ -1,8 +1,8 @@
 package dev.sleypner.asparser.service.parser.event.persistence;
 
 import dev.sleypner.asparser.domain.model.Event;
-import dev.sleypner.asparser.domain.model.RaidBoss;
-import dev.sleypner.asparser.service.parser.shared.PersistenceManager;
+import dev.sleypner.asparser.service.parser.shared.DateRepository;
+import dev.sleypner.asparser.service.parser.shared.RepositoryManager;
 import dev.sleypner.asparser.util.StringExtension;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -13,13 +13,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
 @Repository
 @Transactional
-public class EventPersistenceImpl implements EventPersistence, PersistenceManager<Event> {
+public class EventPersistenceImpl implements EventPersistence, RepositoryManager<Event>, DateRepository<Event> {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
     @PersistenceContext
@@ -31,15 +30,8 @@ public class EventPersistenceImpl implements EventPersistence, PersistenceManage
     }
 
     @Override
-    public Event getById(int id) {
-        TypedQuery<Event> query = em.createQuery("SELECT e FROM Event e WHERE e.id = :id", Event.class);
-        query.setParameter("id", id);
-        return query.getSingleResult();
-    }
-
-    @Override
     public List<Event> getAll() {
-        TypedQuery<Event> query = em.createQuery("SELECT e FROM Event e ORDER BY e.date DESC", Event.class);
+        TypedQuery<Event> query = em.createQuery("SELECT e FROM Event e ORDER BY e.date DESC", getEntityClass());
         return query.getResultList();
     }
 
@@ -55,7 +47,7 @@ public class EventPersistenceImpl implements EventPersistence, PersistenceManage
                 "SELECT e FROM Event e " +
                         "JOIN FETCH e.server s " +
                         "WHERE LOWER(CONCAT(s.name, s.rates)) = :server " +
-                        "ORDER BY e.date DESC", Event.class
+                        "ORDER BY e.date DESC", getEntityClass()
         );
         String serverProcess = StringExtension.trimAll(server.toLowerCase());
         query.setParameter("server", serverProcess);
@@ -77,6 +69,16 @@ public class EventPersistenceImpl implements EventPersistence, PersistenceManage
     }
 
     @Override
+    public void delete(Event entity) {
+        em.remove(entity);
+    }
+
+    @Override
+    public Event getById(Integer id) {
+        return em.find(Event.class, id);
+    }
+
+    @Override
     public EntityManager getEm() {
         return em;
     }
@@ -86,8 +88,4 @@ public class EventPersistenceImpl implements EventPersistence, PersistenceManage
         return Event.class;
     }
 
-    @Override
-    public LocalDateTime getLastDate(String dateFieldName) {
-        return PersistenceManager.super.getLastDate(dateFieldName);
-    }
 }

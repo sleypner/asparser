@@ -36,7 +36,7 @@ public class FortressParserService implements Parser<FortressData> {
             String fortressName = element.select("tr").first().text();
             Elements otherElements = element.select("tbody").last().select("tr");
 
-            String onclick = otherElements.get(0).select("a").attr("onclick");
+            String onclick = otherElements.getFirst().select("a").attr("onclick");
             String clanUrl = null;
             if (onclick.isEmpty()) {
                 clanUrl = "NPC";

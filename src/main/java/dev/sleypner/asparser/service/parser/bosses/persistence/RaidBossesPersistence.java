@@ -1,13 +1,12 @@
 package dev.sleypner.asparser.service.parser.bosses.persistence;
 
-
 import dev.sleypner.asparser.domain.model.RaidBoss;
 import dev.sleypner.asparser.domain.model.Server;
 
 import java.util.List;
 
 public interface RaidBossesPersistence {
-    RaidBoss getById(int id);
+    RaidBoss getById(Integer id);
 
     List<RaidBoss> getAll();
 

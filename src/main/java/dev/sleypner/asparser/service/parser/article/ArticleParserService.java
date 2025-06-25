@@ -8,7 +8,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -25,25 +24,29 @@ public class ArticleParserService implements Parser<Article> {
         return elements.stream().map(element -> {
 
             Element titleElement = element.selectFirst("p.tema");
-            String title = titleElement != null ? titleElement.text() : "";
-            String link = titleElement != null ? titleElement.selectFirst("a").attr("href") : "";
+            String title = Optional.ofNullable(titleElement).map(Element::text).orElse("");
+
+            String link = Optional.ofNullable(titleElement)
+                    .map(el -> el.selectFirst("a"))
+                    .map(a -> a.attr("href"))
+                    .orElse("");
 
             Element articleElement = element.selectFirst("div > div");
-            String subtitle = articleElement != null
-                    ? Optional.ofNullable(articleElement.selectFirst("p"))
+            String subtitle = Optional.ofNullable(articleElement)
+                    .map(el -> el.selectFirst("p"))
                     .map(Element::text)
-                    .orElse("")
-                    : "";
-            String description = articleElement != null ? articleElement.html() : "";
+                    .orElse("");
 
-            Element infoElement = element.selectFirst("p.inf");
-            LocalDateTime createdDate = LocalDateTime.from(
-                    DateFormat.format(
-                            infoElement != null
-                                    ? Optional.ofNullable(infoElement.selectFirst("span.col")).map(Element::text).orElse("")
-                                    : ""
-                    )
-            );
+            String description = Optional.ofNullable(articleElement)
+                    .map(Element::html)
+                    .orElse("");
+
+            LocalDateTime createdDate = Optional.ofNullable(element.selectFirst("p.inf"))
+                    .map(el -> el.selectFirst("span.col"))
+                    .map(Element::text)
+                    .map(DateFormat::format)
+                    .map(LocalDateTime::from)
+                    .orElse(null);
 
             return Article.builder()
                     .title(title)

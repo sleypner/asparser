@@ -5,7 +5,7 @@ import dev.sleypner.asparser.domain.model.Event;
 import java.util.List;
 
 public interface EventPersistence {
-    Event getById(int id);
+    Event getById(Integer id);
 
     List<Event> getAll();
 

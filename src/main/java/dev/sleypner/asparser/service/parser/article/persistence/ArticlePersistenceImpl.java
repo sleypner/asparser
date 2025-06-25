@@ -3,7 +3,8 @@ package dev.sleypner.asparser.service.parser.article.persistence;
 
 import dev.sleypner.asparser.domain.model.Article;
 import dev.sleypner.asparser.domain.model.metamodels.Article_;
-import dev.sleypner.asparser.service.parser.shared.PersistenceManager;
+import dev.sleypner.asparser.service.parser.shared.DateRepository;
+import dev.sleypner.asparser.service.parser.shared.RepositoryManager;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
@@ -25,7 +26,7 @@ import java.util.stream.Collectors;
 
 @Repository
 @Transactional
-public class ArticlePersistenceImpl implements ArticlePersistence, PersistenceManager<Article> {
+public class ArticlePersistenceImpl implements ArticlePersistence, RepositoryManager<Article>, DateRepository<Article> {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
     @PersistenceContext
@@ -42,16 +43,9 @@ public class ArticlePersistenceImpl implements ArticlePersistence, PersistenceMa
     }
 
     @Override
-    public Article deleteById(int id) {
-        Article elem = em.find(Article.class, id);
-        em.remove(elem);
-        return elem;
-    }
-
-    @Override
     public List<Article> getByDate(LocalDateTime dateStart, LocalDateTime dateEnd) {
         return em.createQuery(
-                        "FROM Article articles WHERE articles.createOn BETWEEN :dateStart AND :dateEnd", Article.class)
+                        "FROM Article articles WHERE articles.createOn BETWEEN :dateStart AND :dateEnd", getEntityClass())
                 .setParameter("dateStart", dateStart)
                 .setParameter("dateEnd", dateEnd)
                 .getResultList();
@@ -59,7 +53,7 @@ public class ArticlePersistenceImpl implements ArticlePersistence, PersistenceMa
 
     @Override
     public List<Article> getLastNumbersArticles(int number) {
-        List<Article> res = em.createQuery("FROM Article articles ORDER BY articles.createOn DESC LIMIT :number", Article.class)
+        List<Article> res = em.createQuery("FROM Article articles ORDER BY articles.createOn DESC LIMIT :number", getEntityClass())
                 .setParameter("number", number)
                 .getResultList();
         if (res.isEmpty()) {
@@ -73,8 +67,8 @@ public class ArticlePersistenceImpl implements ArticlePersistence, PersistenceMa
     public List<Article> getByDateAndMore(String title, String subtitle, String description, LocalDateTime dateStart, LocalDateTime dateEnd) {
 
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-        CriteriaQuery<Article> criteriaQuery = criteriaBuilder.createQuery(Article.class);
-        Root<Article> articleRoot = criteriaQuery.from(Article.class);
+        CriteriaQuery<Article> criteriaQuery = criteriaBuilder.createQuery(getEntityClass());
+        Root<Article> articleRoot = criteriaQuery.from(getEntityClass());
 
         List<Predicate> predicates = new ArrayList<>();
 
@@ -110,7 +104,7 @@ public class ArticlePersistenceImpl implements ArticlePersistence, PersistenceMa
 
     @Override
     public List<Article> getLastArticle() {
-        List<Article> res = em.createQuery("FROM Article articles ORDER BY articles.createOn DESC LIMIT 1", Article.class).getResultList();
+        List<Article> res = em.createQuery("FROM Article articles ORDER BY articles.createOn DESC LIMIT 1", getEntityClass()).getResultList();
         if (res.isEmpty()) {
             return null;
         } else {
@@ -119,19 +113,9 @@ public class ArticlePersistenceImpl implements ArticlePersistence, PersistenceMa
     }
 
     @Override
-    public List<Article> query() {
-        return em.createQuery("FROM Article articles", Article.class).getResultList();
-    }
-
-    @Override
-    public Article getById(int id) {
-        return em.find(Article.class, id);
-    }
-
-    @Override
     public List<Article> getAll() {
-        TypedQuery<Article> query = em.createQuery("FROM Article articles", Article.class);
-        return query.getResultList();
+        TypedQuery<Article> query = em.createQuery("FROM Article articles", getEntityClass());
+        return query.getResultStream().toList();
     }
 
     @Override
@@ -157,6 +141,16 @@ public class ArticlePersistenceImpl implements ArticlePersistence, PersistenceMa
             }
         }
         return newArticles;
+    }
+
+    @Override
+    public void delete(Article entity) {
+        em.remove(entity);
+    }
+
+    @Override
+    public Article getById(Integer id) {
+        return em.find(getEntityClass(), id);
     }
 
     @Override

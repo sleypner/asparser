@@ -1,10 +1,10 @@
 package dev.sleypner.asparser.service.parser.server.persistence;
 
 import dev.sleypner.asparser.domain.model.Server;
-import dev.sleypner.asparser.service.parser.shared.PersistenceManager;
+import dev.sleypner.asparser.service.parser.shared.DateRepository;
+import dev.sleypner.asparser.service.parser.shared.RepositoryManager;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,13 +13,12 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Repository
 @Transactional
-public class ServerPersistenceImpl implements PersistenceManager<Server> {
+public class ServerPersistenceImpl implements RepositoryManager<Server>, DateRepository<Server> {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
     @PersistenceContext
@@ -30,31 +29,18 @@ public class ServerPersistenceImpl implements PersistenceManager<Server> {
         this.em = entityManager;
     }
 
-    public Set<Server> getAll() {
-        TypedQuery<Server> query = em.createQuery("FROM Server s", Server.class);
-        return query.getResultStream().collect(Collectors.toSet());
-    }
-
-
-    public Map<String, Integer> getServersMap() {
-        Query query = em.createQuery(
-                "SELECT s.name, s.rates, s.id FROM Server s");
-        List<Object[]> results = query.getResultList();
-
-        return results.stream()
-                .collect(Collectors.toMap(
-                        row -> row[0] + " " + row[1],
-                        row -> (Integer) row[2]
-                ));
+    public List<Server> getAll() {
+        TypedQuery<Server> query = em.createQuery("FROM Server s", getEntityClass());
+        return query.getResultStream().toList();
     }
 
     public Server getById(int id) {
-        return em.find(Server.class, id);
+        return em.find(getEntityClass(), id);
     }
 
     @Override
     public Set<Server> save(Set<Server> servers) {
-        Set<Server> dbServer = getAll();
+        List<Server> dbServer = getAll();
         Set<String> existingServers = dbServer.stream()
                 .map(Server::getName)
                 .collect(Collectors.toSet());
@@ -91,6 +77,11 @@ public class ServerPersistenceImpl implements PersistenceManager<Server> {
             }
         }
         return newServers;
+    }
+
+    @Override
+    public void delete(Server entity) {
+
     }
 
     @Override

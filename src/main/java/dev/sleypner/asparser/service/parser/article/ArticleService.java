@@ -11,11 +11,11 @@ public class ArticleService extends BaseOrchestrationService<Article> implements
 
     Logger log = LoggerFactory.getLogger(getClass());
 
-    protected ArticleService(PersistenceManager<Article> persistenceManager,
+    protected ArticleService(RepositoryManager<Article> repositoryManager,
                              Fetcher<Article> fetcher,
                              Parser<Article> parser,
                              EntityParserConfig<Article> parserConfig) {
-        super(persistenceManager, fetcher, parser, parserConfig, "Article");
+        super(repositoryManager, fetcher, parser, parserConfig, "Article");
     }
 
 }

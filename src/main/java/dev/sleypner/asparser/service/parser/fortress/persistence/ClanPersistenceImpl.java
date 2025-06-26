@@ -1,7 +1,8 @@
 package dev.sleypner.asparser.service.parser.fortress.persistence;
 
 import dev.sleypner.asparser.domain.model.Clan;
-import dev.sleypner.asparser.service.parser.shared.PersistenceManager;
+import dev.sleypner.asparser.service.parser.shared.DateRepository;
+import dev.sleypner.asparser.service.parser.shared.RepositoryManager;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
@@ -14,7 +15,7 @@ import java.util.Set;
 
 @Repository
 @Transactional
-public class ClanPersistenceImpl implements ClanPersistence, PersistenceManager<Clan> {
+public class ClanPersistenceImpl implements ClanPersistence, RepositoryManager<Clan>, DateRepository<Clan> {
     @PersistenceContext
     private final EntityManager em;
 
@@ -25,14 +26,13 @@ public class ClanPersistenceImpl implements ClanPersistence, PersistenceManager<
 
     @Override
     public List<Clan> getAll() {
-        TypedQuery<Clan> query = em.createQuery("FROM Clan clan", Clan.class);
+        TypedQuery<Clan> query = em.createQuery("FROM Clan clan", getEntityClass());
         return query.getResultList();
     }
 
     @Override
     public Clan save(Clan clan) {
         em.persist(clan);
-        System.out.println(clan.toString());
         return clan;
     }
 
@@ -43,7 +43,7 @@ public class ClanPersistenceImpl implements ClanPersistence, PersistenceManager<
 
     @Override
     public Clan getById(int id) {
-        TypedQuery<Clan> query = em.createQuery("SELECT c FROM Clan c WHERE c.id = :id", Clan.class);
+        TypedQuery<Clan> query = em.createQuery("SELECT c FROM Clan c WHERE c.id = :id", getEntityClass());
         query.setParameter("id", id);
         return query.getSingleResult();
     }
@@ -52,7 +52,7 @@ public class ClanPersistenceImpl implements ClanPersistence, PersistenceManager<
     public Clan getByNameAndServer(String clanName, String server) {
         TypedQuery<Clan> query = em.createQuery("SELECT c FROM Clan c " +
                 "JOIN FETCH c.server s " +
-                "WHERE c.name = :clanName AND LOWER(CONCAT(s.name, s.rates)) = :server", Clan.class);
+                "WHERE c.name = :clanName AND LOWER(CONCAT(s.name, s.rates)) = :server", getEntityClass());
         query.setParameter("clanName", clanName);
         query.setParameter("serverName", server);
         query.setMaxResults(1);
@@ -63,9 +63,20 @@ public class ClanPersistenceImpl implements ClanPersistence, PersistenceManager<
         return query.getResultList().getFirst();
     }
 
+
     @Override
     public Set<Clan> save(Set<Clan> set) {
         return Set.of();
+    }
+
+    @Override
+    public void delete(Clan entity) {
+
+    }
+
+    @Override
+    public Clan getById(Integer id) {
+        return em.find(getEntityClass(), id);
     }
 
     @Override

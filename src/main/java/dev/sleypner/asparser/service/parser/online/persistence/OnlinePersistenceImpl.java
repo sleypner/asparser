@@ -2,7 +2,8 @@ package dev.sleypner.asparser.service.parser.online.persistence;
 
 import dev.sleypner.asparser.domain.model.OnlineStatus;
 import dev.sleypner.asparser.dto.OnlineChart;
-import dev.sleypner.asparser.service.parser.shared.PersistenceManager;
+import dev.sleypner.asparser.service.parser.shared.DateRepository;
+import dev.sleypner.asparser.service.parser.shared.RepositoryManager;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
@@ -19,7 +20,7 @@ import java.util.Set;
 
 @Repository
 @Transactional
-public class OnlinePersistenceImpl implements OnlinePersistence, PersistenceManager<OnlineStatus> {
+public class OnlinePersistenceImpl implements OnlinePersistence, RepositoryManager<OnlineStatus>, DateRepository<OnlineStatus> {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
     @PersistenceContext
@@ -38,7 +39,7 @@ public class OnlinePersistenceImpl implements OnlinePersistence, PersistenceMana
 
     @Override
     public List<OnlineStatus> getAll() {
-        TypedQuery<OnlineStatus> query = em.createQuery("FROM OnlineStatus online", OnlineStatus.class);
+        TypedQuery<OnlineStatus> query = em.createQuery("FROM OnlineStatus online", getEntityClass());
         return query.getResultList();
     }
 
@@ -74,6 +75,11 @@ public class OnlinePersistenceImpl implements OnlinePersistence, PersistenceMana
             }
         }
         return onlineStatuses;
+    }
+
+    @Override
+    public void delete(OnlineStatus entity) {
+
     }
 
     @Override

@@ -15,18 +15,18 @@ public abstract class BaseOrchestrationService<T> implements OrchestrationServic
     private final Logger log = LoggerFactory.getLogger(getClass());
     protected String serviceName;
 
-    protected final PersistenceManager<T> persistenceManager;
+    protected final RepositoryManager<T> repositoryManager;
     protected final Fetcher<T> fetcher;
     protected final Parser<T> parser;
     protected final EntityParserConfig<T> parserConfig;
 
     protected BaseOrchestrationService(
-            PersistenceManager<T> persistenceManager,
+            RepositoryManager<T> repositoryManager,
             Fetcher<T> fetcher,
             Parser<T> parser,
             EntityParserConfig<T> parserConfig,
             String serviceName) {
-        this.persistenceManager = persistenceManager;
+        this.repositoryManager = repositoryManager;
         this.fetcher = fetcher;
         this.parser = parser;
         this.parserConfig = parserConfig;
@@ -50,7 +50,7 @@ public abstract class BaseOrchestrationService<T> implements OrchestrationServic
         return fetcher.fetch(url)
                 .flatMap(data -> Mono.just(parser.parse(data)))
                 .doOnNext(set -> {
-                    Set<T> saved = persistenceManager.save(set);
+                    Set<T> saved = repositoryManager.save(set);
                     log.debug("Saved {}: {}", serviceName, saved.size());
                 })
                 .then();

@@ -6,21 +6,10 @@ import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
-import jakarta.persistence.metamodel.EntityType;
-import jakarta.persistence.metamodel.Metamodel;
-import jakarta.persistence.metamodel.SingularAttribute;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.Set;
 
-public interface PersistenceManager<T> {
-    default T save(T entity) {
-        return entity;
-    }
-
-    Set<T> save(Set<T> set);
-
+public interface DateRepository<T> {
     @PersistenceContext
     EntityManager getEm();
 

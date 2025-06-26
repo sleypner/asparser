@@ -14,45 +14,50 @@ import reactor.core.scheduler.Schedulers;
 
 import java.net.URI;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Service
 public class EventService extends BaseOrchestrationService<Event> implements OrchestrationService<Event> {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
-    private final PersistenceManager<Event> pmEvent;
+    private final RepositoryManager<Event> eventRepository;
+    private final DateRepository<Event> dateRepository;
     private final ServerPersistenceImpl sp;
-    private final Fetcher<Event> fetcherService;
+    private final Fetcher<Event> fetcher;
     private final Parser<Event> parserService;
     private final EntityParserConfig<Event> parserConfig;
     private final RaidBossesConverterServices converter;
-    private final PersistenceManager<RaidBoss> pmRaidBosses;
+    private final RepositoryManager<RaidBoss> rRaidBosses;
 
-    protected EventService(PersistenceManager<Event> persistenceManager,
+    protected EventService(RepositoryManager<Event> eventRepository,
+                           DateRepository<Event> dateRepository,
                            Fetcher<Event> fetcher,
                            Parser<Event> parser,
                            EntityParserConfig<Event> parserConfig,
                            ServerPersistenceImpl sp,
                            RaidBossesConverterServices converter,
-                           PersistenceManager<RaidBoss> pmRaidBosses) {
-        super(persistenceManager, fetcher, parser, parserConfig, "Event");
-        this.pmEvent = persistenceManager;
+                           RepositoryManager<RaidBoss> rRaidBosses) {
+        super(eventRepository, fetcher, parser, parserConfig, "Event");
+        this.eventRepository = eventRepository;
+        this.dateRepository = dateRepository;
         this.sp = sp;
-        this.fetcherService = fetcher;
+        this.fetcher = fetcher;
         this.parserService = parser;
         this.parserConfig = parserConfig;
         this.converter = converter;
-        this.pmRaidBosses = pmRaidBosses;
+        this.rRaidBosses = rRaidBosses;
     }
 
     @Override
     public Mono<Void> processSinglePage(URI uri) {
-        return fetcherService.fetch(uri)
+        return fetcher.fetch(uri)
                 .publishOn(Schedulers.boundedElastic())
                 .doOnNext(doc -> {
-                    Set<Server> servers = sp.getAll();
-                    LocalDateTime LastEntryDate = pmEvent.getLastDate("date");
-                    doc.setServers(servers)
+                    List<Server> servers = sp.getAll();
+                    LocalDateTime LastEntryDate = dateRepository.getLastDate("date");
+                    doc.setServers(new HashSet<>(servers))
                             .setLastEntryDate(LastEntryDate);
                 })
                 .flatMap(data -> {
@@ -65,11 +70,11 @@ public class EventService extends BaseOrchestrationService<Event> implements Orc
                 .doOnNext(events -> {
 
                     Set<RaidBoss> bosses = converter.convert(events);
-                    Set<RaidBoss> savedBosses = pmRaidBosses.save(bosses);
+                    Set<RaidBoss> savedBosses = rRaidBosses.save(bosses);
                     log.debug("Saved bosses: {}", savedBosses.size());
 
 
-                    Set<Event> saved = pmEvent.save(events);
+                    Set<Event> saved = eventRepository.save(events);
                     log.debug("Saved events: {}", saved.size());
                 })
                 .then();

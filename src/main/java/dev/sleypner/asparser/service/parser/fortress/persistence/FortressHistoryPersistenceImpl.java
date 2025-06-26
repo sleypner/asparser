@@ -1,7 +1,8 @@
 package dev.sleypner.asparser.service.parser.fortress.persistence;
 
 import dev.sleypner.asparser.domain.model.FortressHistory;
-import dev.sleypner.asparser.service.parser.shared.PersistenceManager;
+import dev.sleypner.asparser.service.parser.shared.DateRepository;
+import dev.sleypner.asparser.service.parser.shared.RepositoryManager;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
@@ -14,7 +15,7 @@ import java.util.Set;
 
 @Repository
 @Transactional
-public class FortressHistoryPersistenceImpl implements FortressHistoryPersistence, PersistenceManager<FortressHistory> {
+public class FortressHistoryPersistenceImpl implements FortressHistoryPersistence, RepositoryManager<FortressHistory>, DateRepository<FortressHistory> {
     @PersistenceContext
     private final EntityManager em;
     private final FortressPersistenceImpl fortressService;
@@ -27,7 +28,7 @@ public class FortressHistoryPersistenceImpl implements FortressHistoryPersistenc
 
     @Override
     public List<FortressHistory> getAll() {
-        TypedQuery<FortressHistory> query = em.createQuery("SELECT f FROM FortressHistory f", FortressHistory.class);
+        TypedQuery<FortressHistory> query = em.createQuery("SELECT f FROM FortressHistory f", getEntityClass());
         return query.getResultList();
     }
 
@@ -48,9 +49,14 @@ public class FortressHistoryPersistenceImpl implements FortressHistoryPersistenc
     }
 
     @Override
+    public FortressHistory getById(Integer id) {
+        return em.find(getEntityClass(), id);
+    }
+
+    @Override
     public FortressHistory getById(int id) {
         TypedQuery<FortressHistory> query = em.createQuery(
-                "SELECT f FROM FortressHistory f WHERE f.id = :id", FortressHistory.class);
+                "SELECT f FROM FortressHistory f WHERE f.id = :id", getEntityClass());
         query.setParameter("id", id);
         return query.getSingleResult();
     }
@@ -58,14 +64,14 @@ public class FortressHistoryPersistenceImpl implements FortressHistoryPersistenc
     @Override
     public FortressHistory getByFortressId(String fortressName) {
         TypedQuery<FortressHistory> query = em.createQuery(
-                "SELECT f FROM FortressHistory f WHERE f.fortressId = :id", FortressHistory.class);
+                "SELECT f FROM FortressHistory f WHERE f.fortressId = :id", getEntityClass());
         return null;
     }
 
     @Override
     public List<FortressHistory> getCurrentStatusOfForts() {
         TypedQuery<FortressHistory> query = em.createQuery(
-                "SELECT f FROM FortressHistory f ORDER BY f.createdDate DESC", FortressHistory.class);
+                "SELECT f FROM FortressHistory f ORDER BY f.createdDate DESC", getEntityClass());
         query.setMaxResults((int) fortressService.getCount());//5x21
         return query.getResultList();
     }
@@ -75,7 +81,7 @@ public class FortressHistoryPersistenceImpl implements FortressHistoryPersistenc
         TypedQuery<FortressHistory> query = em.createQuery(
                 "SELECT fh FROM FortressHistory fh " +
                         "LEFT JOIN Fortress f ON fh.fortressId=f.id " +
-                        "WHERE f.server = :server", FortressHistory.class);
+                        "WHERE f.server = :server", getEntityClass());
         query.setParameter("server", server);
         List<FortressHistory> fortressHistoryList = query.getResultList();
         if (fortressHistoryList.isEmpty()) {

@@ -2,7 +2,8 @@ package dev.sleypner.asparser.service.parser.bosses.persistence;
 
 import dev.sleypner.asparser.domain.model.RaidBoss;
 import dev.sleypner.asparser.domain.model.Server;
-import dev.sleypner.asparser.service.parser.shared.PersistenceManager;
+import dev.sleypner.asparser.service.parser.shared.DateRepository;
+import dev.sleypner.asparser.service.parser.shared.RepositoryManager;
 import dev.sleypner.asparser.util.StringExtension;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -20,7 +21,7 @@ import java.util.stream.Collectors;
 
 @Repository
 @Transactional
-public class RaidBossesPersistenceImpl implements RaidBossesPersistence, PersistenceManager<RaidBoss> {
+public class RaidBossesPersistenceImpl implements RaidBossesPersistence, RepositoryManager<RaidBoss>, DateRepository<RaidBoss> {
 
     Logger log = LoggerFactory.getLogger(getClass());
     @PersistenceContext
@@ -32,16 +33,14 @@ public class RaidBossesPersistenceImpl implements RaidBossesPersistence, Persist
     }
 
     @Override
-    public RaidBoss getById(int id) {
-        TypedQuery<RaidBoss> query = em.createQuery("SELECT b FROM RaidBoss b WHERE b.id = :id", RaidBoss.class);
-        query.setParameter("id", id);
-        return query.getSingleResult();
+    public RaidBoss getById(Integer id) {
+        return em.find(RaidBoss.class, id);
     }
 
     @Override
     public List<RaidBoss> getAll() {
-        TypedQuery<RaidBoss> query = em.createQuery("SELECT b FROM RaidBoss b ORDER BY b.date DESC", RaidBoss.class);
-        return query.getResultList();
+        TypedQuery<RaidBoss> query = em.createQuery("SELECT b FROM RaidBoss b", getEntityClass());
+        return query.getResultStream().toList();
     }
 
     @Override
@@ -51,7 +50,7 @@ public class RaidBossesPersistenceImpl implements RaidBossesPersistence, Persist
 
     @Override
     public RaidBoss getByNameAndServer(String name, Server server) {
-        TypedQuery<RaidBoss> query = em.createQuery("SELECT b FROM RaidBoss b WHERE b.name = :name AND b.server = :server", RaidBoss.class);
+        TypedQuery<RaidBoss> query = em.createQuery("SELECT b FROM RaidBoss b WHERE b.name = :name AND b.server = :server", getEntityClass());
         query.setParameter("name", name);
         query.setParameter("server", server);
 
@@ -68,8 +67,8 @@ public class RaidBossesPersistenceImpl implements RaidBossesPersistence, Persist
         TypedQuery<RaidBoss> query = em.createQuery(
                 "SELECT b FROM RaidBoss b " +
                         "JOIN FETCH b.server s " +
-                "WHERE LOWER(CONCAT(s.name, s.rates)) = :server " +
-                "ORDER BY b.date DESC", RaidBoss.class
+                        "WHERE LOWER(CONCAT(s.name, s.rates)) = :server " +
+                        "ORDER BY b.date DESC", getEntityClass()
         );
 
         String serverProcess = StringExtension.trimAll(server.toLowerCase());
@@ -118,6 +117,11 @@ public class RaidBossesPersistenceImpl implements RaidBossesPersistence, Persist
         }
         newBosses.addAll(updateBosses);
         return newBosses;
+    }
+
+    @Override
+    public void delete(RaidBoss entity) {
+        em.remove(entity);
     }
 
     @Override

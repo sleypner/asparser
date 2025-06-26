@@ -11,10 +11,10 @@ public class OnlineService extends BaseOrchestrationService<OnlineStatus> implem
 
     Logger log = LoggerFactory.getLogger(getClass());
 
-    protected OnlineService(PersistenceManager<OnlineStatus> persistenceManager,
+    protected OnlineService(RepositoryManager<OnlineStatus> repositoryManager,
                             Fetcher<OnlineStatus> fetcher,
                             Parser<OnlineStatus> parser,
                             EntityParserConfig<OnlineStatus> parserConfig) {
-        super(persistenceManager, fetcher, parser, parserConfig, "OnlineStatus");
+        super(repositoryManager, fetcher, parser, parserConfig, "OnlineStatus");
     }
 }

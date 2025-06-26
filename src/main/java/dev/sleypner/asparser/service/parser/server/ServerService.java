@@ -11,10 +11,10 @@ public class ServerService extends BaseOrchestrationService<Server> implements O
 
     Logger log = LoggerFactory.getLogger(getClass());
 
-    protected ServerService(PersistenceManager<Server> persistenceManager,
+    protected ServerService(RepositoryManager<Server> repositoryManager,
                             Fetcher<Server> fetcher,
                             Parser<Server> parser,
                             EntityParserConfig<Server> parserConfig) {
-        super(persistenceManager, fetcher, parser, parserConfig, "Server");
+        super(repositoryManager, fetcher, parser, parserConfig, "Server");
     }
 }

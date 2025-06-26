@@ -21,10 +21,10 @@ public class FortressService implements OrchestrationService<Fortress> {
 
     Logger log = LoggerFactory.getLogger(getClass());
 
-    private final PersistenceManager<Fortress> pmFortress;
-    private final PersistenceManager<FortressSkill> pmFortressSkills;
-    private final PersistenceManager<FortressHistory> pmFortressHistory;
-    private final PersistenceManager<Clan> pmClan;
+    private final RepositoryManager<Fortress> rFortress;
+    private final RepositoryManager<FortressSkill> rFortressSkills;
+    private final RepositoryManager<FortressHistory> rFortressHistory;
+    private final RepositoryManager<Clan> rClan;
     private final Fetcher<Fortress> fetcherService;
     private final Parser<FortressData> parserService;
     private final EntityParserConfig<Fortress> parserConfig;
@@ -54,7 +54,7 @@ public class FortressService implements OrchestrationService<Fortress> {
 
     private Mono<Void> processFortressData(FortressData data) {
         return Mono.fromCallable(() -> {
-                    return pmFortress.save(data.getFortress());
+                    return rFortress.save(data.getFortress());
 
                 })
                 .flatMap(savedFortress -> {
@@ -75,7 +75,7 @@ public class FortressService implements OrchestrationService<Fortress> {
         return fetcherService.fetch(URI.create(data.getClanUrl()))
                 .flatMap(clanHtml -> {
                     Clan clan = FortressParserService.parseClan(clanHtml);
-                    Clan SavedClan = pmClan.save(clan);
+                    Clan SavedClan = rClan.save(clan);
                     data.setClan(SavedClan);
                     return Mono.fromCallable(() -> SavedClan);
                 })
@@ -92,7 +92,7 @@ public class FortressService implements OrchestrationService<Fortress> {
             if (data.getClan() != null) {
                 data.getFortressHistory().setClanId(data.getClan().getId());
             }
-            return pmFortressHistory.save(data.getFortressHistory());
+            return rFortressHistory.save(data.getFortressHistory());
         }).then();
     }
 

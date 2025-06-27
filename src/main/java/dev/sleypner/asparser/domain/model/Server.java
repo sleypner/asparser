@@ -20,6 +20,7 @@ public class Server {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    @Column(name = "external_id", unique = true, nullable = false)
     private Integer externalId;
     @Column(nullable = false)
     private String name;

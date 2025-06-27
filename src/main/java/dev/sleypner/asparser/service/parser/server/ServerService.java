@@ -15,6 +15,6 @@ public class ServerService extends BaseOrchestrationService<Server> implements O
                             Fetcher<Server> fetcher,
                             Parser<Server> parser,
                             EntityParserConfig<Server> parserConfig) {
-        super(repositoryManager, fetcher, parser, parserConfig, "Server");
+        super(repositoryManager, fetcher, parser, parserConfig);
     }
 }

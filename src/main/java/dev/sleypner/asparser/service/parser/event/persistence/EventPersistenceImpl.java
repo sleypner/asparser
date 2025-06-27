@@ -59,9 +59,8 @@ public class EventPersistenceImpl implements EventPersistence, RepositoryManager
 
         try {
             for (Event event : events) {
-                em.persist(event);
+                em.merge(event);
             }
-            em.flush();
         } catch (Exception e) {
             log.error("Failed to save events", e);
         }

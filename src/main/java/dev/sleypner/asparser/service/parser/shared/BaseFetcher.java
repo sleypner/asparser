@@ -23,39 +23,65 @@ public abstract class BaseFetcher<T> implements Fetcher<T> {
 
         return Mono.defer(() -> {
 
-                    String baseUri = buildBaseUrl(uri);
-                    log.debug("Creating WebClient for Host: {}", baseUri);
+                    String baseUri = createBaseUri(uri);
+                    String path = createPath(uri);
+                    log.info("Creating WebClient for Host: {}", baseUri);
 
                     return createWebClient(baseUri)
-                            .parsePage(uri.getPath())
-                            .doOnSubscribe(subscription -> log.debug("Subscribed to page parsing: {}", uri.getPath()))
+                            .parsePage(path)
+                            .doOnSubscribe(subscription -> log.info("Subscribed to page parsing: {}", uri))
                             .doOnSuccess(document -> handleSuccess(document, uri))
                             .doOnError(e -> handleError(e, uri))
                             .doOnCancel(() -> handleCansel(uri))
-                            .doFinally(signal -> handleFinally(uri, null));
+                            .doFinally(signal -> handleFinally(uri, signal));
 
                 })
                 .onErrorResume(e -> handleCriticalError(e, uri));
-    }
-
-    protected String buildBaseUrl(URI uri) {
-        return uri.getScheme() + "://" + uri.getHost();
     }
 
     protected CustomWebClient createWebClient(String baseUri) {
         return new CustomWebClient(baseUri);
     }
 
+    protected String createBaseUri(URI uri) {
+        StringBuilder sb = new StringBuilder();
+        if (uri.getScheme() == null || uri.getHost() == null) {
+            log.error("Invalid URI: {}", uri);
+            return null;
+        }
+        sb.append(uri.getScheme()).append("://").append(uri.getHost());
+        return sb.toString();
+    }
+    protected String createPath(URI uri) {
+        StringBuilder path = new StringBuilder();
+        if (uri.getPath() != null) {
+            path.append(uri.getPath());
+        }else {
+            log.error("Path is empty in URI: {}", uri);
+            return null;
+        }
+        if (uri.getQuery() != null) {
+            path.append("?").append(uri.getQuery());
+        }
+        return path.toString();
+    }
     protected void handleSuccess(HtmlDocument doc, URI uri) {
-        log.info("Successfully fetched: {}", uri.getPath());
+        log.info("Successfully fetched: {}", uri);
     }
 
     protected void handleError(Throwable e, URI uri) {
         log.error("Fetch failed for {}: {}", uri.getPath(), e.getMessage());
     }
 
-    protected void handleFinally(URI uri, SignalType signal) {
-        log.debug("Completed fetch operation for {} with signal: {}", uri.getPath(), signal);
+    protected void handleFinally(URI uri, SignalType signalType) {
+        switch (signalType) {
+            case ON_SUBSCRIBE -> log.info("Subscription started for URI: {}", uri);
+            case ON_NEXT      -> log.info("Data received for URI: {}", uri);
+            case ON_COMPLETE  -> log.info("Successfully completed for URI: {}", uri);
+            case ON_ERROR     -> log.warn("Completed with error for URI: {}", uri);
+            case CANCEL       -> log.warn("Operation was cancelled for URI: {}", uri);
+            default           -> log.debug("Finished with unknown signal [{}] for URI: {}", signalType, uri);
+        }
     }
 
     protected void handleCansel(URI uri) {

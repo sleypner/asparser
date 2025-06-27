@@ -13,7 +13,6 @@ import java.util.concurrent.TimeoutException;
 public abstract class BaseOrchestrationService<T> implements OrchestrationService<T> {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
-    protected String serviceName;
 
     protected final RepositoryManager<T> repositoryManager;
     protected final Fetcher<T> fetcher;
@@ -24,20 +23,18 @@ public abstract class BaseOrchestrationService<T> implements OrchestrationServic
             RepositoryManager<T> repositoryManager,
             Fetcher<T> fetcher,
             Parser<T> parser,
-            EntityParserConfig<T> parserConfig,
-            String serviceName) {
+            EntityParserConfig<T> parserConfig) {
         this.repositoryManager = repositoryManager;
         this.fetcher = fetcher;
         this.parser = parser;
         this.parserConfig = parserConfig;
-        this.serviceName = serviceName;
     }
 
     public Mono<Void> processList() {
         log.info("Starting processing of {} URIs", parserConfig.getUris().size());
         return Flux.fromIterable(parserConfig.getUris())
                 .flatMap(uri -> {
-                    log.debug("Processing URI: {}", uri);
+                    log.info("Processing URI: {}", uri);
                     return processSinglePage(uri)
                             .doOnSubscribe(sub -> handleSubscribe(uri))
                             .onErrorResume(e -> handleError(uri, e));
@@ -51,7 +48,7 @@ public abstract class BaseOrchestrationService<T> implements OrchestrationServic
                 .flatMap(data -> Mono.just(parser.parse(data)))
                 .doOnNext(set -> {
                     Set<T> saved = repositoryManager.save(set);
-                    log.debug("Saved {}: {}", serviceName, saved.size());
+                    log.info("Saved {}: {}", parserConfig.getName(), saved.size());
                 })
                 .then();
     }

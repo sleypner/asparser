@@ -6,6 +6,7 @@ import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -14,7 +15,7 @@ public interface DateRepository<T> {
     EntityManager getEm();
 
     Class<T> getEntityClass();
-
+    @Transactional
     default LocalDateTime getLastDate(String dateFieldName) {
         try {
             CriteriaBuilder cb = getEm().getCriteriaBuilder();
@@ -28,6 +29,5 @@ public interface DateRepository<T> {
         } catch (Exception e) {
             return null;
         }
-
     }
 }

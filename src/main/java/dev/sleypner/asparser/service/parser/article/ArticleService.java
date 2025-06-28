@@ -15,7 +15,7 @@ public class ArticleService extends BaseOrchestrationService<Article> implements
                              Fetcher<Article> fetcher,
                              Parser<Article> parser,
                              EntityParserConfig<Article> parserConfig) {
-        super(repositoryManager, fetcher, parser, parserConfig, "Article");
+        super(repositoryManager, fetcher, parser, parserConfig);
     }
 
 }

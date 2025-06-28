@@ -47,6 +47,7 @@ public class CustomWebClient {
     }
 
     private Mono<String> fetchHtmlPage(String url) {
+        log.info("Fetching page {}", url);
         return webClient.get()
                 .uri(url)
                 .retrieve()

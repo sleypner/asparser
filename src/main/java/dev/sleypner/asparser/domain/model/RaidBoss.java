@@ -18,7 +18,7 @@ import java.util.Objects;
 @AllArgsConstructor
 @Accessors(chain = true)
 @ToString(callSuper = true)
-public class RaidBoss extends AuditableEntity implements Comparable<RaidBoss> {
+public class RaidBoss extends AuditableEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -53,11 +53,6 @@ public class RaidBoss extends AuditableEntity implements Comparable<RaidBoss> {
             SetRespawnBoss();
         }
         return this;
-    }
-
-    @Override
-    public int compareTo(RaidBoss o) {
-        return getDate().compareTo(o.getDate());
     }
 
     private void SetRespawnBoss() {

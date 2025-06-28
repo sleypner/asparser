@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 @Repository
 @Transactional
-public class ServerPersistenceImpl implements RepositoryManager<Server>, DateRepository<Server> {
+public class ServerPersistenceImpl implements RepositoryManager<Server>{
 
     private final Logger log = LoggerFactory.getLogger(getClass());
     @PersistenceContext

@@ -20,7 +20,7 @@ import java.util.Set;
 
 @Repository
 @Transactional
-public class OnlinePersistenceImpl implements OnlinePersistence, RepositoryManager<OnlineStatus>, DateRepository<OnlineStatus> {
+public class OnlinePersistenceImpl implements OnlinePersistence, RepositoryManager<OnlineStatus> {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
     @PersistenceContext
@@ -67,9 +67,8 @@ public class OnlinePersistenceImpl implements OnlinePersistence, RepositoryManag
         if (!onlineStatuses.isEmpty()) {
             try {
                 for (OnlineStatus onlineStatus : onlineStatuses) {
-                    em.persist(onlineStatus);
+                    em.merge(onlineStatus);
                 }
-                em.flush();
             } catch (Exception e) {
                 log.error("Failed to save online", e);
             }

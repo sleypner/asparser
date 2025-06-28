@@ -2,10 +2,12 @@ package dev.sleypner.asparser.service.parser.bosses;
 
 import dev.sleypner.asparser.domain.model.Event;
 import dev.sleypner.asparser.domain.model.RaidBoss;
+import dev.sleypner.asparser.service.parser.util.RaidBossUtil;
 import dev.sleypner.asparser.util.Util;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -37,9 +39,26 @@ public class RaidBossesConverterServices {
                         .lastKiller(killer)
                         .lastKillersClan(killerClan)
                         .attackersCount(countAttackers)
+                        .countKilling(1)
                         .build()
                         .setDate(event.getDate());
-                bosses.add(rb);
+
+
+                if (RaidBossUtil.exists(bosses, rb)) {
+                    Optional<RaidBoss> optBoss = RaidBossUtil.findExists(bosses, rb);
+                    if (optBoss.isPresent()) {
+                        RaidBoss presBoss = optBoss.get();
+                        if (presBoss.getDate().isBefore(rb.getDate())) {
+                            rb.setCountKilling(presBoss.getCountKilling() + rb.getCountKilling());
+                            bosses.remove(presBoss);
+                            bosses.add(rb);
+                        } else {
+                            presBoss.setCountKilling(presBoss.getCountKilling() + rb.getCountKilling());
+                        }
+                    }
+                } else {
+                    bosses.add(rb);
+                }
             }
         }
         return bosses;

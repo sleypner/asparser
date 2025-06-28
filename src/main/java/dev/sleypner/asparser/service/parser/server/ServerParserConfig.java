@@ -12,7 +12,7 @@ import java.util.List;
 @Data
 public class ServerParserConfig implements EntityParserConfig<Server> {
     private String uri = "https://asterios.tm/index.php?cmd=rss";
-    private String name = "server";
+    private String name = "Server";
 
     @Override
     public List<URI> getUris() {

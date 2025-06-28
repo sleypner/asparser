@@ -10,6 +10,4 @@ import org.springframework.stereotype.Service;
 @Service
 public class ServerFetcherService extends BaseFetcher<Server> implements Fetcher<Server> {
 
-    Logger log = LoggerFactory.getLogger(getClass());
-
 }

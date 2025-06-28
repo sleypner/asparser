@@ -1,5 +1,6 @@
 package dev.sleypner.asparser.domain.model;
 
+import dev.sleypner.asparser.domain.model.shared.Identifiable;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.Accessors;
@@ -19,7 +20,7 @@ import java.util.Objects;
 @AllArgsConstructor
 @Accessors(chain = true)
 @ToString(callSuper = true)
-public class Article extends AuditableEntity implements Serializable, Comparable<Article> {
+public class Article extends AuditableEntity implements Serializable, Comparable<Article>, Identifiable<Article, String> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -64,5 +65,10 @@ public class Article extends AuditableEntity implements Serializable, Comparable
     @Override
     public final int hashCode() {
         return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
+    }
+
+    @Override
+    public String getIdentifier() {
+        return this.link;
     }
 }

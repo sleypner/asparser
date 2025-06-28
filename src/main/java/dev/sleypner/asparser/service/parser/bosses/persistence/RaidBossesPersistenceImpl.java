@@ -2,8 +2,8 @@ package dev.sleypner.asparser.service.parser.bosses.persistence;
 
 import dev.sleypner.asparser.domain.model.RaidBoss;
 import dev.sleypner.asparser.domain.model.Server;
-import dev.sleypner.asparser.service.parser.shared.DateRepository;
 import dev.sleypner.asparser.service.parser.shared.RepositoryManager;
+import dev.sleypner.asparser.service.parser.util.RaidBossUtil;
 import dev.sleypner.asparser.util.StringExtension;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -14,14 +14,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
 @Repository
 @Transactional
-public class RaidBossesPersistenceImpl implements RaidBossesPersistence, RepositoryManager<RaidBoss>, DateRepository<RaidBoss> {
+public class RaidBossesPersistenceImpl implements RaidBossesPersistence, RepositoryManager<RaidBoss> {
 
     Logger log = LoggerFactory.getLogger(getClass());
     @PersistenceContext
@@ -81,38 +80,32 @@ public class RaidBossesPersistenceImpl implements RaidBossesPersistence, Reposit
     public Set<RaidBoss> save(Set<RaidBoss> bosses) {
         List<RaidBoss> dbBosses = getAll();
 
-        Set<RaidBoss> newBosses = bosses.stream()
-                .filter(rb -> !dbBosses.contains(rb))
-                .collect(Collectors.toSet());
+        Map<Boolean, List<RaidBoss>> partitioned = bosses.stream()
+                .collect(Collectors.partitioningBy(rb -> RaidBossUtil.exists(dbBosses,rb)));
 
-        Set<RaidBoss> updateBosses = bosses.stream()
-                .filter(dbBosses::contains)
-                .collect(Collectors.toSet());
+        Set<RaidBoss> newBosses = new HashSet<>(partitioned.get(false));
+        Set<RaidBoss> updateBosses = new HashSet<>(partitioned.get(true));
 
         if (!newBosses.isEmpty()) {
             try {
-                for (RaidBoss rb : newBosses) {
-                    em.persist(rb);
-                }
-                em.flush();
+                bosses.forEach(em::merge);
             } catch (Exception e) {
-                log.error("Failed to save new RaidBoss", e);
+                log.error("Failed to save RaidBoss", e);
             }
         }
         if (!updateBosses.isEmpty()) {
             try {
-                for (RaidBoss rb : newBosses) {
-                    RaidBoss saved = getByNameAndServer(rb.getName(), rb.getServer());
-                    saved.setDate(rb.getDate())
-                            .setCountKilling(saved.getCountKilling() + 1)
-                            .setLastKillersClan(rb.getLastKillersClan())
-                            .setAttackersCount(rb.getAttackersCount())
-                            .setLastKiller(rb.getLastKiller());
-                    em.merge(saved);
-                }
-                em.flush();
+                bosses.forEach(rb -> {
+                    Optional<RaidBoss> dbBoss = RaidBossUtil.findExists(dbBosses, rb);
+                    dbBoss.ifPresent(dbRb->{
+                        int countKilling = rb.getCountKilling() + dbRb.getCountKilling();
+                        rb.setId(dbRb.getId());
+                        rb.setCountKilling(countKilling);
+                    });
+                    em.merge(rb);
+                });
             } catch (Exception e) {
-                log.error("Failed to save new RaidBoss", e);
+                log.error("Failed to update RaidBoss", e);
             }
         }
         newBosses.addAll(updateBosses);

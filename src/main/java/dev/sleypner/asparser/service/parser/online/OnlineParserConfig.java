@@ -11,8 +11,8 @@ import java.util.List;
 @Component
 @Data
 public class OnlineParserConfig implements EntityParserConfig<OnlineStatus> {
-    private String uri = "https://asterios.tm/index.php?js=1";
-    private String name = "online";
+    private final String uri = "https://asterios.tm/index.php";
+    private final String name = "OnlineStatus";
 
     @Override
     public List<URI> getUris() {

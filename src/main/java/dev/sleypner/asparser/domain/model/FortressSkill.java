@@ -1,19 +1,16 @@
 package dev.sleypner.asparser.domain.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.Accessors;
 import lombok.experimental.SuperBuilder;
-import org.hibernate.annotations.BatchSize;
 import org.hibernate.proxy.HibernateProxy;
 
-import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
 @Entity
-@Table(name = "fortress_skills")
+@Table(name = "fortress_skills", uniqueConstraints = @UniqueConstraint(columnNames = "name"))
 @Getter
 @Setter
 @SuperBuilder
@@ -22,27 +19,23 @@ import java.util.Set;
 @Accessors(chain = true)
 @ToString(callSuper = true)
 public class FortressSkill extends AuditableEntity {
+
+    public static final String UNIQUE_FIELD_NAME = "name";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer id;
-    @Column(name = "name")
+    @Column(name = "name", unique = true)
     private String name;
     @Column(name = "effect")
     private String effect;
-    @Lob
-    @Column(name = "image", columnDefinition = "BLOB")
-    private byte[] image;
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinTable(
-            name = "fortress_and_skills",
-            joinColumns = @JoinColumn(name = "fortress_skills_id"),
-            inverseJoinColumns = @JoinColumn(name = "fortress_id"))
-    @BatchSize(size = 10)
-    @JsonIgnore
-    @Builder.Default
+    @OneToOne(mappedBy = "fortressSkill")
     @ToString.Exclude
-    private Set<Fortress> fortress = new HashSet<>();
+    private Image image;
+    @ManyToMany(mappedBy = "skills")
+    @ToString.Exclude
+    private Set<Fortress> fortress;
 
     @PrePersist
     private void onCreate() {

@@ -23,11 +23,13 @@ public class Clan extends AuditableEntity {
     private Integer id;
     @Column(name = "name")
     private String name;
-    @Lob
-    @Column(name = "image", columnDefinition = "BLOB")
-    private byte[] image;
-    @Column(name = "server")
-    private String server;
+    @OneToOne(mappedBy = "clan")
+    @ToString.Exclude
+    private Image image;
+    @JoinColumn(name = "server_id")
+    @ManyToOne()
+    @ToString.Exclude
+    private Server server;
     @Column(name = "level")
     private short level;
     @Column(name = "leader")

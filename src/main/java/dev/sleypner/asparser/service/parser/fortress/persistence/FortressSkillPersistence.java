@@ -3,8 +3,9 @@ package dev.sleypner.asparser.service.parser.fortress.persistence;
 import dev.sleypner.asparser.domain.model.FortressSkill;
 
 import java.util.List;
+import java.util.Optional;
 
-public interface FortressSkillsPersistence {
+public interface FortressSkillPersistence {
 
     List<FortressSkill> getAll();
 
@@ -14,5 +15,5 @@ public interface FortressSkillsPersistence {
 
     FortressSkill getById(int id);
 
-    FortressSkill getByName(String name);
+    Optional<FortressSkill> getByName(String name);
 }

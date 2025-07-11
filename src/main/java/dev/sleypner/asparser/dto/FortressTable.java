@@ -2,6 +2,7 @@ package dev.sleypner.asparser.dto;
 
 import dev.sleypner.asparser.domain.model.Clan;
 import dev.sleypner.asparser.domain.model.FortressSkill;
+import dev.sleypner.asparser.domain.model.Server;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,7 +21,7 @@ import java.util.List;
 public class FortressTable implements Serializable {
     private int id;
     private String name;
-    private String server;
+    private Server server;
     private List<FortressSkill> skills;
     private LocalDateTime updatedDate;
     private Clan clan;

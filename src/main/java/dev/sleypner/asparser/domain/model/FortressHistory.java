@@ -9,7 +9,7 @@ import org.hibernate.proxy.HibernateProxy;
 import java.util.Objects;
 
 @Entity
-@Table(name = "fortress_histories")
+@Table(name = "fortresses_history")
 @Getter
 @Setter
 @SuperBuilder

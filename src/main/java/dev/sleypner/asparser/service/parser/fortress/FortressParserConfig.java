@@ -1,29 +1,34 @@
 package dev.sleypner.asparser.service.parser.fortress;
 
 import dev.sleypner.asparser.domain.model.Fortress;
+import dev.sleypner.asparser.domain.model.Server;
 import dev.sleypner.asparser.service.parser.shared.EntityParserConfig;
+import dev.sleypner.asparser.service.parser.shared.RepositoryManager;
 import lombok.Data;
 import org.springframework.stereotype.Component;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @Data
 public class FortressParserConfig implements EntityParserConfig<Fortress> {
-    private String name = "fortress";
-    private static String host = "https://asterios.tm";
+    private final String name = "Fortress";
+    private static final String host = "https://asterios.tm";
+    private final RepositoryManager<Server> serverRepository;
 
     @Override
     public List<URI> getUris() {
-        List<URI> uris = new ArrayList<URI>();
-        uris.add(URI.create("https://asterios.tm/static/ratings/fortress/3.en.html"));
-//        uris.add(URI.create("https://asterios.tm/static/ratings/fortress/8.en.html"));
-//        uris.add(URI.create("https://asterios.tm/static/ratings/fortress/0.en.html"));
-//        uris.add(URI.create("https://asterios.tm/static/ratings/fortress/2.en.html"));
-//        uris.add(URI.create("https://asterios.tm/static/ratings/fortress/6.en.html"));
-        return uris;
+        return serverRepository.getAll().stream().map(server -> {
+            String uri = host + "/static/ratings/fortress/*.en.html";
+            if (server.getExternalId() != null) {
+                char ch = server.getExternalId().toString().charAt(0);
+                uri = uri.replace('*', ch);
+                return URI.create(uri);
+            }
+            return null;
+        }).collect(Collectors.toList());
     }
 
     public static String pullHost() {

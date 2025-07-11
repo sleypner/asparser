@@ -6,7 +6,6 @@ import lombok.experimental.Accessors;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.proxy.HibernateProxy;
 
-import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -25,30 +24,23 @@ public class Fortress extends AuditableEntity implements Comparable<Fortress> {
     private Integer id;
     @Column(name = "name")
     private String name;
-    @Column(name = "server")
-    private String server;
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "image_id")
+    @ManyToOne
+    @ToString.Exclude
+    private Image image;
+    @JoinColumn(name = "server_id")
+    @ManyToOne()
+    @ToString.Exclude
+    private Server server;
+    @ManyToMany
     @JoinTable(
             name = "fortress_and_skills",
             joinColumns = @JoinColumn(name = "fortress_id"),
-            inverseJoinColumns = @JoinColumn(name = "fortress_skills_id"))
-    @Builder.Default
+            inverseJoinColumns = @JoinColumn(name = "fortress_skills_id"),
+            uniqueConstraints = @UniqueConstraint(columnNames = {"fortress_id", "fortress_skills_id"})
+    )
     @ToString.Exclude
-    private Set<FortressSkill> skills = new HashSet<>();
-
-    public void setSkill(FortressSkill skills) {
-        if (this.skills == null) {
-            this.skills = new HashSet<>();
-        }
-        this.skills.add(skills);
-    }
-
-    public void setSkillAll(Set<FortressSkill> skills) {
-        if (this.skills == null) {
-            this.skills = new HashSet<>();
-        }
-        this.skills.addAll(skills);
-    }
+    private Set<FortressSkill> skills;
 
     @PrePersist
     private void onCreate() {

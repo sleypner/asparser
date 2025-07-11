@@ -35,6 +35,12 @@ public class Server {
     @OneToMany(mappedBy = "server")
     @ToString.Exclude
     private Set<RaidBoss> raidBosses;
+    @OneToMany(mappedBy = "server")
+    @ToString.Exclude
+    private Set<Fortress> fortresses;
+    @OneToMany(mappedBy = "server")
+    @ToString.Exclude
+    private Set<Clan> clans;
 
 
 }

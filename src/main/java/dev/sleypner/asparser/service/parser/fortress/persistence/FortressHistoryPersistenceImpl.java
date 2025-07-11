@@ -44,11 +44,6 @@ public class FortressHistoryPersistenceImpl implements FortressHistoryPersistenc
     }
 
     @Override
-    public void delete(FortressHistory fh) {
-        em.remove(fh);
-    }
-
-    @Override
     public FortressHistory getById(Integer id) {
         return em.find(getEntityClass(), id);
     }
@@ -91,11 +86,6 @@ public class FortressHistoryPersistenceImpl implements FortressHistoryPersistenc
     }
 
     @Override
-    public Set<FortressHistory> save(Set<FortressHistory> set) {
-        return Set.of();
-    }
-
-    @Override
     public EntityManager getEm() {
         return em;
     }
@@ -103,5 +93,15 @@ public class FortressHistoryPersistenceImpl implements FortressHistoryPersistenc
     @Override
     public Class<FortressHistory> getEntityClass() {
         return FortressHistory.class;
+    }
+
+    @Override
+    public void delete(FortressHistory fortress) {
+        RepositoryManager.super.delete(fortress);
+    }
+
+    @Override
+    public Set<FortressHistory> save(Set<FortressHistory> set) {
+        return RepositoryManager.super.save(set);
     }
 }

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <configuration>
-    <property name="LOG_PATTERN" value="%d{dd.MM.yyyy/HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"/>
     <property name="LOG_PATH" value="${LOG_PATH:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}}"/>
     <property name="LOG_FILE" value="${LOG_FILE:-${LOG_PATH}/spring.log}"/>
+    <property name="LOG_PATTERN" value="%d{HH:mm:ss.SSS} [%thread] %highlight(%-5level){FATAL=red bold, ERROR=red, WARN=yellow bold, INFO=green, DEBUG=blue, TRACE=cyan} %cyan(%logger{36}) - %msg%n"/>
 
     <springProfile name="!prod">
         <appender name="JSON_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -13,8 +13,7 @@
                 <maxHistory>30</maxHistory>
                 <totalSizeCap>1GB</totalSizeCap>
             </rollingPolicy>
-            <encoder class="net.logstash.logback.encoder.LogstashEncoder">
-            </encoder>
+            <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
         </appender>
         <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
             <encoder>
@@ -22,7 +21,7 @@
                 <charset>utf8</charset>
             </encoder>
         </appender>
-        <root level="INFO">
+        <root level="WARN">
             <appender-ref ref="CONSOLE"/>
             <appender-ref ref="JSON_FILE"/>
         </root>
@@ -37,16 +36,14 @@
                 <maxHistory>30</maxHistory>
                 <totalSizeCap>1GB</totalSizeCap>
             </rollingPolicy>
-            <encoder class="net.logstash.logback.encoder.LogstashEncoder">
-            </encoder>
+            <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
         </appender>
         <appender name="JSON_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
             <encoder class="net.logstash.logback.encoder.LogstashEncoder">
-                <jsonGeneratorDecorator class="net.logstash.logback.decorate.CompositeJsonGeneratorDecorator">
-                </jsonGeneratorDecorator>
+                <jsonGeneratorDecorator class="net.logstash.logback.decorate.CompositeJsonGeneratorDecorator"/>
             </encoder>
         </appender>
-        <root level="INFO">
+        <root level="WARN">
             <appender-ref ref="JSON_CONSOLE"/>
             <appender-ref ref="JSON_FILE"/>
         </root>

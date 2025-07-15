@@ -31,7 +31,6 @@ public class AuthPageController {
     public String showLoginPage(Model model,
                                 @RequestParam(value = "error", defaultValue = "false") boolean error,
                                 @RequestParam(value = "logout", defaultValue = "false") boolean logout) {
-        System.out.println("sad");
 
         if (error) {
             model.addAttribute("errorMessage", "Incorrect credentials");

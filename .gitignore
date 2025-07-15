@@ -1,12 +1,14 @@
 logs/
 mariadb_volume/
 .gradle
-variables.env
 sqliteMy.db
 build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
+local/
+uploads/
+gradle.properties
 
 ### IntelliJ IDEA ###
 .idea/

@@ -2,6 +2,7 @@ package dev.sleypner.asparser.service.parser.event;
 
 import dev.sleypner.asparser.domain.model.Event;
 import dev.sleypner.asparser.domain.model.RaidBoss;
+import dev.sleypner.asparser.domain.model.Server;
 import dev.sleypner.asparser.service.parser.bosses.RaidBossesConverterServices;
 import dev.sleypner.asparser.service.parser.server.persistence.ServerPersistenceImpl;
 import dev.sleypner.asparser.service.parser.shared.*;
@@ -22,37 +23,37 @@ import java.util.Set;
 public class EventService extends BaseOrchestrationService<Event> implements OrchestrationService<Event> {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
-    private final RepositoryManager<Event> pmEvent;
     private final DateRepository<Event> dateRepository;
-    private final ServerPersistenceImpl sp;
     private final Fetcher<Event> fetcherService;
     private final Parser<Event> parserService;
     private final EntityParserConfig<Event> parserConfig;
     private final RaidBossesConverterServices converter;
+
+    private final RepositoryManager<Event> pmEvent;
     private final RepositoryManager<RaidBoss> pmRaidBosses;
+    private final RepositoryManager<Server> pmServers;
 
     protected EventService(RepositoryManager<Event> RepositoryManager,
                            DateRepository<Event> dateRepository,
                            Fetcher<Event> fetcher,
                            Parser<Event> parser,
                            EntityParserConfig<Event> parserConfig,
-                           ServerPersistenceImpl sp,
                            RaidBossesConverterServices converter,
-                           RepositoryManager<RaidBoss> pmRaidBosses) {
+                           RepositoryManager<RaidBoss> pmRaidBosses, RepositoryManager<Server> pmServers) {
         super(RepositoryManager, fetcher, parser, parserConfig);
         this.pmEvent = RepositoryManager;
         this.dateRepository = dateRepository;
-        this.sp = sp;
         this.fetcherService = fetcher;
         this.parserService = parser;
         this.parserConfig = parserConfig;
         this.converter = converter;
         this.pmRaidBosses = pmRaidBosses;
+        this.pmServers = pmServers;
     }
 
     @Override
     public Mono<Void> processList() {
-        List<URI> uris = parserConfig.getUris(sp.getAll());
+        List<URI> uris = parserConfig.getUris(pmServers.getAll());
         log.info("Starting processing of {} URIs", uris.size());
         return Flux.fromIterable(uris)
                 .flatMap(uri -> {
@@ -71,7 +72,7 @@ public class EventService extends BaseOrchestrationService<Event> implements Orc
                 .publishOn(Schedulers.boundedElastic())
                 .doOnNext(doc -> {
                     LocalDateTime lastEntryDate = dateRepository.getLastDate("date");
-                    doc.setServers(new HashSet<>(sp.getAll()))
+                    doc.setServers(new HashSet<>(pmServers.getAll()))
                             .setLastEntryDate(lastEntryDate);
                 })
                 .flatMap(data -> {

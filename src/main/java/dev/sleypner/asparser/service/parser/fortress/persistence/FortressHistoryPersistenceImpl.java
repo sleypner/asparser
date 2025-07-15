@@ -1,5 +1,6 @@
 package dev.sleypner.asparser.service.parser.fortress.persistence;
 
+import dev.sleypner.asparser.domain.model.Fortress;
 import dev.sleypner.asparser.domain.model.FortressHistory;
 import dev.sleypner.asparser.service.parser.shared.DateRepository;
 import dev.sleypner.asparser.service.parser.shared.RepositoryManager;
@@ -18,10 +19,10 @@ import java.util.Set;
 public class FortressHistoryPersistenceImpl implements FortressHistoryPersistence, RepositoryManager<FortressHistory>, DateRepository<FortressHistory> {
     @PersistenceContext
     private final EntityManager em;
-    private final FortressPersistenceImpl fortressService;
+    private final FortressPersistence fortressService;
 
     @Autowired
-    public FortressHistoryPersistenceImpl(EntityManager em, FortressPersistenceImpl fortressService) {
+    public FortressHistoryPersistenceImpl(EntityManager em, FortressPersistence fortressService) {
         this.em = em;
         this.fortressService = fortressService;
     }

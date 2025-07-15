@@ -34,7 +34,6 @@ public abstract class BaseOrchestrationService<T> implements OrchestrationServic
         log.info("Starting processing of {} URIs", parserConfig.getUris().size());
         return Flux.fromIterable(parserConfig.getUris())
                 .flatMap(uri -> {
-                    log.info("Processing URI: {}", uri);
                     return processSinglePage(uri)
                             .doOnSubscribe(sub -> handleSubscribe(uri))
                             .onErrorResume(e -> handleError(uri, e));

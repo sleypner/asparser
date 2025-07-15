@@ -1,12 +1,3 @@
-#parse:
-#  zone: "Europe/Helsinki"
-#  articles:
-#    cron: "-"
-#  fortress:
-#    cron: "0 0 12 * * ?"
-#  online:
-#    delay: "60000"
-#    initial-delay: "60000"
 oauth2:
   client:
     google:
@@ -26,20 +17,21 @@ oauth2:
 parse:
   zone: ${PARSE_TIME_ZONE:Europe/Helsinki}
   articles:
-    cron: ${PARSE_ARTICLES_CRONE_EX:-}
-  fortress:
-    cron: ${PARSE_FORTRESS_CRONE_EX:0 0 12 * * ?}
+    cron: ${PARSE_ARTICLES_CRONE_EX:"0 0 2 * * ?"}
+  fortresses:
+    cron: ${PARSE_FORTRESS_CRONE_EX:0 0 3 * * ?}
   online:
     delay: ${PARSE_ONLINE_DELAY:600000}
     initial-delay: ${PARSE_ONLINE_DELAY_INIT:60000}
   events:
     delay: ${PARSE_EVENTS_DELAY:1200000}
     initial-delay: ${PARSE_EVENTS_DELAY_INIT:60000}
+  servers:
+    cron: ${PARSE_SERVER_CRONE_EX:"0 0 2 ? * 0"}
 
 spring:
   profiles:
     active: ${SPRING_PROFILE:prod}
-  # Google smtp
   mail:
     host: smtp.gmail.com
     port: 587
@@ -51,6 +43,8 @@ spring:
           auth: true
           starttls:
             enabled: true
+  aop:
+    proxy-target-class:
 
 smtp:
   mail:
@@ -63,19 +57,23 @@ google:
   recaptcha:
     secret: ${GOOGLE_CAPTCHA:}
 
-# Database
 db:
   url: ${DB_CONNECT_URL:jdbc:mariadb://db:3306/asparser_db}
   username: ${DB_CONNECT_USERNAME:asparser}
   password: ${DB_CONNECT_PASSWORD:as4561}
 
-# Admin user
 admin:
   username: ${ADMIN_USERNAME:admin}
-  password: ${ADMIN_PASSWORD:admin123}
+  password: ${ADMIN_PASSWORD:admin1234}
+
 logging:
   level:
     root: ${LOGGING_LEVEL:info}
+
+proxy:
+  host: ${PROXY_HOST:127.0.0.1}
+  port: ${PROXY_PORT:8888}
+  enabled: ${PROXY_ENABLED:false}
 
 host:
   url: ${HOST_URL:http://localhost:8080}

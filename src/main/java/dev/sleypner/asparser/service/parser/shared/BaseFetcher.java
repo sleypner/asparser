@@ -22,8 +22,6 @@ public class BaseFetcher<T> implements Fetcher<T> {
     @Override
     public Mono<HtmlDocument> fetch(URI uri) {
 
-        log.info("Starting fetch: {}", uri);
-
         return Mono.defer(() -> {
 
                     String baseUri = createBaseUri(uri);
@@ -50,8 +48,7 @@ public class BaseFetcher<T> implements Fetcher<T> {
 
         Mono<Image> fetchMono = webClient.fetchImages(image)
                 .doOnError(e -> handleError(e, uri))
-                .doOnCancel(() -> handleCansel(uri))
-                .doFinally(signal -> handleFinally(uri, signal));
+                .doOnCancel(() -> handleCansel(uri));
 
         return Mono.defer(() -> fetchMono)
                 .onErrorResume(e -> {
@@ -79,7 +76,7 @@ public class BaseFetcher<T> implements Fetcher<T> {
         if (uri.getPath() != null) {
             path.append(uri.getPath());
         } else {
-            log.error("Path is empty in URI: {}", uri);
+            log.error("Path is empty: {}", uri);
             return null;
         }
         if (uri.getQuery() != null) {
@@ -94,17 +91,17 @@ public class BaseFetcher<T> implements Fetcher<T> {
 
     protected void handleFinally(URI uri, SignalType signalType) {
         switch (signalType) {
-            case ON_SUBSCRIBE -> log.info("Subscription started for URI: {}", uri);
-            case ON_NEXT -> log.info("Data received for URI: {}", uri);
-            case ON_COMPLETE -> log.info("Successfully completed for URI: {}", uri);
-            case ON_ERROR -> log.warn("Completed with error for URI: {}", uri);
-            case CANCEL -> log.warn("Operation was cancelled for URI: {}", uri);
-            default -> log.debug("Finished with unknown signal [{}] for URI: {}", signalType, uri);
+            case ON_SUBSCRIBE -> log.info("Subscription started: {}", uri);
+            case ON_NEXT -> log.info("Data received: {}", uri);
+            case ON_COMPLETE -> log.info("Completed: {}", uri);
+            case ON_ERROR -> log.warn("Completed with error: {}", uri);
+            case CANCEL -> log.warn("Operation was cancelled: {}", uri);
+            default -> log.debug("Finished with unknown signal [{}]: {}", signalType, uri);
         }
     }
 
     protected void handleCansel(URI uri) {
-        log.warn("Fetch operation was cancelled for {}", uri.getPath());
+        log.warn("Fetch operation was cancelled {}", uri.getPath());
     }
 
     protected Mono<HtmlDocument> handleCriticalError(Throwable e, URI uri) {

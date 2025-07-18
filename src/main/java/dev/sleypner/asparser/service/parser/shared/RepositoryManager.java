@@ -51,5 +51,9 @@ public interface RepositoryManager<T> {
     default Optional<T> getByName(String name) {
         return getByName("name", name);
     }
+    default Long count(){
+        return getEm().createQuery("SELECT COUNT(t) FROM "+getEntityClass().getSimpleName()+" t", Long.class)
+                        .getSingleResult();
+    }
 
 }

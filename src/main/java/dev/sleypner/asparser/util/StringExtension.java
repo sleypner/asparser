@@ -7,7 +7,6 @@ import java.util.Random;
 public class StringExtension {
     public static String encodeBCrypt(String input) {
         var encoder = new BCryptPasswordEncoder();
-        System.out.println(encoder.encode(input));
         return encoder.encode(input);
     }
 
